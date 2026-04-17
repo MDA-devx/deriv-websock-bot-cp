@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jump 25 Trading Bot - Deriv</title>
+    <!-- Librería Lightweight Charts (pin a stable version) -->
+    <script src="https://unpkg.com/lightweight-charts@3.8.0/dist/lightweight-charts.standalone.production.js"></script>
+    <style>
+        :root {
+            --bg-color: #131722;
+            --sidebar-bg: #1e222d;
+            --border-color: #2a2e39;
+            --text-color: #d1d4dc;
+            --accent-color: #2962ff;
+            --success: #089981;
+            --danger: #f23645;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styles */
+        #sidebar {
+            width: 320px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+
+        h2 { font-size: 1.2rem; margin-top: 0; color: #fff; }
+
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 11px; color: #b2b5be; text-transform: uppercase; margin-bottom: 5px; }
+        
+        input, select {
+            width: 100%;
+            background-color: #2a2e39;
+            border: 1px solid #363c4e;
+            color: #d1d4dc;
+            padding: 10px;
+            border-radius: 4px;
+            box-sizing: border-box;
+            outline: none;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus { border-color: var(--accent-color); }
+
+        button {
+            width: 100%;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: opacity 0.2s;
+        }
+
+        button:hover { opacity: 0.9; }
+
+        /* Logs Viewer */
+        #logs-container {
+            flex-grow: 1;
+            margin-top: 20px;
+            background-color: #000;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 10px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            overflow-y: auto;
+            color: #4ade80; /* Green terminal color */
+        }
+
+        .log-entry { margin-bottom: 6px; border-bottom: 1px solid #111; padding-bottom: 4px; line-height: 1.4; }
+        .log-time { color: #888; font-size: 10px; }
+        .signal-call { color: #089981; font-weight: bold; }
+        .signal-put { color: #f23645; font-weight: bold; }
+
+        /* Main Content / Charts */
+        #main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        #price-chart { flex: 2; position: relative; min-height: 320px; }
+        #rsi-chart { flex: 1; border-top: 2px solid var(--border-color); position: relative; min-height: 160px; }
+
+        .chart-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 5;
+            background: rgba(30, 34, 45, 0.8);
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <h2>Deriv Jump 25 Bot</h2>
+        
+        <div class="input-group">
+            <label for="api-token">API Token (Opcional para lectura)</label>
+            <input type="password" id="api-token" placeholder="Tu token de Deriv...">
+        </div>
+
+        <div class="input-group">
+            <label for="app-id">App ID</label>
+            <input type="text" id="app-id" value="1089" placeholder="Ej: 1089">
+        </div>
+
+        <div class="input-group">
+            <label for="timeframe">Temporalidad (Velas)</label>
+            <select id="timeframe">
+                <option value="1">1 Segundo</option>
+                <option value="5">5 Segundos</option>
+                <option value="15">15 Segundos</option>
+                <option value="60" selected>1 Minuto</option>
+                <option value="300">5 Minutos</option>
+                <option value="900">15 Minutos</option>
+            </select>
+        </div>
+
+        <div style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+            <label style="color: var(--accent-color); font-weight: bold;">Indicadores</label>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <div class="input-group" style="flex: 1;">
+                    <label>SMA Period</label>
+                    <input type="number" id="sma-period" value="23">
+                </div>
+                <div class="input-group" style="flex: 1;">
+                    <label>EMA Period</label>
+                    <input type="number" id="ema-period" value="10">
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <div class="input-group" style="flex: 1;">
+                    <label>RSI Period</label>
+                    <input type="number" id="rsi-period" value="7">
+                </div>
+                <div class="input-group" style="flex: 1;">
+                    <label>BB Period</label>
+                    <input type="number" id="bb-period" value="20">
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <div class="input-group" style="flex: 1;">
+                    <label>RSI High</label>
+                    <input type="number" id="rsi-high" value="65">
+                </div>
+                <div class="input-group" style="flex: 1;">
+                    <label>RSI Low</label>
+                    <input type="number" id="rsi-low" value="35">
+                </div>
+            </div>
+        </div>
+
+        <button id="start-btn">CONECTAR WEBSOCKET</button>
+        <button id="reset-zoom" style="margin-top:10px;background:#3a3f58;color:#fff;border:none;padding:10px;border-radius:4px;cursor:pointer;">RESET ZOOM</button>
+
+        <div style="margin-top:12px;">
+            <label style="color:var(--accent-color); font-weight:bold;">Mostrar Indicadores</label>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">
+                <label style="font-size:13px;"><input type="checkbox" id="toggle-sma" checked> SMA</label>
+                <label style="font-size:13px;"><input type="checkbox" id="toggle-ema" checked> EMA</label>
+                <label style="font-size:13px;"><input type="checkbox" id="toggle-bb" checked> Bollinger Bands</label>
+                <label style="font-size:13px;"><input type="checkbox" id="toggle-rsi" checked> RSI</label>
+            </div>
+        </div>
+
+        <div id="logs-container">
+            <div class="log-entry">Sistema listo. Ingrese parámetros y conecte.</div>
+        </div>
+    </div>
+
+    <div id="main-content">
+        <div id="price-chart">
+            <div class="chart-label">JUMP 25 INDEX</div>
+        </div>
+        <div id="rsi-chart">
+            <div class="chart-label">RSI</div>
+        </div>
+    </div>
+
+    <script>
+        let priceChart, rsiChart;
+        let candleSeries, smaSeries, emaSeries, rsiSeries;
+        let bbUpperSeries, bbLowerSeries;
+        let ws;
+        let isConnected = false;
+        let currentSymbol = 'R_25';
+        let dataHistory = [];
+        let indicatorEnabled = { sma: true, ema: true, bb: true, rsi: true };
+
+        const chartOptions = {
+            layout: { backgroundColor: '#131722', textColor: '#d1d4dc' },
+            grid: { vertLines: { color: '#2a2e39' }, horzLines: { color: '#2a2e39' } },
+            crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+            rightPriceScale: { borderColor: '#2a2e39' },
+            timeScale: { borderColor: '#2a2e39', timeVisible: true, secondsVisible: true },
+            // Enable horizontal zoom/pan interactions
+            handleScale: {
+                axisPressedMouseMove: { time: true, price: false },
+                mouseWheel: { time: true, price: false },
+                pinch: { time: true, price: false }
+            },
+            handleScroll: { mouseWheel: false, pressedMouseMove: true, horzTouchDrag: true, vertTouchDrag: false }
+        };
+
+        function initCharts() {
+            const pContainer = document.getElementById('price-chart');
+            const rContainer = document.getElementById('rsi-chart');
+            pContainer.innerHTML = '<div class="chart-label">JUMP 25 INDEX</div>';
+            rContainer.innerHTML = '<div class="chart-label">RSI</div>';
+
+            priceChart = LightweightCharts.createChart(pContainer, { ...chartOptions, height: pContainer.clientHeight });
+            // Some builds of the standalone bundle may not expose candlestick series. Use a safe fallback.
+            if (typeof priceChart.addCandlestickSeries === 'function') {
+                candleSeries = priceChart.addCandlestickSeries({ upColor: '#089981', downColor: '#f23645', borderVisible: false, wickUpColor: '#089981', wickDownColor: '#f23645' });
+            } else if (typeof priceChart.addBarSeries === 'function') {
+                addLog('addCandlestickSeries not available; using bar-series fallback', 'danger');
+                candleSeries = priceChart.addBarSeries({ color: '#d1d4dc' });
+            } else {
+                addLog('Charting library missing series API; using line-series fallback', 'danger');
+                candleSeries = priceChart.addLineSeries({ color: '#d1d4dc' });
+            }
+            
+            smaSeries = priceChart.addLineSeries({ color: '#2962ff', lineWidth: 2, title: 'SMA' });
+            emaSeries = priceChart.addLineSeries({ color: '#f23645', lineWidth: 1, title: 'EMA' });
+            bbUpperSeries = priceChart.addLineSeries({ color: 'rgba(255, 255, 255, 0.2)', lineWidth: 1, lineStyle: 2 });
+            bbLowerSeries = priceChart.addLineSeries({ color: 'rgba(255, 255, 255, 0.2)', lineWidth: 1, lineStyle: 2 });
+
+            rsiChart = LightweightCharts.createChart(rContainer, { ...chartOptions, height: rContainer.clientHeight });
+            rsiSeries = rsiChart.addLineSeries({ color: '#ff9800', lineWidth: 2, title: 'RSI' });
+
+            const highLevel = parseFloat(document.getElementById('rsi-high').value);
+            const lowLevel = parseFloat(document.getElementById('rsi-low').value);
+            rsiSeries.createPriceLine({ price: highLevel, color: '#f23645', lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'SOBRECOMPRA' });
+            rsiSeries.createPriceLine({ price: lowLevel, color: '#089981', lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'SOBREVENTA' });
+
+            priceChart.timeScale().subscribeVisibleTimeRangeChange(range => {
+                if (range) {
+                    try { rsiChart.timeScale().setVisibleRange(range); } catch (e) { console.warn('Failed to sync RSI range', e); }
+                }
+            });
+            rsiChart.timeScale().subscribeVisibleTimeRangeChange(range => {
+                if (range) {
+                    try { priceChart.timeScale().setVisibleRange(range); } catch (e) { console.warn('Failed to sync price range', e); }
+                }
+            });
+        }
+
+        // --- CÁLCULOS ---
+        function calculateSMA(data, period) {
+            return data.map((d, i) => {
+                if (i < period - 1) return { time: d.time, value: null };
+                let sum = 0;
+                for (let j = 0; j < period; j++) sum += data[i - j].close;
+                return { time: d.time, value: sum / period };
+            });
+        }
+
+        function calculateEMA(data, period) {
+            let k = 2 / (period + 1);
+            let ema = data[0].close;
+            return data.map(d => {
+                ema = (d.close - ema) * k + ema;
+                return { time: d.time, value: ema };
+            });
+        }
+
+        function calculateRSI(data, period) {
+            let res = [];
+            for (let i = 0; i < data.length; i++) {
+                if (i < period) { res.push({ time: data[i].time, value: null }); continue; }
+                let gains = 0, losses = 0;
+                for (let j = i - period + 1; j <= i; j++) {
+                    let diff = data[j].close - data[j - 1].close;
+                    diff >= 0 ? gains += diff : losses -= diff;
+                }
+                let rs = gains / (losses || 1);
+                res.push({ time: data[i].time, value: 100 - (100 / (1 + rs)) });
+            }
+            return res;
+        }
+
+        function calculateBB(data, period) {
+            let upper = [], lower = [];
+            data.forEach((d, i) => {
+                if (i < period - 1) { upper.push({ time: d.time, value: null }); lower.push({ time: d.time, value: null }); return; }
+                let sum = 0;
+                for (let j = 0; j < period; j++) sum += data[i - j].close;
+                let avg = sum / period;
+                let sqSum = 0;
+                for (let j = 0; j < period; j++) sqSum += Math.pow(data[i - j].close - avg, 2);
+                let sd = Math.sqrt(sqSum / period);
+                upper.push({ time: d.time, value: avg + sd * 2 });
+                lower.push({ time: d.time, value: avg - sd * 2 });
+            });
+            return { upper, lower };
+        }
+
+        function updateIndicators() {
+            if (dataHistory.length < 2) return;
+            const smaP = parseInt(document.getElementById('sma-period').value);
+            const emaP = parseInt(document.getElementById('ema-period').value);
+            const rsiP = parseInt(document.getElementById('rsi-period').value);
+            const bbP = parseInt(document.getElementById('bb-period').value);
+
+            if (indicatorEnabled.sma) {
+                const smaData = calculateSMA(dataHistory, smaP).filter(d => d.value !== null);
+                try { smaSeries.setData(smaData); } catch (e) { console.warn('SMA setData', e); }
+            } else { try { smaSeries.setData([]); } catch (e) {} }
+
+            if (indicatorEnabled.ema) {
+                try { emaSeries.setData(calculateEMA(dataHistory, emaP)); } catch (e) { console.warn('EMA setData', e); }
+            } else { try { emaSeries.setData([]); } catch (e) {} }
+
+            const rsiData = calculateRSI(dataHistory, rsiP);
+            if (indicatorEnabled.rsi) {
+                try { rsiSeries.setData(rsiData.filter(d => d.value !== null)); } catch (e) { console.warn('RSI setData', e); }
+            } else { try { rsiSeries.setData([]); } catch (e) {} }
+
+            const bb = calculateBB(dataHistory, bbP);
+            if (indicatorEnabled.bb) {
+                try { bbUpperSeries.setData(bb.upper.filter(d => d.value !== null)); bbLowerSeries.setData(bb.lower.filter(d => d.value !== null)); } catch (e) { console.warn('BB setData', e); }
+            } else { try { bbUpperSeries.setData([]); bbLowerSeries.setData([]); } catch (e) {} }
+
+            if (rsiData.length >= 2) {
+                const curr = rsiData[rsiData.length - 1].value;
+                const prev = rsiData[rsiData.length - 2].value;
+                if (curr !== null && prev !== null) processSignals(curr, prev);
+            }
+        }
+
+        // --- WEBSOCKET ---
+        const startBtn = document.getElementById('start-btn');
+        startBtn.addEventListener('click', () => isConnected ? location.reload() : connect());
+
+        function connect() {
+            const appId = document.getElementById('app-id').value || '1089';
+            const token = document.getElementById('api-token').value;
+            const granularity = document.getElementById('timeframe').value;
+            ws = new WebSocket(`wss://ws.binaryws.com/websockets/v3?app_id=${appId}`);
+
+            ws.onopen = () => {
+                addLog('Conectado. Cargando historial...');
+                initCharts();
+                if (token) ws.send(JSON.stringify({ authorize: token })); else requestHistory();
+            };
+
+            ws.onmessage = (msg) => {
+                try {
+                    const res = JSON.parse(msg.data);
+                    if (res.msg_type === 'authorize') requestHistory();
+                    if (res.msg_type === 'candles') {
+                        const sanitized = (res.candles || []).map(c => {
+                            const time = c.epoch != null ? Number(c.epoch) : (c.time != null ? Number(c.time) : null);
+                            const open = Number(c.open);
+                            const high = Number(c.high);
+                            const low = Number(c.low);
+                            const close = Number(c.close);
+                            if (!Number.isFinite(time) || !Number.isFinite(open) || !Number.isFinite(high) || !Number.isFinite(low) || !Number.isFinite(close)) return null;
+                            return { time: time, open, high, low, close };
+                        }).filter(Boolean);
+                        if (sanitized.length === 0) { addLog('Received candles but no valid entries', 'danger'); return; }
+                        dataHistory = sanitized;
+                        try { candleSeries.setData(dataHistory); } catch (e) { console.warn('Failed setting candle data', e); addLog('Chart error applying candle data: ' + e.message, 'danger'); }
+                        updateIndicators();
+                        subscribeOHLC();
+                        isConnected = true;
+                        startBtn.innerText = 'DESCONECTAR';
+                    }
+                    if (res.msg_type === 'ohlc') {
+                        const o = res.ohlc;
+                        const time = o.open_time != null ? Number(o.open_time) : (o.epoch != null ? Number(o.epoch) : null);
+                        const open = Number(o.open);
+                        const high = Number(o.high);
+                        const low = Number(o.low);
+                        const close = Number(o.close);
+                        if (!Number.isFinite(time) || !Number.isFinite(open) || !Number.isFinite(high) || !Number.isFinite(low) || !Number.isFinite(close)) { addLog('Invalid ohlc received', 'danger'); return; }
+                        const candle = { time, open, high, low, close };
+                        try { candleSeries.update(candle); } catch (e) { console.warn('Failed to update candle', e); addLog('Chart update error: ' + e.message, 'danger'); }
+                        if (dataHistory.length > 0 && dataHistory[dataHistory.length - 1].time === candle.time) dataHistory[dataHistory.length - 1] = candle;
+                        else dataHistory.push(candle);
+                        updateIndicators();
+                    }
+                } catch (e) {
+                    addLog('Error parsing WS message: ' + e.message, 'danger');
+                    console.error('WS parse error', e, msg.data);
+                }
+            };
+
+            ws.onerror = (err) => {
+                addLog('WebSocket error: ' + (err.message || JSON.stringify(err)), 'danger');
+                console.error('WebSocket error', err);
+            };
+
+            ws.onclose = (evt) => {
+                addLog('WebSocket closed (code ' + evt.code + ').', 'danger');
+                isConnected = false;
+                startBtn.innerText = 'CONECTAR WEBSOCKET';
+            };
+        }
+
+        function requestHistory() {
+            const gran = parseInt(document.getElementById('timeframe').value);
+            ws.send(JSON.stringify({ ticks_history: currentSymbol, end: 'latest', start: Math.floor(Date.now() / 1000) - 3600, style: 'candles', granularity: gran }));
+        }
+
+        function subscribeOHLC() {
+            const gran = parseInt(document.getElementById('timeframe').value);
+            ws.send(JSON.stringify({ forget_all: 'ohlc' }));
+            ws.send(JSON.stringify({ ticks_history: currentSymbol, subscribe: 1, end: 'latest', granularity: gran, style: 'candles' }));
+        }
+
+        function processSignals(currentRsi, prevRsi) {
+            // Paso 5: Estrategia de Pendiente
+        }
+
+        function addLog(msg, type = '') {
+            const container = document.getElementById('logs-container');
+            const div = document.createElement('div');
+            div.className = 'log-entry' + (type ? ' signal-' + type : '');
+            div.innerHTML = `<span class="log-time">[${new Date().toLocaleTimeString()}]</span> ${msg}`;
+            container.prepend(div);
+        }
+
+        // Indicator toggle handlers and reset zoom
+        function toggleIndicator(key, enabled) {
+            indicatorEnabled[key] = !!enabled;
+            updateIndicators();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const tSma = document.getElementById('toggle-sma');
+            const tEma = document.getElementById('toggle-ema');
+            const tBb = document.getElementById('toggle-bb');
+            const tRsi = document.getElementById('toggle-rsi');
+            const resetBtn = document.getElementById('reset-zoom');
+            if (tSma) tSma.addEventListener('change', e => toggleIndicator('sma', e.target.checked));
+            if (tEma) tEma.addEventListener('change', e => toggleIndicator('ema', e.target.checked));
+            if (tBb) tBb.addEventListener('change', e => toggleIndicator('bb', e.target.checked));
+            if (tRsi) tRsi.addEventListener('change', e => toggleIndicator('rsi', e.target.checked));
+            if (resetBtn) resetBtn.addEventListener('click', () => {
+                try { priceChart.timeScale().fitContent(); rsiChart.timeScale().fitContent(); } catch (e) { console.warn('Reset zoom failed', e); }
+            });
+        });
+
+        window.onload = initCharts;
+    </script>
+</body>
+</html>
