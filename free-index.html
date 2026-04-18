@@ -35,27 +35,27 @@
             border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            padding: 12px;
             box-sizing: border-box;
             z-index: 10;
             overflow-y: auto;
         }
 
-        h2 { font-size: 1.2rem; margin-top: 0; color: #fff; }
+        h2 { font-size: 1.1rem; margin-top: 0; color: #fff; }
 
-        .input-group { margin-bottom: 15px; }
-        label { display: block; font-size: 11px; color: #b2b5be; text-transform: uppercase; margin-bottom: 5px; }
-        
+        .input-group { margin-bottom: 8px; }
+        label { display: block; font-size: 10px; color: #b2b5be; text-transform: uppercase; margin-bottom: 4px; }
+         
         input, select {
             width: 100%;
             background-color: #2a2e39;
             border: 1px solid #363c4e;
             color: #d1d4dc;
-            padding: 10px;
+            padding: 8px;
             border-radius: 4px;
             box-sizing: border-box;
             outline: none;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         input:focus, select:focus { border-color: var(--accent-color); }
@@ -65,11 +65,11 @@
             background-color: var(--accent-color);
             color: white;
             border: none;
-            padding: 12px;
+            padding: 10px;
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
-            margin-top: 10px;
+            margin-top: 8px;
             transition: opacity 0.2s;
         }
 
@@ -85,6 +85,7 @@
             padding: 10px;
             font-family: 'Consolas', 'Monaco', monospace;
             font-size: 12px;
+            line-height: 1.8; /* Increased line height for better readability */
             overflow-y: auto;
             color: #4ade80;
             max-height: 200px;
@@ -146,8 +147,8 @@
             </select>
         </div>
 
-        <div style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
-            <label style="color: var(--accent-color); font-weight: bold;">Indicadores</label>
+        <details style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+            <summary style="color: var(--accent-color); font-weight: bold; cursor: pointer; outline: none;">Indicadores</summary>
             <div style="display: flex; gap: 10px; margin-top: 10px;">
                 <div class="input-group" style="flex: 1;">
                     <label>SMA Period</label>
@@ -178,7 +179,7 @@
                     <input type="number" id="rsi-low" value="35">
                 </div>
             </div>
-        </div>
+        </details>
 
         <button id="start-btn">CONECTAR WEBSOCKET</button>
 
@@ -431,6 +432,8 @@
             ws.onmessage = (msg) => {
                 try {
                     const res = JSON.parse(msg.data);
+                    // Debug: Log all incoming messages
+                    console.log('WebSocket message received:', res);
                     
                     if (res.msg_type === 'authorize') {
                         if (res.error) {
@@ -439,6 +442,10 @@
                             addLog('Autorizado.');
                             requestHistory();
                         }
+                    }
+                    // Handle explicit error messages from API
+                    if (res.msg_type === 'error') {
+                        addLog('Error de API: ' + (res.error?.message || JSON.stringify(res)), 'put');
                     }
 
                     // Manejo de Historial de Velas
@@ -525,27 +532,33 @@
             const now = Math.floor(Date.now() / 1000);
             const oneHourAgo = now - 3600; // 1 hora en segundos
             
-            ws.send(JSON.stringify({
+            // For history request, we DON'T want to subscribe - just get data once
+            const request = {
                 ticks_history: currentSymbol,
                 end: 'latest',
                 start: oneHourAgo,
                 style: 'candles',
-                granularity: gran,
-                subscribe: 0 // Solo historial primero
-            }));
+                granularity: gran
+                // Note: NOT including subscribe field at all for one-time request
+            };
+            
+            addLog(`Enviando solicitud de historial (no suscripción): ${JSON.stringify(request)}`);
+            ws.send(JSON.stringify(request));
         }
 
         function subscribeOHLC() {
             const gran = parseInt(document.getElementById('timeframe').value) || 60;
             try {
-                ws.send(JSON.stringify({ forget_all: 'ohlc' })); // Olvidar suscripciones previas
-                ws.send(JSON.stringify({
+                const subscribeRequest = {
                     ticks_history: currentSymbol,
                     subscribe: 1, // Suscribirse a updates
                     end: 'latest',
                     granularity: gran,
                     style: 'candles'
-                }));
+                };
+                addLog(`Enviando solicitud de suscripción: ${JSON.stringify(subscribeRequest)}`);
+                ws.send(JSON.stringify({ forget_all: 'ohlc' })); // Olvidar suscripciones previas
+                ws.send(JSON.stringify(subscribeRequest));
             } catch (e) {
                 console.error('Error suscribiendo a OHLC:', e);
                 addLog('Error suscribiendo a actualizaciones: ' + e.message, 'put');
