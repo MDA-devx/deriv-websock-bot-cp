@@ -7,7 +7,7 @@
 - **Backend**: Implement WebSocket/server logic in `backend/server.js`
 
 ## Critical Files
-- `free-index.html` - Recommended working UI (includes fixes)
+- `index.html` - Recommended working UI (includes fixes)
 - `index-old.html` - Original version with known issues (reference only)
 - `frontend/js/app.js` - Frontend trading logic & indicator calculations
 - `frontend/css/style.css` - UI styling
@@ -22,6 +22,5 @@
 
 ## Common Pitfalls to Avoid
 - Don't look for build scripts or package.json (none exist)
-- Don't modify index.html directly - use free-index.html for working version
 - Backend currently empty - all logic runs in frontend WebSocket connection
 - Indicator calculations (SMA, EMA, RSI, BB) are in frontend JavaScript

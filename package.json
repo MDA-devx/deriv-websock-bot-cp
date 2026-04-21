@@ -9,5 +9,9 @@
     "dev": "node backend/server.js"
   },
   "author": "MDA-devx",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  }
 }
