@@ -30,12 +30,12 @@
 
         /* Sidebar Styles */
         #sidebar {
-            width: 280px;
+            width: 320px;
             background-color: var(--sidebar-bg);
             border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            padding: 8px;
+            padding: 20px;
             box-sizing: border-box;
             z-index: 10;
             overflow-y: auto;
@@ -43,19 +43,19 @@
 
         h2 { font-size: 1.1rem; margin-top: 0; color: #fff; }
 
-        .input-group { margin-bottom: 5px; }
-        label { display: block; font-size: 9px; color: #b2b5be; text-transform: uppercase; margin-bottom: 2px; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 11px; color: #b2b5be; text-transform: uppercase; margin-bottom: 5px; }
          
         input, select {
             width: 100%;
             background-color: #2a2e39;
             border: 1px solid #363c4e;
             color: #d1d4dc;
-            padding: 6px;
-            border-radius: 3px;
+            padding: 10px;
+            border-radius: 4px;
             box-sizing: border-box;
             outline: none;
-            font-size: 12px;
+            font-size: 14px;
         }
 
         input:focus, select:focus { border-color: var(--accent-color); }
@@ -65,11 +65,11 @@
             background-color: var(--accent-color);
             color: white;
             border: none;
-            padding: 8px;
-            border-radius: 3px;
+            padding: 12px;
+            border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
-            margin-top: 6px;
+            margin-top: 10px;
             transition: opacity 0.2s;
         }
 
@@ -78,17 +78,17 @@
         /* Logs Viewer */
         #logs-container {
             flex-grow: 1;
-            margin-top: 10px;
+            margin-top: 20px;
             background-color: #000;
             border: 1px solid var(--border-color);
             border-radius: 4px;
-            padding: 8px;
+            padding: 10px;
             font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 11px;
-            line-height: 1.4; /* Reduced line height for compactness */
+            font-size: 12px;
+            line-height: 1.8; /* Increased line height for better readability */
             overflow-y: auto;
             color: #4ade80;
-            max-height: 250px;
+            max-height: 200px;
         }
 
         .log-entry { margin-bottom: 6px; border-bottom: 1px solid #111; padding-bottom: 4px; line-height: 1.4; word-break: break-word; }
