@@ -147,39 +147,59 @@
             </select>
         </div>
 
-        <details style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
-            <summary style="color: var(--accent-color); font-weight: bold; cursor: pointer; outline: none;">Indicadores</summary>
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <div class="input-group" style="flex: 1;">
-                    <label>SMA Period</label>
-                    <input type="number" id="sma-period" value="23">
-                </div>
-                <div class="input-group" style="flex: 1;">
-                    <label>EMA Period</label>
-                    <input type="number" id="ema-period" value="10">
-                </div>
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <div class="input-group" style="flex: 1;">
-                    <label>RSI Period</label>
-                    <input type="number" id="rsi-period" value="7">
-                </div>
-                <div class="input-group" style="flex: 1;">
-                    <label>BB Period</label>
-                    <input type="number" id="bb-period" value="20">
-                </div>
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <div class="input-group" style="flex: 1;">
-                    <label>RSI High</label>
-                    <input type="number" id="rsi-high" value="65">
-                </div>
-                <div class="input-group" style="flex: 1;">
-                    <label>RSI Low</label>
-                    <input type="number" id="rsi-low" value="35">
-                </div>
-            </div>
-        </details>
+<details style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+    <summary style="color: var(--accent-color); font-weight: bold; cursor: pointer; outline: none;">Indicadores</summary>
+    <div style="display: flex; gap: 10px; margin-top: 10px; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 5px;">
+            <input type="checkbox" id="sma-enabled" checked>
+            <label for="sma-enabled">SMA</label>
+        </div>
+        <div class="input-group" style="flex: 1;">
+            <label>SMA Period</label>
+            <input type="number" id="sma-period" value="23">
+        </div>
+    </div>
+    <div style="display: flex; gap: 10px; margin-top: 5px; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 5px;">
+            <input type="checkbox" id="ema-enabled" checked>
+            <label for="ema-enabled">EMA</label>
+        </div>
+        <div class="input-group" style="flex: 1;">
+            <label>EMA Period</label>
+            <input type="number" id="ema-period" value="10">
+        </div>
+    </div>
+    <div style="display: flex; gap: 10px; margin-top: 5px; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 5px;">
+            <input type="checkbox" id="bb-enabled" checked>
+            <label for="bb-enabled">Bandas de Bollinger</label>
+        </div>
+        <div class="input-group" style="flex: 1;">
+            <label>BB Period</label>
+            <input type="number" id="bb-period" value="20">
+        </div>
+    </div>
+    <div style="display: flex; gap: 10px; margin-top: 5px; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 5px;">
+            <input type="checkbox" id="rsi-enabled" checked>
+            <label for="rsi-enabled">RSI</label>
+        </div>
+        <div class="input-group" style="flex: 1;">
+            <label>RSI Period</label>
+            <input type="number" id="rsi-period" value="7">
+        </div>
+    </div>
+    <div style="display: flex; gap: 10px; margin-top: 5px; align-items: center;">
+        <div class="input-group" style="flex: 1;">
+            <label>RSI High</label>
+            <input type="number" id="rsi-high" value="65">
+        </div>
+        <div class="input-group" style="flex: 1;">
+            <label>RSI Low</label>
+            <input type="number" id="rsi-low" value="35">
+        </div>
+    </div>
+</details>
 
         <button id="start-btn">CONECTAR WEBSOCKET</button>
 
@@ -216,14 +236,39 @@
             grid: { vertLines: { color: '#2a2e39' }, horzLines: { color: '#2a2e39' } },
             crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
             rightPriceScale: { borderColor: '#2a2e39' },
-            timeScale: { borderColor: '#2a2e39', timeVisible: true, secondsVisible: true, visible: true },
+            timeScale: { borderColor: '#2a2e39', timeVisible: true, secondsVisible: true, visible: true, rightOffset: 50 },
             handleScale: true,
             handleScroll: true
         };
         
+        // Always apply right offset to keep space at end of chart
+        function applyRightOffset() {
+            if (priceChart && dataHistory.length > 0) {
+                const lastTime = dataHistory[dataHistory.length - 1].time;
+                priceChart.timeScale().setVisibleRange({ from: dataHistory[0].time, to: lastTime + 60 });
+            }
+        }
+        
         function initCharts() {
             const pContainer = document.getElementById('price-chart');
             const rContainer = document.getElementById('rsi-chart');
+            
+            // Verify library is loaded
+            if (typeof LightweightCharts === 'undefined' || !LightweightCharts.createChart) {
+                console.error('LightweightCharts library not available');
+                addLog('Error: LightweightCharts no disponible', 'put');
+                return;
+            }
+            
+            // Clean up existing charts first to avoid conflicts
+            if (priceChart) {
+                try { priceChart.remove(); } catch(e) {}
+                priceChart = null;
+            }
+            if (rsiChart) {
+                try { rsiChart.remove(); } catch(e) {}
+                rsiChart = null;
+            }
             
             // Limpiar si ya existen para evitar duplicados al reconectar
             pContainer.innerHTML = '<div class="chart-label">JUMP 25 INDEX</div>';
@@ -340,14 +385,25 @@
                 const rsiData = calculateRSI(dataHistory, rsiP).filter(d => d.value !== null);
                 const bb = calculateBB(dataHistory, bbP);
 
-                if (smaSeries) smaSeries.setData(smaData);
-                if (emaSeries) emaSeries.setData(emaData);
-                if (rsiSeries) rsiSeries.setData(rsiData);
-                if (bbUpperSeries) bbUpperSeries.setData(bb.upper.filter(d => d.value !== null));
-                if (bbLowerSeries) bbLowerSeries.setData(bb.lower.filter(d => d.value !== null));
+                // Only update series if corresponding checkbox is checked
+                if (smaSeries && document.getElementById('sma-enabled').checked) {
+                    smaSeries.setData(smaData);
+                }
+                if (emaSeries && document.getElementById('ema-enabled').checked) {
+                    emaSeries.setData(emaData);
+                }
+                if (rsiSeries && document.getElementById('rsi-enabled').checked) {
+                    rsiSeries.setData(rsiData);
+                }
+                if (bbUpperSeries && document.getElementById('bb-enabled').checked) {
+                    bbUpperSeries.setData(bb.upper.filter(d => d.value !== null));
+                }
+                if (bbLowerSeries && document.getElementById('bb-enabled').checked) {
+                    bbLowerSeries.setData(bb.lower.filter(d => d.value !== null));
+                }
 
-                // Paso 5: Señales
-                if (rsiData.length >= 2) {
+                // Paso 5: Señales (solo si RSI está habilitado)
+                if (rsiData.length >= 2 && document.getElementById('rsi-enabled').checked) {
                     const currentRsi = rsiData[rsiData.length - 1].value;
                     const prevRsi = rsiData[rsiData.length - 2].value;
                     if (currentRsi !== null && prevRsi !== null) {
@@ -362,6 +418,126 @@
         // --- WEBSOCKET Y CONEXIÓN ---
         const startBtn = document.getElementById('start-btn');
         startBtn.addEventListener('click', () => isConnected ? location.reload() : connect());
+        
+        // Checkbox event listeners for enabling/disabling indicators
+        document.getElementById('sma-enabled').addEventListener('click', () => {
+            const enabled = document.getElementById('sma-enabled').checked;
+            if (smaSeries) {
+                smaSeries.setVisible(enabled);
+                if (enabled) updateIndicators();
+            }
+        });
+        
+        document.getElementById('ema-enabled').addEventListener('click', () => {
+            const enabled = document.getElementById('ema-enabled').checked;
+            if (emaSeries) {
+                emaSeries.setVisible(enabled);
+                if (enabled) updateIndicators();
+            }
+        });
+        
+        document.getElementById('bb-enabled').addEventListener('click', () => {
+            const enabled = document.getElementById('bb-enabled').checked;
+            if (bbUpperSeries) bbUpperSeries.setVisible(enabled);
+            if (bbLowerSeries) bbLowerSeries.setVisible(enabled);
+            if (enabled) updateIndicators();
+        });
+        
+        document.getElementById('rsi-enabled').addEventListener('click', () => {
+            const enabled = document.getElementById('rsi-enabled').checked;
+            if (rsiSeries) {
+                rsiSeries.setVisible(enabled);
+                if (enabled) updateIndicators();
+            }
+        });
+        
+        // Input change listeners for indicator periods
+        document.getElementById('sma-period').addEventListener('input', updateIndicators);
+        document.getElementById('ema-period').addEventListener('input', updateIndicators);
+        document.getElementById('bb-period').addEventListener('input', updateIndicators);
+        document.getElementById('rsi-period').addEventListener('input', updateIndicators);
+        document.getElementById('rsi-high').addEventListener('input', () => {
+            // Update RSI levels when changed
+            if (rsiSeries) {
+                // Remove existing lines first
+                const existingLines = rsiSeries.priceLines();
+                existingLines.forEach(line => {
+                    try { rsiSeries.removePriceLine(line); } catch(e) {}
+                });
+                // Add new lines
+                const highLevel = parseFloat(document.getElementById('rsi-high').value) || 65;
+                const lowLevel = parseFloat(document.getElementById('rsi-low').value) || 35;
+                
+                if (!isNaN(highLevel)) {
+                    rsiSeries.createPriceLine({ 
+                        price: highLevel, 
+                        color: '#f23645', 
+                        lineWidth: 1, 
+                        lineStyle: 2, 
+                        axisLabelVisible: true, 
+                        title: 'SOBRECOMPRA' 
+                    });
+                }
+                
+                if (!isNaN(lowLevel)) {
+                    rsiSeries.createPriceLine({ 
+                        price: lowLevel, 
+                        color: '#089981', 
+                        lineWidth: 1, 
+                        lineStyle: 2, 
+                        axisLabelVisible: true, 
+                        title: 'SOBREVENTA' 
+                    });
+                }
+            }
+        });
+        document.getElementById('rsi-low').addEventListener('input', () => {
+            // Update RSI levels when changed
+            if (rsiSeries) {
+                // Remove existing lines first
+                const existingLines = rsiSeries.priceLines();
+                existingLines.forEach(line => {
+                    try { rsiSeries.removePriceLine(line); } catch(e) {}
+                });
+                // Add new lines
+                const highLevel = parseFloat(document.getElementById('rsi-high').value) || 65;
+                const lowLevel = parseFloat(document.getElementById('rsi-low').value) || 35;
+                
+                if (!isNaN(highLevel)) {
+                    rsiSeries.createPriceLine({ 
+                        price: highLevel, 
+                        color: '#f23645', 
+                        lineWidth: 1, 
+                        lineStyle: 2, 
+                        axisLabelVisible: true, 
+                        title: 'SOBRECOMPRA' 
+                    });
+                }
+                
+                if (!isNaN(lowLevel)) {
+                    rsiSeries.createPriceLine({ 
+                        price: lowLevel, 
+                        color: '#089981', 
+                        lineWidth: 1, 
+                        lineStyle: 2, 
+                        axisLabelVisible: true, 
+                        title: 'SOBREVENTA' 
+                    });
+                }
+            }
+        });
+        
+        // Timeframe change: reconnect with new timeframe
+        document.getElementById('timeframe').addEventListener('change', () => {
+            if (isConnected) {
+                addLog('Cambiando temporalidad...');
+                if (ws) {
+                    ws.close();
+                }
+                // Reconnect after a short delay
+                setTimeout(() => connect(), 500);
+            }
+        });
 
         function connect() {
             const appId = document.getElementById('app-id').value || '1089';
@@ -427,6 +603,8 @@
                             isConnected = true;
                             startBtn.innerText = 'DESCONECTAR';
                             addLog(`Historial cargado: ${dataHistory.length} velas válidas`);
+                            // Auto-scroll to latest candle
+                            setTimeout(scrollToLatest, 100);
                         } else {
                             addLog('No se recibieron velas válidas del historial', 'put');
                         }
@@ -536,31 +714,113 @@
             const logMsg = `RSI: ${currentRsi.toFixed(2)} | Prev: ${prevRsi.toFixed(2)} | Trend: ${trend}`;
             addLog(logMsg);
             
-            // Dibujar marcador en el gráfico
+            // Dibujar marcador (flecha) en el gráfico - preserving existing markers
             if (signal && candleSeries && dataHistory && dataHistory.length > 0) {
                 const lastCandle = dataHistory[dataHistory.length - 1];
                 const markerColor = signal === 'call' ? '#089981' : '#f23645'; // Verde para Call, Rojo para Put
-                const markerText = signal === 'call' ? '▲' : '▼';
-
-                candleSeries.createPriceLine({
-                    price: lastCandle.high, // Posicionar sobre el máximo de la vela
+                const markerShape = signal === 'call' ? 'arrowUp' : 'arrowDown';
+                const markerText = signal === 'call' ? 'CALL' : 'PUT';
+                
+                // Get existing markers and add new one
+                const existingMarkers = candleSeries.markers() || [];
+                const newMarker = {
+                    time: lastCandle.time,
+                    position: 'aboveBar',
                     color: markerColor,
-                    lineWidth: 2,
-                    lineStyle: LightweightCharts.LineStyle.Solid,
-                    axisLabelVisible: false, // No mostrar label de precio
-                    visible: true,
-                    title: markerText // Usar texto como marcador simple
-                });
+                    shape: markerShape,
+                    text: markerText + ' @ ' + lastCandle.close.toFixed(2)
+                };
+                candleSeries.setMarkers([...existingMarkers, newMarker]);
                 addLog(`¡SEÑAL DE ${signal.toUpperCase()} DETECTADA!`, signal);
             }
         }
 
         // Inicialización inicial al cargar la página
-        window.onload = () => {
+        window.addEventListener('DOMContentLoaded', () => {
+            if (typeof LightweightCharts === 'undefined') {
+                console.error('LightweightCharts library not loaded');
+                addLog('Error: LightweightCharts no cargado', 'put');
+                return;
+            }
             initCharts();
-            // Ajustar tamaño inicial si es necesario
             window.dispatchEvent(new Event('resize'));
-        };
+        });
+        
+        // Keyboard navigation for charts
+        document.addEventListener('keydown', (e) => {
+            if (!priceChart || !rsiChart) return;
+            
+            const timeScale = priceChart.timeScale();
+            const visibleRange = timeScale.getVisibleRange();
+            if (!visibleRange) return;
+            
+            const totalBars = dataHistory.length;
+            const scrollAmount = Math.floor(totalBars * 0.3); // 30% of data at a time
+            
+            switch(e.key) {
+                case 'End': // Go to latest candle with full zoom
+                    e.preventDefault();
+                    if (dataHistory.length > 0) {
+                        const lastTime = dataHistory[dataHistory.length - 1].time;
+                        const firstTime = dataHistory[0].time;
+                        timeScale.setVisibleRange({ from: firstTime, to: lastTime + 60 });
+                        // Auto-fit price scale
+                        priceChart.timeScale().fitContent();
+                        rsiChart.timeScale().fitContent();
+                    }
+                    break;
+                case 'Home': // Reset view - zoom to latest with auto price scale
+                    e.preventDefault();
+                    if (dataHistory.length > 0) {
+                        const lastTime = dataHistory[dataHistory.length - 1].time;
+                        const firstTime = dataHistory[Math.max(0, dataHistory.length - 50)].time;
+                        // Show last 50 candles on screen
+                        timeScale.setVisibleRange({ from: firstTime, to: lastTime + 30 });
+                        // Auto-fit price scale to visible data
+                        priceChart.timeScale().fitContent();
+                        rsiChart.timeScale().fitContent();
+                    }
+                    break;
+                case 'PageDown': // Scroll right (older)
+                    e.preventDefault();
+                    timeScale.setVisibleRange({
+                        from: visibleRange.from + scrollAmount,
+                        to: visibleRange.to + scrollAmount
+                    });
+                    break;
+                case 'PageUp': // Scroll left (newer)
+                    e.preventDefault();
+                    timeScale.setVisibleRange({
+                        from: visibleRange.from - scrollAmount,
+                        to: visibleRange.to - scrollAmount
+                    });
+                    break;
+            }
+        });
+        
+        // Function to scroll to latest candle
+        function scrollToLatest() {
+            if (!priceChart || dataHistory.length === 0) return;
+            
+            const lastTime = dataHistory[dataHistory.length - 1].time;
+            const firstTime = dataHistory[0].time;
+            priceChart.timeScale().setVisibleRange({ from: firstTime, to: lastTime + 60 });
+            // Auto-fit price scale to visible data
+            priceChart.timeScale().fitContent();
+            rsiChart.timeScale().fitContent();
+        }
+        
+        // Keep right offset always applied
+        setInterval(() => {
+            if (isConnected && dataHistory.length > 0 && priceChart) {
+                const lastTime = dataHistory[dataHistory.length - 1].time;
+                const currentRange = priceChart.timeScale().getVisibleRange();
+                if (currentRange && currentRange.to >= lastTime) {
+                    // Already at latest, ensure right offset
+                    priceChart.timeScale().setVisibleRange({ from: currentRange.from, to: lastTime + 60 });
+                }
+            }
+        }, 1000);
 
         // Función para agregar logs
         function addLog(message, type = 'call') {
