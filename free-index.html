@@ -201,6 +201,26 @@
         // Import indicator functions
         import { calculateSMA, calculateEMA, calculateRSI, calculateBB } from './frontend/js/modules/indicators.js';
         
+        // Chart instances and series (declared at module level for accessibility)
+        let priceChart, rsiChart;
+        let candleSeries, smaSeries, emaSeries, rsiSeries;
+        let bbUpperSeries, bbLowerSeries;
+        let ws;
+        let isConnected = false;
+        let currentSymbol = 'R_25';
+        let dataHistory = []; // Almacena velas {time, open, high, low, close}
+        let lastRsiValue = null; // Para la lógica de pendiente
+
+        const chartOptions = {
+            layout: { backgroundColor: '#131722', textColor: '#d1d4dc' },
+            grid: { vertLines: { color: '#2a2e39' }, horzLines: { color: '#2a2e39' } },
+            crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+            rightPriceScale: { borderColor: '#2a2e39' },
+            timeScale: { borderColor: '#2a2e39', timeVisible: true, secondsVisible: true, visible: true },
+            handleScale: true,
+            handleScroll: true
+        };
+        
         function initCharts() {
             const pContainer = document.getElementById('price-chart');
             const rContainer = document.getElementById('rsi-chart');
