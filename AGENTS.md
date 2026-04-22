@@ -5,6 +5,7 @@
 - **Update UI**: Edit HTML/JS/CSS files → refresh browser
 - **Test**: Manually verify in browser via Deriv WebSocket connection
 - **Backend**: Implement WebSocket/server logic in `backend/server.js`
+- **Local Dashboard**: Run `npm run dashboard` and access at http://dashboard.deriv:3002/free-index.html (after configuring hosts file)
 
 ## Critical Files
 - `index.html` - Recommended working UI (includes fixes)

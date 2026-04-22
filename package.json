@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node backend/server.js",
-    "dev": "node backend/server.js"
+    "dev": "node backend/server.js",
+    "dashboard": "HOSTNAME=dashboard.deriv PORT=3002 node backend/server.js"
   },
   "author": "MDA-devx",
   "license": "MIT",

@@ -16,15 +16,23 @@ app.use((req, res, next) => {
 });
 app.use(express.static(path.join(__dirname, '..')));
 
-const port = 3002; // Fixed port for consistency
-console.log(`[Backend] Preparing to start server on port ${port}`);
+// Get hostname from environment or use default
+const hostname = process.env.HOSTNAME || '0.0.0.0';
+const port = process.env.PORT || 3002; // Fixed port for consistency
+console.log(`[Backend] Preparing to start server on ${hostname}:${port}`);
 
 const server = createServer(app);
 
-server.listen(port, '0.0.0.0', () => {
-  console.log(`[Backend] Server running at http://0.0.0.0:${port}/`);
+server.listen(port, hostname, () => {
+  console.log(`[Backend] Server running at http://${hostname}:${port}/`);
   console.log(`[Backend] Access locally at: http://localhost:${port}/`);
   console.log(`[Backend] Serving static files from: ${path.join(__dirname, '..')}`);
+  
+  // Provide helpful instructions for local dashboard access
+  if (hostname === '0.0.0.0') {
+    console.log(`[Backend] For local dashboard access, use: http://localhost:${port}/free-index.html`);
+    console.log(`[Backend] Or configure your hosts file to map dashboard.deriv to 127.0.0.1`);
+  }
 });
 
 server.on('error', (err) => {
