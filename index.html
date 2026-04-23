@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jump 25 Trading Bot - Deriv (Fixed)</title>
-    <!-- Librería Lightweight Charts - Versión estable -->
+    <title>Jump 25 Trading Bot - Deriv</title>
     <script src="https://unpkg.com/lightweight-charts@4.0.0/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         :root {
@@ -17,6 +16,8 @@
             --danger: #f23645;
         }
 
+        * { box-sizing: border-box; }
+
         body {
             margin: 0;
             padding: 0;
@@ -28,75 +29,114 @@
             overflow: hidden;
         }
 
-        /* Sidebar Styles */
         #sidebar {
-            width: 320px;
+            width: 340px;
             background-color: var(--sidebar-bg);
             border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            padding: 15px;
             box-sizing: border-box;
             z-index: 10;
             overflow-y: auto;
         }
 
-        h2 { font-size: 1.1rem; margin-top: 0; color: #fff; }
+        h2 { font-size: 1.1rem; margin: 0 0 15px 0; color: #fff; }
+        h3 { font-size: 0.85rem; margin: 12px 0 8px 0; color: var(--accent-color); text-transform: uppercase; }
 
-        .input-group { margin-bottom: 15px; }
-        label { display: block; font-size: 11px; color: #b2b5be; text-transform: uppercase; margin-bottom: 5px; }
-         
+        .input-group { margin-bottom: 12px; }
+        .input-group label { display: block; font-size: 11px; color: #b2b5be; text-transform: uppercase; margin-bottom: 4px; }
+        
+        .input-row { display: flex; gap: 8px; align-items: center; }
+        .input-row > * { flex: 1; }
+
         input, select {
-            width: 100%;
             background-color: #2a2e39;
             border: 1px solid #363c4e;
             color: #d1d4dc;
-            padding: 10px;
+            padding: 8px 10px;
             border-radius: 4px;
-            box-sizing: border-box;
+            font-size: 13px;
             outline: none;
-            font-size: 14px;
         }
 
         input:focus, select:focus { border-color: var(--accent-color); }
+        input[type="checkbox"] { width: auto; margin-right: 5px; }
 
         button {
-            width: 100%;
             background-color: var(--accent-color);
             color: white;
             border: none;
-            padding: 12px;
+            padding: 10px;
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
-            margin-top: 10px;
+            font-size: 13px;
             transition: opacity 0.2s;
         }
-
         button:hover { opacity: 0.9; }
+        button.secondary { background-color: #363c4e; }
+        button.success { background-color: var(--success); }
+        button.danger { background-color: var(--danger); }
 
-        /* Logs Viewer */
-        #logs-container {
-            flex-grow: 1;
-            margin-top: 20px;
-            background-color: #000;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 10px;
-            font-family: 'Consolas', 'Monaco', monospace;
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
             font-size: 12px;
-            line-height: 1.8; /* Increased line height for better readability */
-            overflow-y: auto;
-            color: #4ade80;
-            max-height: 200px;
+        }
+        .checkbox-item input[type="number"] {
+            width: 50px;
+            padding: 4px;
         }
 
-        .log-entry { margin-bottom: 6px; border-bottom: 1px solid #111; padding-bottom: 4px; line-height: 1.4; word-break: break-word; }
-        .log-time { color: #888; font-size: 10px; }
+        .timeframe-btns {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .timeframe-btns button {
+            flex: 1;
+            min-width: 45px;
+            padding: 6px 4px;
+            font-size: 11px;
+        }
+        .timeframe-btns button.active {
+            background-color: var(--success);
+        }
+
+        .section {
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+            margin-top: 12px;
+        }
+
+        #logs-container {
+            flex-grow: 1;
+            margin-top: 12px;
+            background-color: #0a0a0a;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 11px;
+            line-height: 1.5;
+            overflow-y: auto;
+            color: #4ade80;
+            min-height: 120px;
+            max-height: 180px;
+        }
+
+        .log-entry { margin-bottom: 4px; padding-bottom: 2px; word-break: break-word; }
+        .log-time { color: #666; font-size: 10px; margin-right: 5px; }
         .signal-call { color: var(--success); font-weight: bold; }
         .signal-put { color: var(--danger); font-weight: bold; }
 
-        /* Main Content / Charts */
         #main-content {
             flex-grow: 1;
             display: flex;
@@ -106,38 +146,127 @@
         }
 
         #price-chart { flex: 2; position: relative; min-height: 300px; }
-        #rsi-chart { flex: 1; border-top: 2px solid var(--border-color); position: relative; min-height: 150px; }
+        #rsi-chart { flex: 1; border-top: 2px solid var(--border-color); position: relative; min-height: 120px; }
 
         .chart-label {
             position: absolute;
-            top: 10px;
-            left: 10px;
+            top: 8px;
+            left: 8px;
             z-index: 5;
-            background: rgba(30, 34, 45, 0.8);
+            background: rgba(30, 34, 45, 0.9);
             padding: 4px 8px;
             border-radius: 3px;
-            font-size: 12px;
+            font-size: 11px;
             pointer-events: none;
         }
+
+        .chart-controls {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            z-index: 5;
+            display: flex;
+            gap: 4px;
+        }
+        .chart-controls button {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        #tooltip {
+            position: absolute;
+            display: none;
+            background: rgba(30, 34, 45, 0.95);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 100;
+            white-space: nowrap;
+        }
+        #tooltip .tt-time { color: #888; font-size: 10px; margin-bottom: 4px; }
+        #tooltip .tt-row { display: flex; justify-content: space-between; gap: 12px; }
+        #tooltip .tt-label { color: #888; }
+        #tooltip .tt-open, #tooltip .tt-high { color: var(--success); }
+        #tooltip .tt-low, #tooltip .tt-close { color: var(--danger); }
+
+        #results-panel {
+            position: absolute;
+            top: 45px;
+            right: 8px;
+            z-index: 5;
+            background: rgba(30, 34, 45, 0.95);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 10px;
+            min-width: 160px;
+        }
+        #results-panel h4 { margin: 0 0 8px 0; font-size: 11px; color: var(--accent-color); }
+        .result-stat { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+        .result-stat .label { color: #888; }
+        .result-stat .value { font-weight: bold; }
+        .result-stat .value.call { color: var(--success); }
+        .result-stat .value.put { color: var(--danger); }
+
+        #signal-history {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            z-index: 5;
+            background: rgba(30, 34, 45, 0.95);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 8px;
+            max-width: 300px;
+            max-height: 100px;
+            overflow-y: auto;
+            font-size: 11px;
+        }
+        .history-item { display: flex; align-items: center; gap: 6px; padding: 2px 0; border-bottom: 1px solid #222; }
+        .history-item:last-child { border-bottom: none; }
+        .history-icon { font-size: 10px; }
     </style>
 </head>
 <body>
     <div id="sidebar">
-        <h2>Deriv Jump 25 Bot</h2>
+        <h2>Deriv Trading Bot</h2>
         
         <div class="input-group">
-            <label for="api-token">API Token (Opcional)</label>
+            <label>Símbolo</label>
+            <select id="symbol">
+                <option value="R_25" selected>Jump 25 Index</option>
+                <option value="R_50">Jump 50 Index</option>
+                <option value="R_75">Jump 75 Index</option>
+                <option value="R_100">Jump 100 Index</option>
+                <option value="R_10">Jump 10 Index</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>API Token (Opcional)</label>
             <input type="password" id="api-token" placeholder="Tu token de Deriv...">
         </div>
 
         <div class="input-group">
-            <label for="app-id">App ID</label>
+            <label>App ID</label>
             <input type="text" id="app-id" value="1089" placeholder="Ej: 1089">
         </div>
 
         <div class="input-group">
-            <label for="timeframe">Temporalidad (Velas)</label>
-            <select id="timeframe">
+            <label>Temporalidad</label>
+            <div class="timeframe-btns" id="timeframe-btns">
+                <button data-value="1">1s</button>
+                <button data-value="5">5s</button>
+                <button data-value="15">15s</button>
+                <button data-value="60" class="active">1m</button>
+                <button data-value="300">5m</button>
+                <button data-value="900">15m</button>
+            </div>
+            <select id="timeframe" style="display:none;">
                 <option value="1">1 Segundo</option>
                 <option value="5">5 Segundos</option>
                 <option value="15">15 Segundos</option>
@@ -147,439 +276,412 @@
             </select>
         </div>
 
-        <div style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
-            <label style="color: var(--accent-color); font-weight: bold;">Indicadores</label>
-            <div style="display: flex; gap: 15px; margin-top: 10px; flex-wrap: wrap;">
-                <div style="display: flex; align-items: center; gap: 5px;">
+        <div class="input-group">
+            <label>Estrategia</label>
+            <select id="strategy">
+                <option value="rsi" selected>RSI (momentum)</option>
+                <option value="sma-ema-crossover">SMA/EMA Crossover</option>
+                <option value="bollinger-bands">Bollinger Bands</option>
+            </select>
+        </div>
+
+        <div class="section">
+            <label>Indicadores</label>
+            <div class="checkbox-group">
+                <div class="checkbox-item">
                     <input type="checkbox" id="sma-enabled" checked>
                     <label for="sma-enabled">SMA</label>
-                    <input type="number" id="sma-period" value="23" style="width: 60px; margin-left: 5px;">
+                    <input type="number" id="sma-period" value="23" min="1">
                 </div>
-                <div style="display: flex; align-items: center; gap: 5px;">
+                <div class="checkbox-item">
                     <input type="checkbox" id="ema-enabled" checked>
                     <label for="ema-enabled">EMA</label>
-                    <input type="number" id="ema-period" value="10" style="width: 60px; margin-left: 5px;">
+                    <input type="number" id="ema-period" value="10" min="1">
                 </div>
-                <div style="display: flex; align-items: center; gap: 5px;">
-                    <input type="checkbox" id="rsi-enabled" checked>
-                    <label for="rsi-enabled">RSI</label>
-                    <input type="number" id="rsi-period" value="7" style="width: 60px; margin-left: 5px;">
-                </div>
-                <div style="display: flex; align-items: center; gap: 5px;">
+                <div class="checkbox-item">
                     <input type="checkbox" id="bb-enabled" checked>
                     <label for="bb-enabled">BB</label>
-                    <input type="number" id="bb-period" value="20" style="width: 60px; margin-left: 5px;">
-                </div>
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <div style="display: flex; align-items: center; gap: 5px;">
-                    <input type="checkbox" id="rsi-high-enabled" checked>
-                    <label for="rsi-high-enabled">RSI High</label>
-                    <input type="number" id="rsi-high" value="65" style="width: 60px; margin-left: 5px;">
-                </div>
-                <div style="display: flex; align-items: center; gap: 5px;">
-                    <input type="checkbox" id="rsi-low-enabled" checked>
-                    <label for="rsi-low-enabled">RSI Low</label>
-                    <input type="number" id="rsi-low" value="35" style="width: 60px; margin-left: 5px;">
+                    <input type="number" id="bb-period" value="20" min="1">
                 </div>
             </div>
         </div>
 
-        <button id="start-btn">CONECTAR WEBSOCKET</button>
+        <div class="section">
+            <label>RSI</label>
+            <div class="input-row">
+                <div class="checkbox-item">
+                    <input type="number" id="rsi-period" value="7" min="1">
+                    <span>per</span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="number" id="rsi-high" value="65" min="0" max="100">
+                    <span>high</span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="number" id="rsi-low" value="35" min="0" max="100">
+                    <span>low</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <label>Configuración</label>
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="auto-scroll" checked>
+                    <label for="auto-scroll">Auto-scroll</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="show-tooltip" checked>
+                    <label for="show-tooltip">Tooltip</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="sound-alert">
+                    <label for="sound-alert">Sonido</label>
+                </div>
+            </div>
+            <div class="input-row" style="margin-top:8px;">
+                <div class="checkbox-item">
+                    <label>Min velas</label>
+                    <input type="number" id="min-candles" value="24" min="10" max="100">
+                </div>
+            </div>
+        </div>
+
+        <button id="start-btn">CONECTAR</button>
 
         <div id="logs-container">
-            <div class="log-entry">Sistema listo. Ingrese parámetros y conecte.</div>
+            <div class="log-entry"><span class="log-time">[--:--:--]</span>Sistema listo. Configure y conecte.</div>
         </div>
     </div>
 
     <div id="main-content">
         <div id="price-chart">
             <div class="chart-label">JUMP 25 INDEX</div>
+            <div class="chart-controls">
+                <button id="zoom-out">-</button>
+                <button id="zoom-in">+</button>
+                <button id="fit-content">⊡</button>
+            </div>
         </div>
         <div id="rsi-chart">
             <div class="chart-label">RSI</div>
         </div>
+        <div id="tooltip">
+            <div class="tt-time"></div>
+            <div class="tt-row"><span class="tt-label">O</span><span class="tt-open"></span></div>
+            <div class="tt-row"><span class="tt-label">H</span><span class="tt-high"></span></div>
+            <div class="tt-row"><span class="tt-label">L</span><span class="tt-low"></span></div>
+            <div class="tt-row"><span class="tt-label">C</span><span class="tt-close"></span></div>
+        </div>
+        <div id="results-panel">
+            <h4>RESULTADOS</h4>
+            <div class="result-stat"><span class="label">Señales HOY</span><span class="value" id="signal-count">0</span></div>
+            <div class="result-stat"><span class="label">CALL</span><span class="value call" id="call-count">0</span></div>
+            <div class="result-stat"><span class="label">PUT</span><span class="value put" id="put-count">0</span></div>
+            <div class="result-stat"><span class="label">Última</span><span class="value" id="last-signal">--</span></div>
+        </div>
     </div>
 
     <script type="module">
-        // Import indicator functions
         import { calculateSMA, calculateEMA, calculateRSI, calculateBB } from './frontend/js/modules/indicators.js';
         
-        // Chart options configuration
+        const currentSymbol = 'R_25';
+        let priceChart, rsiChart, candleSeries, smaSeries, emaSeries, bbUpperSeries, bbLowerSeries, rsiSeries;
+        let dataHistory = [];
+        let ws, isConnected = false;
+
+        const signalHistory = [];
+        let callCount = 0;
+        let putCount = 0;
+
         const chartOptions = {
             layout: { backgroundColor: '#131722', textColor: '#d1d4dc' },
             grid: { vertLines: { color: '#2a2e39' }, horzLines: { color: '#2a2e39' } },
-            crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+            crosshair: { mode: LightweightCharts.CrosshairMode.Normal, vertLine: { labelBackgroundColor: '#2962ff' }, horzLine: { labelBackgroundColor: '#2962ff' } },
             rightPriceScale: { borderColor: '#2a2e39' },
             timeScale: { borderColor: '#2a2e39', timeVisible: true, secondsVisible: true, visible: true },
-            handleScale: true,
-            handleScroll: true
+            handleScale: { axisPressedMouseMove: true },
+            handleScroll: { vertTouchDrag: false }
         };
-        
+
         function initCharts() {
             const pContainer = document.getElementById('price-chart');
             const rContainer = document.getElementById('rsi-chart');
             
-            // Limpiar si ya existen para evitar duplicados al reconectar
-            pContainer.innerHTML = '<div class="chart-label">JUMP 25 INDEX</div>';
+            pContainer.innerHTML = `
+                <div class="chart-label">${document.getElementById('symbol').value} INDEX</div>
+                <div class="chart-controls">
+                    <button id="zoom-out">-</button>
+                    <button id="zoom-in">+</button>
+                    <button id="fit-content">⊡</button>
+                </div>`;
             rContainer.innerHTML = '<div class="chart-label">RSI</div>';
 
-            // Asegurarse de que los contenedores tengan altura
             pContainer.style.minHeight = '300px';
-            rContainer.style.minHeight = '150px';
+            rContainer.style.minHeight = '120px';
 
-            try {
-                priceChart = LightweightCharts.createChart(pContainer, { ...chartOptions, height: pContainer.clientHeight || 300 });
-                rsiChart = LightweightCharts.createChart(rContainer, { ...chartOptions, height: rContainer.clientHeight || 150 });
-                
-                // Verificar que el método existe antes de usarlo
-                if (typeof priceChart.addCandlestickSeries === 'function') {
-                    candleSeries = priceChart.addCandlestickSeries({
-                        upColor: '#089981', downColor: '#f23645',
-                        borderVisible: false, wickUpColor: '#089981', wickDownColor: '#f23645',
-                    });
-                } else {
-                    // Fallback a barras si candlestick no está disponible
-                    console.warn('addCandlestickSeries no disponible, usando addBarSeries');
-                    candleSeries = priceChart.addBarSeries({
-                        upColor: '#089981', downColor: '#f23645',
-                        borderVisible: false, wickUpColor: '#089981', wickDownColor: '#f23645',
-                    });
-                }
-                
-                smaSeries = priceChart.addLineSeries({ color: '#2962ff', lineWidth: 2, title: 'SMA' });
-                emaSeries = priceChart.addLineSeries({ color: '#f23645', lineWidth: 1, title: 'EMA' });
-                bbUpperSeries = priceChart.addLineSeries({ color: 'rgba(255, 255, 255, 0.2)', lineWidth: 1, lineStyle: 2 });
-                bbLowerSeries = priceChart.addLineSeries({ color: 'rgba(255, 255, 255, 0.2)', lineWidth: 1, lineStyle: 2 });
+            document.getElementById('zoom-in').onclick = () => priceChart.timeScale().applyOptions({ rightOffset: priceChart.timeScale().options().rightOffset + 2 });
+            document.getElementById('zoom-out').onclick = () => priceChart.timeScale().applyOptions({ rightOffset: Math.max(0, priceChart.timeScale().options().rightOffset - 2) });
+            document.getElementById('fit-content').onclick = () => priceChart.timeScale().fitContent();
 
-                rsiSeries = rsiChart.addLineSeries({ color: '#ff9800', lineWidth: 2, title: 'RSI' });
+            priceChart = LightweightCharts.createChart(pContainer, { ...chartOptions, height: pContainer.clientHeight || 300 });
+            rsiChart = LightweightCharts.createChart(rContainer, { ...chartOptions, height: rContainer.clientHeight || 120 });
 
-                const highLevel = parseFloat(document.getElementById('rsi-high').value) || 65;
-                const lowLevel = parseFloat(document.getElementById('rsi-low').value) || 35;
-                
-                if (!isNaN(highLevel)) {
-                    rsiSeries.createPriceLine({ 
-                        price: highLevel, 
-                        color: '#f23645', 
-                        lineWidth: 1, 
-                        lineStyle: 2, 
-                        axisLabelVisible: true, 
-                        title: 'SOBRECOMPRA' 
-                    });
-                }
-                
-                if (!isNaN(lowLevel)) {
-                    rsiSeries.createPriceLine({ 
-                        price: lowLevel, 
-                        color: '#089981', 
-                        lineWidth: 1, 
-                        lineStyle: 2, 
-                        axisLabelVisible: true, 
-                        title: 'SOBREVENTA' 
-                    });
-                }
+            candleSeries = priceChart.addCandlestickSeries({
+                upColor: '#089981', downColor: '#f23645',
+                borderVisible: false, wickUpColor: '#089981', wickDownColor: '#f23645',
+            });
+            
+            smaSeries = priceChart.addLineSeries({ color: '#2962ff', lineWidth: 2, title: 'SMA' });
+            emaSeries = priceChart.addLineSeries({ color: '#f23645', lineWidth: 1, title: 'EMA' });
+            bbUpperSeries = priceChart.addLineSeries({ color: 'rgba(255,255,255,0.15)', lineWidth: 1, lineStyle: 2 });
+            bbLowerSeries = priceChart.addLineSeries({ color: 'rgba(255,255,255,0.15)', lineWidth: 1, lineStyle: 2 });
 
-                // Sincronización segura de timeScales
-                priceChart.timeScale().subscribeVisibleTimeRangeChange(range => {
-                    try {
-                        if (range && rsiChart) {
-                            rsiChart.timeScale().setVisibleRange(range);
-                        }
-                    } catch (e) {
-                        console.warn('Error sincronizando timeScale (precio->rsi):', e);
-                    }
-                });
-                
-                rsiChart.timeScale().subscribeVisibleTimeRangeChange(range => {
-                    try {
-                        if (range && priceChart) {
-                            priceChart.timeScale().setVisibleRange(range);
-                        }
-                    } catch (e) {
-                        console.warn('Error sincronizando timeScale (rsi->precio):', e);
-                    }
-                });
-                
-                // Ajuste de tamaño al redimensionar ventana
-                window.addEventListener('resize', () => {
-                    try {
-                        if (priceChart && pContainer) {
-                            priceChart.resize(pContainer.clientWidth, pContainer.clientHeight || 300);
-                        }
-                        if (rsiChart && rContainer) {
-                            rsiChart.resize(rContainer.clientWidth, rContainer.clientHeight || 150);
-                        }
-                    } catch (e) {
-                        console.warn('Error redimensionando charts:', e);
-                    }
-                });
-            } catch (error) {
-                console.error('Error inicializando charts:', error);
-                addLog('Error inicializando gráficos: ' + error.message, 'put');
-            }
+            rsiSeries = rsiChart.addLineSeries({ color: '#ff9800', lineWidth: 2, title: 'RSI' });
+
+            const highLevel = parseFloat(document.getElementById('rsi-high').value) || 65;
+            const lowLevel = parseFloat(document.getElementById('rsi-low').value) || 35;
+            
+            rsiSeries.createPriceLine({ price: highLevel, color: '#f23645', lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'HIGH' });
+            rsiSeries.createPriceLine({ price: lowLevel, color: '#089981', lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'LOW' });
+
+            setupCrosshair();
+            priceChart.timeScale().subscribeVisibleTimeRangeChange(range => {
+                try { if (range && rsiChart) rsiChart.timeScale().setVisibleRange(range); } catch (e) {}
+            });
+            rsiChart.timeScale().subscribeVisibleTimeRangeChange(range => {
+                try { if (range && priceChart) priceChart.timeScale().setVisibleRange(range); } catch (e) {}
+            });
+
+            window.addEventListener('resize', () => {
+                try {
+                    if (priceChart && pContainer) priceChart.resize(pContainer.clientWidth, pContainer.clientHeight || 300);
+                    if (rsiChart && rContainer) rsiChart.resize(rContainer.clientWidth, rContainer.clientHeight || 120);
+                } catch (e) { console.warn('Resize error:', e); }
+            });
         }
 
-        // --- CÁLCULOS DE INDICADORES (using imported functions) ---
+        function setupCrosshair() {
+            const tooltip = document.getElementById('tooltip');
+            const showTooltip = document.getElementById('show-tooltip');
+            
+            priceChart.subscribeCrosshairMove(param => {
+                if (!showTooltip.checked || !param.time || !param.seriesData.get(candleSeries)) {
+                    tooltip.style.display = 'none';
+                    return;
+                }
+                
+                const data = param.seriesData.get(candleSeries);
+                if (data) {
+                    const date = new Date(param.time * 1000);
+                    tooltip.querySelector('.tt-time').textContent = date.toLocaleString();
+                    tooltip.querySelector('.tt-open').textContent = data.open.toFixed(2);
+                    tooltip.querySelector('.tt-high').textContent = data.high.toFixed(2);
+                    tooltip.querySelector('.tt-low').textContent = data.low.toFixed(2);
+                    tooltip.querySelector('.tt-close').textContent = data.close.toFixed(2);
+                    
+                    const chartRect = document.getElementById('price-chart').getBoundingClientRect();
+                    let x = param.point.x + 15;
+                    let y = param.point.y + 15;
+                    if (x + 120 > chartRect.width) x = param.point.x - 130;
+                    if (y + 100 > chartRect.height) y = param.point.y - 110;
+                    
+                    tooltip.style.left = x + 'px';
+                    tooltip.style.top = y + 'px';
+                    tooltip.style.display = 'block';
+                }
+            });
+        }
 
         function updateIndicators() {
             if (dataHistory.length < 2) return;
-            
             try {
                 const smaP = parseInt(document.getElementById('sma-period').value) || 23;
                 const emaP = parseInt(document.getElementById('ema-period').value) || 10;
                 const rsiP = parseInt(document.getElementById('rsi-period').value) || 7;
                 const bbP = parseInt(document.getElementById('bb-period').value) || 20;
 
-                const smaData = calculateSMA(dataHistory, smaP).filter(d => d.value !== null);
-                const emaData = calculateEMA(dataHistory, emaP);
+                const smaData = document.getElementById('sma-enabled').checked ? calculateSMA(dataHistory, smaP).filter(d => d.value !== null) : [];
+                const emaData = document.getElementById('ema-enabled').checked ? calculateEMA(dataHistory, emaP) : [];
                 const rsiData = calculateRSI(dataHistory, rsiP).filter(d => d.value !== null);
-                const bb = calculateBB(dataHistory, bbP);
+                const bb = document.getElementById('bb-enabled').checked ? calculateBB(dataHistory, bbP) : { upper: [], lower: [] };
 
                 if (smaSeries) smaSeries.setData(smaData);
                 if (emaSeries) emaSeries.setData(emaData);
-                if (rsiSeries) rsiSeries.setData(rsiData);
                 if (bbUpperSeries) bbUpperSeries.setData(bb.upper.filter(d => d.value !== null));
                 if (bbLowerSeries) bbLowerSeries.setData(bb.lower.filter(d => d.value !== null));
+                if (rsiSeries) rsiSeries.setData(rsiData);
 
-                // Paso 5: Señales
                 if (rsiData.length >= 2) {
                     const currentRsi = rsiData[rsiData.length - 1].value;
                     const prevRsi = rsiData[rsiData.length - 2].value;
-                    if (currentRsi !== null && prevRsi !== null) {
-                        processSignals(currentRsi, prevRsi);
-                    }
+                    if (currentRsi !== null && prevRsi !== null) processSignals(currentRsi, prevRsi);
                 }
-            } catch (error) {
-                console.warn('Error actualizando indicadores:', error);
-            }
+            } catch (error) { console.warn('Indicator error:', error); }
         }
 
-        // --- WEBSOCKET Y CONEXIÓN ---
-        const startBtn = document.getElementById('start-btn');
-        startBtn.addEventListener('click', () => isConnected ? location.reload() : connect());
+        document.getElementById('start-btn').addEventListener('click', () => isConnected ? disconnect() : connect());
 
         function connect() {
             const appId = document.getElementById('app-id').value || '1089';
             const token = document.getElementById('api-token').value;
             const granularity = parseInt(document.getElementById('timeframe').value) || 60;
+            currentSymbol = document.getElementById('symbol').value;
 
-            addLog(`Conectando a Deriv (App ID: ${appId})...`);
-
+            addLog(`Conectando (${appId})...`);
             ws = new WebSocket(`wss://ws.binaryws.com/websockets/v3?app_id=${appId}`);
 
             ws.onopen = () => {
-                addLog('Conectado a Deriv. Solicitando historial (1 hora)...');
+                addLog('Conectado. Solicitando historial...');
                 initCharts();
-                
-                // Hide login elements after successful connection
                 document.getElementById('api-token').parentElement.style.display = 'none';
                 document.getElementById('app-id').parentElement.style.display = 'none';
                 document.getElementById('start-btn').style.display = 'none';
                 
-                if (token) {
-                    ws.send(JSON.stringify({ authorize: token }));
-                } else {
-                    requestHistory();
-                }
+                if (token) ws.send(JSON.stringify({ authorize: token }));
+                else requestHistory();
             };
 
             ws.onmessage = (msg) => {
                 try {
                     const res = JSON.parse(msg.data);
-                    // Debug: Log all incoming messages
-                    console.log('WebSocket message received:', res);
-                    
                     if (res.msg_type === 'authorize') {
-                        if (res.error) {
-                            addLog('Error de Token: ' + res.error.message, 'put');
-                        } else {
-                            addLog('Autorizado.');
-                            requestHistory();
-                        }
+                        if (res.error) addLog('Token error: ' + res.error.message, 'put');
+                        else { addLog('Autorizado.'); requestHistory(); }
                     }
-                    // Handle explicit error messages from API
-                    if (res.msg_type === 'error') {
-                        addLog('Error de API: ' + (res.error?.message || JSON.stringify(res)), 'put');
-                    }
-
-                    // Manejo de Historial de Velas
-                    if (res.msg_type === 'candles' && res.candles && Array.isArray(res.candles)) {
-                        const validCandles = res.candles
-                            .map(c => ({
-                                time: parseInt(c.epoch),
-                                open: parseFloat(c.open),
-                                high: parseFloat(c.high),
-                                low: parseFloat(c.low),
-                                close: parseFloat(c.close)
-                            }))
-                            .filter(c => 
-                                !isNaN(c.time) && !isNaN(c.open) && !isNaN(c.high) && 
-                                !isNaN(c.low) && !isNaN(c.close) &&
-                                c.open > 0 && c.high > 0 && c.low > 0 && c.close > 0 &&
-                                c.high >= Math.max(c.open, c.close) && 
-                                c.low <= Math.min(c.open, c.close)
-                            );
+                    if (res.msg_type === 'error') addLog('API: ' + (res.error?.message || JSON.stringify(res)), 'put';
+                    if (res.msg_type === 'candles' && res.candles) {
+                        const validCandles = res.candles.map(c => ({
+                            time: parseInt(c.epoch), open: parseFloat(c.open), high: parseFloat(c.high),
+                            low: parseFloat(c.low), close: parseFloat(c.close)
+                        })).filter(c => c.time && c.open > 0 && c.high >= Math.max(c.open, c.close) && c.low <= Math.min(c.open, c.close));
 
                         if (validCandles.length > 0) {
                             dataHistory = validCandles;
-                            if (candleSeries) candleSeries.setData(dataHistory);
-                            updateIndicators(); // Calcular indicadores iniciales
+                            candleSeries.setData(dataHistory);
+                            applyMinCandles();
+                            updateIndicators();
                             subscribeOHLC();
                             isConnected = true;
-                            startBtn.innerText = 'DESCONECTAR';
-                            addLog(`Historial cargado: ${dataHistory.length} velas válidas`);
-                        } else {
-                            addLog('No se recibieron velas válidas del historial', 'put');
+                            addLog(`Cargado: ${dataHistory.length} velas`);
                         }
                     }
-
-                    // Manejo de Velas en Tiempo Real (msg_type: ohlc)
                     if (res.msg_type === 'ohlc' && res.ohlc) {
                         const o = res.ohlc;
-                        const candle = {
-                            time: parseInt(o.open_time),
-                            open: parseFloat(o.open),
-                            high: parseFloat(o.high),
-                            low: parseFloat(o.low),
-                            close: parseFloat(o.close)
-                        };
-
-                        // Validar que todos los valores sean números válidos
-                        if (!isNaN(candle.time) && !isNaN(candle.open) && !isNaN(candle.high) && 
-                            !isNaN(candle.low) && !isNaN(candle.close) &&
-                            candle.open > 0 && candle.high > 0 && candle.low > 0 && candle.close > 0 &&
-                            candle.high >= Math.max(candle.open, candle.close) && 
-                            candle.low <= Math.min(candle.open, candle.close)) {
-                            
+                        const candle = { time: parseInt(o.open_time), open: parseFloat(o.open), high: parseFloat(o.high), low: parseFloat(o.low), close: parseFloat(o.close) };
+                        if (candle.time && candle.open > 0) {
                             if (candleSeries) candleSeries.update(candle);
-
-                            // Actualizar nuestro array de datos
-                            if (dataHistory.length > 0 && dataHistory[dataHistory.length - 1].time === candle.time)  {
-                                dataHistory[dataHistory.length - 1] = candle; // Actualiza vela actual
+                            if (dataHistory.length > 0 && dataHistory[dataHistory.length - 1].time === candle.time) {
+                                dataHistory[dataHistory.length - 1] = candle;
                             } else {
                                 dataHistory.push(candle);
-                                if (dataHistory.length > 5000) dataHistory.shift(); // Limitar memoria
+                                if (dataHistory.length > 5000) dataHistory.shift();
                             }
                             updateIndicators();
+                            if (document.getElementById('auto-scroll').checked) scrollToEnd();
                         }
                     }
-                } catch (e) {
-                    console.error('Error procesando mensaje WS:', e);
-                    addLog('Error procesando mensaje: ' + e.message, 'put');
-                }
+                } catch (e) { console.error('WS error:', e); }
             };
 
-            ws.onerror = (error) => {
-                console.error('WebSocket error:', error);
-                addLog('Error de WebSocket: ' + error.message, 'put');
-            };
+            ws.onerror = (e) => addLog('WS Error: ' + e.message, 'put');
+            ws.onclose = () => { addLog('Desconectado.', 'put'); isConnected = false; };
+        }
 
-            ws.onclose = () => {
-                addLog('Conexión cerrada.', 'put');
-                isConnected = false;
-                startBtn.innerText = 'CONECTAR WEBSOCKET';
-            };
+        function disconnect() {
+            if (ws) ws.close();
+            isConnected = false;
         }
 
         function requestHistory() {
             const gran = parseInt(document.getElementById('timeframe').value) || 60;
-            const now = Math.floor(Date.now() / 1000);
-            const oneHourAgo = now - 3600; // 1 hora en segundos
-            
-            // For history request, we DON'T want to subscribe - just get data once
-            const request = {
-                ticks_history: currentSymbol,
-                end: 'latest',
-                start: oneHourAgo,
-                style: 'candles',
-                granularity: gran
-                // Note: NOT including subscribe field at all for one-time request
-            };
-            
-            addLog(`Enviando solicitud de historial (no suscripción): ${JSON.stringify(request)}`);
-            ws.send(JSON.stringify(request));
+            ws.send(JSON.stringify({ ticks_history: currentSymbol, end: 'latest', start: Math.floor(Date.now() / 1000) - 3600, style: 'candles', granularity: gran }));
         }
 
         function subscribeOHLC() {
             const gran = parseInt(document.getElementById('timeframe').value) || 60;
-            try {
-                const subscribeRequest = {
-                    ticks_history: currentSymbol,
-                    subscribe: 1, // Suscribirse a updates
-                    end: 'latest',
-                    granularity: gran,
-                    style: 'candles'
-                };
-                addLog(`Enviando solicitud de suscripción: ${JSON.stringify(subscribeRequest)}`);
-                ws.send(JSON.stringify({ forget_all: 'ohlc' })); // Olvidar suscripciones previas
-                ws.send(JSON.stringify(subscribeRequest));
-            } catch (e) {
-                console.error('Error suscribiendo a OHLC:', e);
-                addLog('Error suscribiendo a actualizaciones: ' + e.message, 'put');
+            ws.send(JSON.stringify({ forget_all: 'ohlc' }));
+            ws.send(JSON.stringify({ ticks_history: currentSymbol, subscribe: 1, end: 'latest', granularity: gran, style: 'candles' }));
+        }
+
+        function applyMinCandles() {
+            const minCandles = parseInt(document.getElementById('min-candles').value) || 24;
+            const visible = priceChart.timeScale().getVisibleRange();
+            if (visible) {
+                const diff = visible.to - visible.from;
+                if (diff < minCandles) {
+                    priceChart.timeScale().setVisibleRange({ from: visible.to - minCandles, to: visible.to });
+                }
             }
         }
 
-        // --- ESTRATEGIA DE SEÑALES ---
+        function scrollToEnd() {
+            if (dataHistory.length > 0) {
+                const lastTime = dataHistory[dataHistory.length - 1].time;
+                const minCandles = parseInt(document.getElementById('min-candles').value) || 24;
+                priceChart.timeScale().setVisibleRange({ from: lastTime - minCandles, to: lastTime + 5 });
+            }
+        }
+
         function processSignals(currentRsi, prevRsi) {
             const rsiHigh = parseFloat(document.getElementById('rsi-high').value) || 65;
             const rsiLow = parseFloat(document.getElementById('rsi-low').value) || 35;
-            let signal = null; // 'call' or 'put'
+            let signal = null;
             let trend = '';
 
-            if (currentRsi > rsiHigh && currentRsi > prevRsi) {
-                signal = 'call';
-                trend = 'Subiendo (RSI > ' + rsiHigh + ')';
-            } else if (currentRsi < rsiLow && currentRsi < prevRsi) {
-                signal = 'put';
-                trend = 'Bajando (RSI < ' + rsiLow + ')';
-            }
+            if (currentRsi > rsiHigh && currentRsi > prevRsi) { signal = 'call'; trend = 'RSI > ' + rsiHigh; }
+            else if (currentRsi < rsiLow && currentRsi < prevRsi) { signal = 'put'; trend = 'RSI < ' + rsiLow; }
 
-            const logMsg = `RSI: ${currentRsi.toFixed(2)} | Prev: ${prevRsi.toFixed(2)} | Trend: ${trend}`;
-            addLog(logMsg);
+            addLog(`RSI: ${currentRsi.toFixed(1)} | Prev: ${prevRsi.toFixed(1)} | ${trend || 'neutral'}`);
             
-            // Dibujar marcador en el gráfico
-            if (signal && candleSeries && dataHistory && dataHistory.length > 0) {
+            if (signal && candleSeries && dataHistory.length > 0) {
                 const lastCandle = dataHistory[dataHistory.length - 1];
-                const markerColor = signal === 'call' ? '#089981' : '#f23645'; // Verde para Call, Rojo para Put
-                const markerText = signal === 'call' ? '▲' : '▼';
-
-                candleSeries.createPriceLine({
-                    price: lastCandle.high, // Posicionar sobre el máximo de la vela
-                    color: markerColor,
-                    lineWidth: 2,
-                    lineStyle: LightweightCharts.LineStyle.Solid,
-                    axisLabelVisible: false, // No mostrar label de precio
-                    visible: true,
-                    title: markerText // Usar texto como marcador simple
-                });
-                addLog(`¡SEÑAL DE ${signal.toUpperCase()} DETECTADA!`, signal);
+                const color = signal === 'call' ? '#089981' : '#f23645';
+                const icon = signal === 'call' ? '��' : '▼';
+                
+                candleSeries.setMarkers([{ time: lastCandle.time, position: 'aboveBar', color: color, shape: 'arrowUp', text: signal === 'call' ? 'A' : 'V' }]);
+                addLog(`¡SEÑAL ${signal.toUpperCase()}!`, signal);
+                
+                signalHistory.unshift({ type: signal, time: lastCandle.time, price: lastCandle.close });
+                if (signalHistory.length > 20) signalHistory.pop();
+                
+                if (signal === 'call') callCount++; else putCount++;
+                updateResults();
+                
+                if (document.getElementById('sound-alert').checked) {
+                    try { new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU').play().catch(() => {}); } catch (e) {}
+                }
             }
         }
 
-        // Inicialización inicial al cargar la página
-        window.onload = () => {
-            initCharts();
-            // Ajustar tamaño inicial si es necesario
-            window.dispatchEvent(new Event('resize'));
-        };
+        function updateResults() {
+            document.getElementById('signal-count').textContent = callCount + putCount;
+            document.getElementById('call-count').textContent = callCount;
+            document.getElementById('put-count').textContent = putCount;
+            document.getElementById('last-signal').textContent = signalHistory[0] ? (signalHistory[0].type === 'call' ? '▲ CALL' : '▼ PUT') : '--';
+            document.getElementById('last-signal').className = 'value ' + (signalHistory[0]?.type === 'call' ? 'call' : signalHistory[0]?.type === 'put' ? 'put' : '');
+        }
 
-        // Función para agregar logs
-        function addLog(message, type = 'call') {
-            const logsContainer = document.getElementById('logs-container');
-            if (!logsContainer) return;
-            
-            const logEntry = document.createElement('div');
-            logEntry.className = `log-entry ${type}`;
-            logEntry.innerHTML = `<span class="log-time">[${new Date().toLocaleTimeString()}]</span> ${message}`;
-            logsContainer.appendChild(logEntry);
-            
-            // Mantener solo los últimos 100 logs
-            while (logsContainer.children.length > 100) {
-                logsContainer.removeChild(logsContainer.firstChild);
-            }
-            
-            // Scroll automático al final
-            logsContainer.scrollTop = logsContainer.scrollHeight;
+        document.querySelectorAll('#timeframe-btns button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#timeframe-btns button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById('timeframe').value = btn.dataset.value;
+                if (isConnected) { disconnect(); connect(); }
+            });
+        });
+
+        window.addEventListener('load', () => { initCharts(); window.dispatchEvent(new Event('resize')); });
+
+        function addLog(message, type = '') {
+            const container = document.getElementById('logs-container');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.innerHTML = `<span class="log-time">[${new Date().toLocaleTimeString()}]</span> ${message}`;
+            container.appendChild(entry);
+            while (container.children.length > 100) container.removeChild(container.firstChild);
+            container.scrollTop = container.scrollHeight;
         }
     </script>
 </body>
