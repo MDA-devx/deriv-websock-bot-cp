@@ -1,0 +1,20 @@
+{
+  "appId": "1089",
+  "defaultTimeframe": 60,
+  "symbols": ["R_25"],
+  "indicators": {
+    "sma": { "enabled": true, "period": 23 },
+    "ema": { "enabled": true, "period": 10 },
+    "rsi": { "enabled": true, "period": 7, "high": 65, "low": 35 },
+    "bb": { "enabled": true, "period": 20 }
+  },
+  "websocket": {
+    "reconnect": true,
+    "maxRetries": 10,
+    "heartbeatInterval": 30000
+  },
+  "server": {
+    "port": 3002,
+    "hostname": "0.0.0.0"
+  }
+}
