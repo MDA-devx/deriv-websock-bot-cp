@@ -628,7 +628,6 @@ button {
                                 if (dataHistory.length > 5000) dataHistory.shift();
                             }
                             updateIndicators();
-                            if (document.getElementById('auto-scroll').checked) scrollToEnd();
                         }
                     }
                 } catch (e) { console.error('[WS] Parse error:', e); }
@@ -662,17 +661,19 @@ button {
         }
 
         function applyMinCandles() {
-            const minCandles = parseInt(document.getElementById('min-candles').value) || 24;
-            const space = minCandles;
-            priceChart.timeScale().setVisibleRange({ from: dataHistory[dataHistory.length - 1].time - minCandles, to: dataHistory[dataHistory.length - 1].time + space });
+            if (dataHistory.length > 0) {
+                const minCandles = parseInt(document.getElementById('min-candles').value) || 24;
+                console.log('[ZOOM] Setting rightOffset for', minCandles, 'candles');
+                priceChart.timeScale().applyOptions({ rightOffset: minCandles });
+                rsiChart.timeScale().applyOptions({ rightOffset: minCandles });
+            }
         }
 
         function scrollToEnd() {
             if (dataHistory.length > 0) {
-                const lastTime = dataHistory[dataHistory.length - 1].time;
                 const minCandles = parseInt(document.getElementById('min-candles').value) || 24;
-                const space = minCandles; // Add equal space as visible candles
-                priceChart.timeScale().setVisibleRange({ from: lastTime - minCandles, to: lastTime + space });
+                console.log('[SCROLL] Scrolling to end with rightOffset:', minCandles);
+                priceChart.timeScale().applyOptions({ rightOffset: minCandles });
             }
         }
 
