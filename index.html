@@ -267,6 +267,7 @@ button {
                 <button data-value="60" class="active">1m</button>
                 <button data-value="300">5m</button>
                 <button data-value="900">15m</button>
+                <button id="view-1d" title="Ver 1 día">1D</button>
             </div>
             <select id="timeframe" style="display:none;">
                 <option value="1">1 Segundo</option>
@@ -431,9 +432,18 @@ button {
             pContainer.style.minHeight = '300px';
             rContainer.style.minHeight = '120px';
 
-            document.getElementById('zoom-in').onclick = () => priceChart.timeScale().applyOptions({ rightOffset: priceChart.timeScale().options().rightOffset + 2 });
-            document.getElementById('zoom-out').onclick = () => priceChart.timeScale().applyOptions({ rightOffset: Math.max(0, priceChart.timeScale().options().rightOffset - 2) });
-            document.getElementById('fit-content').onclick = () => priceChart.timeScale().fitContent();
+            document.getElementById('zoom-in').onclick = () => {
+                const current = priceChart.timeScale().options().rightOffset;
+                priceChart.timeScale().applyOptions({ rightOffset: clampZoom(current + 2) });
+            };
+            document.getElementById('zoom-out').onclick = () => {
+                const current = priceChart.timeScale().options().rightOffset;
+                priceChart.timeScale().applyOptions({ rightOffset: clampZoom(current - 2) });
+            };
+            document.getElementById('fit-content').onclick = () => {
+                priceChart.timeScale().fitContent();
+                applyMinCandles();
+            };
 
             console.log('[CHART] Creating price chart...');
             priceChart = LightweightCharts.createChart(pContainer, { ...chartOptions, height: pContainer.clientHeight || 300 });
@@ -620,6 +630,7 @@ button {
                         const o = res.ohlc;
                         const candle = { time: parseInt(o.open_time), open: parseFloat(o.open), high: parseFloat(o.high), low: parseFloat(o.low), close: parseFloat(o.close) };
                         if (candle.time && candle.open > 0) {
+                            const isNewCandle = dataHistory.length === 0 || dataHistory[dataHistory.length - 1].time !== candle.time;
                             if (candleSeries) candleSeries.update(candle);
                             if (dataHistory.length > 0 && dataHistory[dataHistory.length - 1].time === candle.time) {
                                 dataHistory[dataHistory.length - 1] = candle;
@@ -628,6 +639,9 @@ button {
                                 if (dataHistory.length > 5000) dataHistory.shift();
                             }
                             updateIndicators();
+                            if (isNewCandle && document.getElementById('auto-scroll').checked) {
+                                scrollToEnd();
+                            }
                         }
                     }
                 } catch (e) { console.error('[WS] Parse error:', e); }
@@ -660,21 +674,36 @@ button {
             ws.send(JSON.stringify({ ticks_history: currentSymbol, subscribe: 1, end: 'latest', granularity: gran, style: 'candles' }));
         }
 
+        const ZOOM_LIMIT = { min: 10, max: 200 };
+
+        function clampZoom(offset) {
+            return Math.max(ZOOM_LIMIT.min, Math.min(ZOOM_LIMIT.max, offset));
+        }
+
         function applyMinCandles() {
             if (dataHistory.length > 0) {
                 const minCandles = parseInt(document.getElementById('min-candles').value) || 24;
-                console.log('[ZOOM] Setting rightOffset for', minCandles, 'candles');
-                priceChart.timeScale().applyOptions({ rightOffset: minCandles });
-                rsiChart.timeScale().applyOptions({ rightOffset: minCandles });
+                const offset = clampZoom(minCandles);
+                console.log('[ZOOM] Setting rightOffset:', offset);
+                priceChart.timeScale().applyOptions({ rightOffset: offset });
+                rsiChart.timeScale().applyOptions({ rightOffset: offset });
             }
         }
 
         function scrollToEnd() {
             if (dataHistory.length > 0) {
                 const minCandles = parseInt(document.getElementById('min-candles').value) || 24;
-                console.log('[SCROLL] Scrolling to end with rightOffset:', minCandles);
-                priceChart.timeScale().applyOptions({ rightOffset: minCandles });
+                const offset = clampZoom(minCandles);
+                priceChart.timeScale().applyOptions({ rightOffset: offset });
             }
+        }
+
+        function set1DayView() {
+            const gran = parseInt(document.getElementById('timeframe').value) || 60;
+            const candlesPerDay = Math.floor(86400 / gran);
+            const offset = clampZoom(candlesPerDay);
+            console.log('[1D] Setting for', candlesPerDay, 'candles, offset:', offset);
+            priceChart.timeScale().applyOptions({ rightOffset: offset });
         }
 
         function processSignals(currentRsi, prevRsi) {
@@ -727,6 +756,10 @@ button {
 
         document.getElementById('symbol').addEventListener('change', () => {
             if (isConnected) { disconnect(); connect(); }
+        });
+
+        document.getElementById('view-1d').addEventListener('click', () => {
+            if (priceChart) set1DayView();
         });
 
         ['sma-enabled', 'ema-enabled', 'bb-enabled'].forEach(id => {
