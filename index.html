@@ -41,22 +41,22 @@
             overflow-y: auto;
         }
 
-        h2 { font-size: 1.1rem; margin: 0 0 15px 0; color: #fff; }
-        h3 { font-size: 0.85rem; margin: 12px 0 8px 0; color: var(--accent-color); text-transform: uppercase; }
+        h2 { font-size: 1.1rem; margin: 0 0 8px 0; color: #fff; }
+        h3 { font-size: 0.85rem; margin: 7px 0 8px 0; color: var(--accent-color); text-transform: uppercase; }
 
-        .input-group { margin-bottom: 12px; }
-        .input-group label { display: block; font-size: 11px; color: #b2b5be; text-transform: uppercase; margin-bottom: 4px; }
+        .input-group { margin-bottom: 2px; }
+        .input-group label { display: block; font-size: 11px; color: #b2b5be; text-transform: uppercase; margin-bottom: 2px; }
         
-        .input-row { display: flex; gap: 8px; align-items: center; }
+        .input-row { display: flex; gap: 4px; align-items: center; }
         .input-row > * { flex: 1; }
 
         input, select {
             background-color: #2a2e39;
             border: 1px solid #363c4e;
             color: #d1d4dc;
-            padding: 8px 10px;
+            padding: 4px 4px;
             border-radius: 4px;
-            font-size: 13px;
+            font-size: 12px;
             outline: none;
         }
 
@@ -257,6 +257,7 @@ button {
             <label>App ID</label>
             <input type="text" id="app-id" value="1089" placeholder="Ej: 1089">
         </div>
+        <button id="start-btn">CONECTAR</button>
 
         <div class="input-group">
             <label>Temporalidad</label>
@@ -351,7 +352,7 @@ button {
             </div>
         </div>
 
-        <button id="start-btn">CONECTAR</button>
+
 
         <div id="logs-container" style="z-index:100;position:relative;">
             <div class="log-entry"><span class="log-time">[--:--:--]</span>Sistema listo. Configure y conecte.</div>
