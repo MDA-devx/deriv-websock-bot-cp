@@ -725,6 +725,18 @@ button {
             });
         });
 
+        document.getElementById('symbol').addEventListener('change', () => {
+            if (isConnected) { disconnect(); connect(); }
+        });
+
+        ['sma-enabled', 'ema-enabled', 'bb-enabled'].forEach(id => {
+            document.getElementById(id).addEventListener('change', updateIndicators);
+        });
+
+        ['sma-period', 'ema-period', 'bb-period', 'rsi-period', 'rsi-high', 'rsi-low'].forEach(id => {
+            document.getElementById(id).addEventListener('change', updateIndicators);
+        });
+
         window.addEventListener('load', () => { initCharts(); window.dispatchEvent(new Event('resize')); });
 
         function addLog(message, type = '') {
