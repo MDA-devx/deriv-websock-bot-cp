@@ -407,9 +407,17 @@ button {
             handleScroll: { vertTouchDrag: false }
         };
 
+        console.log('[APP] Script loaded, LightweightCharts:', typeof LightweightCharts);
+        console.log('[APP] calculateSMA:', typeof calculateSMA);
+        console.log('[APP] calculateEMA:', typeof calculateEMA);
+        console.log('[APP] calculateRSI:', typeof calculateRSI);
+        console.log('[APP] calculateBB:', typeof calculateBB);
+
         function initCharts() {
+            console.log('[CHART] initCharts() called');
             const pContainer = document.getElementById('price-chart');
             const rContainer = document.getElementById('rsi-chart');
+            console.log('[CHART] Containers found, price:', !!pContainer, 'rsi:', !!rContainer);
             
             pContainer.innerHTML = `
                 <div class="chart-label">${document.getElementById('symbol').value} INDEX</div>
@@ -427,13 +435,17 @@ button {
             document.getElementById('zoom-out').onclick = () => priceChart.timeScale().applyOptions({ rightOffset: Math.max(0, priceChart.timeScale().options().rightOffset - 2) });
             document.getElementById('fit-content').onclick = () => priceChart.timeScale().fitContent();
 
+            console.log('[CHART] Creating price chart...');
             priceChart = LightweightCharts.createChart(pContainer, { ...chartOptions, height: pContainer.clientHeight || 300 });
+            console.log('[CHART] Price chart created:', !!priceChart);
             rsiChart = LightweightCharts.createChart(rContainer, { ...chartOptions, height: rContainer.clientHeight || 120 });
+            console.log('[CHART] RSI chart created:', !!rsiChart);
 
             candleSeries = priceChart.addCandlestickSeries({
                 upColor: '#089981', downColor: '#f23645',
                 borderVisible: false, wickUpColor: '#089981', wickDownColor: '#f23645',
             });
+            console.log('[CHART] Candle series:', !!candleSeries);
             
             smaSeries = priceChart.addLineSeries({ color: '#2962ff', lineWidth: 2, title: 'SMA' });
             emaSeries = priceChart.addLineSeries({ color: '#f23645', lineWidth: 1, title: 'EMA' });
@@ -538,39 +550,51 @@ button {
             const granularity = parseInt(document.getElementById('timeframe').value) || 60;
             currentSymbol = document.getElementById('symbol').value;
 
+            console.log('[APP] connect() started - appId:', appId, 'symbol:', currentSymbol, 'granularity:', granularity);
             addLog(`Conectando a ${currentSymbol} (${appId})...`);
             
             const wsUrl = `wss://ws.binaryws.com/websockets/v3?app_id=${appId}`;
-            console.log('Connecting to:', wsUrl);
+            console.log('[WS] Creating WebSocket:', wsUrl);
             
             ws = new WebSocket(wsUrl);
+            console.log('[WS] WebSocket object created, readyState:', ws.readyState);
 
             ws.onopen = () => {
+                console.log('[WS] onopen fired, readyState:', ws.readyState);
                 addLog('WebSocket abierto. Solicitando historial...');
-                console.log('WebSocket connected successfully');
                 initCharts();
                 document.getElementById('api-token').parentElement.style.display = 'none';
                 document.getElementById('app-id').parentElement.style.display = 'none';
                 document.getElementById('start-btn').style.display = 'none';
                 
+                console.log('[WS] Sending authorize or requesting history...');
                 if (token) ws.send(JSON.stringify({ authorize: token }));
                 else requestHistory();
             };
 
             ws.onmessage = (msg) => {
+                console.log('[WS] onmessage received, data:', msg.data.substring(0, 200));
                 try {
                     const res = JSON.parse(msg.data);
+                    console.log('[WS] Parsed msg_type:', res.msg_type);
+                    
                     if (res.msg_type === 'authorize') {
+                        console.log('[AUTH] authorize response:', res);
                         if (res.error) addLog('Token error: ' + res.error.message, 'put');
                         else { addLog('Autorizado.'); requestHistory(); }
                     }
-                    if (res.msg_type === 'error') addLog('API: ' + (res.error?.message || JSON.stringify(res)), 'put');
-                    if (res.msg_type === 'candles' && res.candles) {
+                    if (res.msg_type === 'error') {
+                        console.log('[ERROR] API error:', res.error);
+                        addLog('API: ' + (res.error?.message || JSON.stringify(res)), 'put');
+                    }
+                    if (res.msg_type === 'candles') {
+                        console.log('[DATA] Received candles, count:', res.candles?.length);
                         const validCandles = res.candles.map(c => ({
                             time: parseInt(c.epoch), open: parseFloat(c.open), high: parseFloat(c.high),
                             low: parseFloat(c.low), close: parseFloat(c.close)
                         })).filter(c => c.time && c.open > 0 && c.high >= Math.max(c.open, c.close) && c.low <= Math.min(c.open, c.close));
 
+                        console.log('[DATA] Valid candles:', validCandles.length);
                         if (validCandles.length > 0) {
                             dataHistory = validCandles;
                             candleSeries.setData(dataHistory);
@@ -579,9 +603,11 @@ button {
                             subscribeOHLC();
                             isConnected = true;
                             addLog(`Cargado: ${dataHistory.length} velas`);
+                            console.log('[DATA] Charts updated, connected:', isConnected);
                         }
                     }
-                    if (res.msg_type === 'ohlc' && res.ohlc) {
+                    if (res.msg_type === 'ohlc') {
+                        console.log('[DATA] OHLC update:', res.ohlc);
                         const o = res.ohlc;
                         const candle = { time: parseInt(o.open_time), open: parseFloat(o.open), high: parseFloat(o.high), low: parseFloat(o.low), close: parseFloat(o.close) };
                         if (candle.time && candle.open > 0) {
@@ -596,15 +622,15 @@ button {
                             if (document.getElementById('auto-scroll').checked) scrollToEnd();
                         }
                     }
-                } catch (e) { console.error('WS error:', e); }
+                } catch (e) { console.error('[WS] Parse error:', e); }
             };
 
             ws.onerror = (e) => {
-                console.error('WebSocket error:', e);
+                console.error('[WS] onerror:', e);
                 addLog('Error de conexión: ' + (e.message || 'No se pudo conectar'), 'put');
             };
             ws.onclose = (e) => {
-                console.log('WebSocket closed:', e.code, e.reason);
+                console.log('[WS] onclose:', e.code, e.reason);
                 addLog('Desconectado (' + e.code + ')', 'put');
                 isConnected = false;
             };
