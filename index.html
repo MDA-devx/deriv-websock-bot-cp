@@ -399,11 +399,29 @@ button {
         let putCount = 0;
 
         const chartOptions = {
-            layout: { backgroundColor: '#131722', textColor: '#d1d4dc' },
-            grid: { vertLines: { color: '#2a2e39' }, horzLines: { color: '#2a2e39' } },
-            crosshair: { mode: LightweightCharts.CrosshairMode.Normal, vertLine: { labelBackgroundColor: '#2962ff' }, horzLine: { labelBackgroundColor: '#2962ff' } },
-            rightPriceScale: { borderColor: '#2a2e39' },
-            timeScale: { borderColor: '#2a2e39', timeVisible: true, secondsVisible: true, visible: true },
+            layout: { backgroundColor: '#0d1117', textColor: '#e6edf3' },
+            grid: { 
+                vertLines: { color: '#21262d', style: 1 }, 
+                horzLines: { color: '#21262d', style: 1 },
+                crossings: false
+            },
+            crosshair: { 
+                mode: LightweightCharts.CrosshairMode.Normal, 
+                vertLine: { color: '#58a6ff', width: 1, style: 0, labelBackgroundColor: '#1f6feb' }, 
+                horzLine: { color: '#58a6ff', width: 1, style: 0, labelBackgroundColor: '#1f6feb' } 
+            },
+            rightPriceScale: { 
+                borderColor: '#30363d',
+                scaleMargins: { top: 0.1, bottom: 0.1 }
+            },
+            timeScale: { 
+                borderColor: '#30363d',
+                timeVisible: true, 
+                secondsVisible: true, 
+                visible: true,
+                rightOffset: 24,
+                barSpacing: 8
+            },
             handleScale: { axisPressedMouseMove: true },
             handleScroll: { vertTouchDrag: false }
         };
@@ -433,16 +451,17 @@ button {
             rContainer.style.minHeight = '120px';
 
             document.getElementById('zoom-in').onclick = () => {
-                const current = priceChart.timeScale().options().rightOffset;
-                priceChart.timeScale().applyOptions({ rightOffset: clampZoom(current + 2) });
+                const opts = priceChart.timeScale().options();
+                priceChart.timeScale().applyOptions({ rightOffset: clampZoom(opts.rightOffset + 5), barSpacing: Math.max(4, (opts.barSpacing || 8) - 1) });
             };
             document.getElementById('zoom-out').onclick = () => {
-                const current = priceChart.timeScale().options().rightOffset;
-                priceChart.timeScale().applyOptions({ rightOffset: clampZoom(current - 2) });
+                const opts = priceChart.timeScale().options();
+                priceChart.timeScale().applyOptions({ rightOffset: clampZoom(opts.rightOffset - 5), barSpacing: (opts.barSpacing || 8) + 1 });
             };
             document.getElementById('fit-content').onclick = () => {
                 priceChart.timeScale().fitContent();
-                applyMinCandles();
+                const minCandles = parseInt(document.getElementById('min-candles').value) || 24;
+                setTimeout(() => priceChart.timeScale().applyOptions({ rightOffset: clampZoom(minCandles) }), 50);
             };
 
             console.log('[CHART] Creating price chart...');
@@ -470,20 +489,8 @@ button {
             rsiSeries.createPriceLine({ price: highLevel, color: '#f23645', lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'HIGH' });
             rsiSeries.createPriceLine({ price: lowLevel, color: '#089981', lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'LOW' });
 
-            setupCrosshair();
-            priceChart.timeScale().subscribeVisibleTimeRangeChange(range => {
-                try { if (range && rsiChart) rsiChart.timeScale().setVisibleRange(range); } catch (e) {}
-            });
-            rsiChart.timeScale().subscribeVisibleTimeRangeChange(range => {
-                try { if (range && priceChart) priceChart.timeScale().setVisibleRange(range); } catch (e) {}
-            });
-
-            window.addEventListener('resize', () => {
-                try {
-                    if (priceChart && pContainer) priceChart.resize(pContainer.clientWidth, pContainer.clientHeight || 300);
-                    if (rsiChart && rContainer) rsiChart.resize(rContainer.clientWidth, rContainer.clientHeight || 120);
-                } catch (e) { console.warn('Resize error:', e); }
-            });
+setupCrosshair();
+            // Don't sync time scales - let user control view independently
         }
 
         function setupCrosshair() {
@@ -681,42 +688,28 @@ button {
         }
 
         function applyMinCandles() {
-            if (dataHistory.length > 0) {
+            if (dataHistory.length > 0 && priceChart) {
                 const minCandles = parseInt(document.getElementById('min-candles').value) || 24;
-                const lastTime = dataHistory[dataHistory.length - 1].time;
                 const offset = clampZoom(minCandles);
-                console.log('[ZOOM] applyMinCandles:', lastTime - minCandles, 'to', lastTime + offset);
-                priceChart.timeScale().setVisibleRange({
-                    from: lastTime - minCandles,
-                    to: lastTime + offset + 5
-                });
+                console.log('[ZOOM] applyMinCandles, rightOffset:', offset);
+                priceChart.timeScale().applyOptions({ rightOffset: offset });
             }
         }
 
         function scrollToEnd() {
-            if (dataHistory.length > 0) {
+            if (dataHistory.length > 0 && priceChart) {
                 const minCandles = parseInt(document.getElementById('min-candles').value) || 24;
-                const lastTime = dataHistory[dataHistory.length - 1].time;
                 const offset = clampZoom(minCandles);
-                priceChart.timeScale().setVisibleRange({
-                    from: lastTime - minCandles,
-                    to: lastTime + offset + 5
-                });
+                priceChart.timeScale().applyOptions({ rightOffset: offset });
             }
         }
 
         function set1DayView() {
             const gran = parseInt(document.getElementById('timeframe').value) || 60;
             const candlesPerDay = Math.floor(86400 / gran);
-            if (dataHistory.length > 0) {
-                const lastTime = dataHistory[dataHistory.length - 1].time;
-                const offset = clampZoom(candlesPerDay);
-                console.log('[1D] Setting:', lastTime - candlesPerDay, 'to', lastTime + offset);
-                priceChart.timeScale().setVisibleRange({
-                    from: lastTime - candlesPerDay,
-                    to: lastTime + offset + 5
-                });
-            }
+            const offset = clampZoom(candlesPerDay);
+            console.log('[1D] Setting rightOffset:', offset);
+            if (priceChart) priceChart.timeScale().applyOptions({ rightOffset: offset });
         }
 
         function processSignals(currentRsi, prevRsi) {
