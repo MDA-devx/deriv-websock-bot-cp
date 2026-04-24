@@ -683,33 +683,40 @@ button {
         function applyMinCandles() {
             if (dataHistory.length > 0) {
                 const minCandles = parseInt(document.getElementById('min-candles').value) || 24;
+                const lastTime = dataHistory[dataHistory.length - 1].time;
                 const offset = clampZoom(minCandles);
-                console.log('[ZOOM] applyMinCandles setting rightOffset:', offset);
-                priceChart.timeScale().applyOptions({ rightOffset: offset });
-                rsiChart.timeScale().applyOptions({ rightOffset: offset });
-                setTimeout(() => {
-                    priceChart.timeScale().applyOptions({ rightOffset: offset });
-                    console.log('[ZOOM] Double-apply rightOffset:', offset);
-                }, 50);
+                console.log('[ZOOM] applyMinCandles:', lastTime - minCandles, 'to', lastTime + offset);
+                priceChart.timeScale().setVisibleRange({
+                    from: lastTime - minCandles,
+                    to: lastTime + offset + 5
+                });
             }
         }
 
         function scrollToEnd() {
             if (dataHistory.length > 0) {
                 const minCandles = parseInt(document.getElementById('min-candles').value) || 24;
+                const lastTime = dataHistory[dataHistory.length - 1].time;
                 const offset = clampZoom(minCandles);
-                priceChart.timeScale().applyOptions({ rightOffset: offset });
-                setTimeout(() => priceChart.timeScale().applyOptions({ rightOffset: offset }), 50);
+                priceChart.timeScale().setVisibleRange({
+                    from: lastTime - minCandles,
+                    to: lastTime + offset + 5
+                });
             }
         }
 
         function set1DayView() {
             const gran = parseInt(document.getElementById('timeframe').value) || 60;
             const candlesPerDay = Math.floor(86400 / gran);
-            const offset = clampZoom(candlesPerDay);
-            console.log('[1D] Setting for', candlesPerDay, 'candles, offset:', offset);
-            priceChart.timeScale().applyOptions({ rightOffset: offset });
-            setTimeout(() => priceChart.timeScale().applyOptions({ rightOffset: offset }), 50);
+            if (dataHistory.length > 0) {
+                const lastTime = dataHistory[dataHistory.length - 1].time;
+                const offset = clampZoom(candlesPerDay);
+                console.log('[1D] Setting:', lastTime - candlesPerDay, 'to', lastTime + offset);
+                priceChart.timeScale().setVisibleRange({
+                    from: lastTime - candlesPerDay,
+                    to: lastTime + offset + 5
+                });
+            }
         }
 
         function processSignals(currentRsi, prevRsi) {
