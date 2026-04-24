@@ -535,7 +535,16 @@ button {
             } catch (error) { console.warn('Indicator error:', error); }
         }
 
-        document.getElementById('start-btn').addEventListener('click', () => isConnected ? disconnect() : connect());
+        document.getElementById('start-btn').addEventListener('click', () => {
+            console.log('[BTN] Click detected, isConnected:', isConnected);
+            if (isConnected) {
+                console.log('[BTN] Calling disconnect()');
+                disconnect();
+            } else {
+                console.log('[BTN] Calling connect()');
+                connect();
+            }
+        });
 
         window.startBot = function() {
             if (!isConnected) connect();
