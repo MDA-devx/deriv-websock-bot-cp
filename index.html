@@ -663,11 +663,12 @@ button {
 
         function applyMinCandles() {
             const minCandles = parseInt(document.getElementById('min-candles').value) || 24;
+            const space = minCandles;
             const visible = priceChart.timeScale().getVisibleRange();
             if (visible) {
                 const diff = visible.to - visible.from;
                 if (diff < minCandles) {
-                    priceChart.timeScale().setVisibleRange({ from: visible.to - minCandles, to: visible.to });
+                    priceChart.timeScale().setVisibleRange({ from: visible.to - minCandles, to: visible.to + space });
                 }
             }
         }
@@ -676,7 +677,8 @@ button {
             if (dataHistory.length > 0) {
                 const lastTime = dataHistory[dataHistory.length - 1].time;
                 const minCandles = parseInt(document.getElementById('min-candles').value) || 24;
-                priceChart.timeScale().setVisibleRange({ from: lastTime - minCandles, to: lastTime + 5 });
+                const space = minCandles; // Add equal space as visible candles
+                priceChart.timeScale().setVisibleRange({ from: lastTime - minCandles, to: lastTime + space });
             }
         }
 
