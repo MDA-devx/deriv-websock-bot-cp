@@ -538,11 +538,16 @@ button {
             const granularity = parseInt(document.getElementById('timeframe').value) || 60;
             currentSymbol = document.getElementById('symbol').value;
 
-            addLog(`Conectando (${appId})...`);
-            ws = new WebSocket(`wss://ws.binaryws.com/websockets/v3?app_id=${appId}`);
+            addLog(`Conectando a ${currentSymbol} (${appId})...`);
+            
+            const wsUrl = `wss://ws.binaryws.com/websockets/v3?app_id=${appId}`;
+            console.log('Connecting to:', wsUrl);
+            
+            ws = new WebSocket(wsUrl);
 
             ws.onopen = () => {
-                addLog('Conectado. Solicitando historial...');
+                addLog('WebSocket abierto. Solicitando historial...');
+                console.log('WebSocket connected successfully');
                 initCharts();
                 document.getElementById('api-token').parentElement.style.display = 'none';
                 document.getElementById('app-id').parentElement.style.display = 'none';
@@ -594,8 +599,15 @@ button {
                 } catch (e) { console.error('WS error:', e); }
             };
 
-            ws.onerror = (e) => addLog('WS Error: ' + e.message, 'put');
-            ws.onclose = () => { addLog('Desconectado.', 'put'); isConnected = false; };
+            ws.onerror = (e) => {
+                console.error('WebSocket error:', e);
+                addLog('Error de conexión: ' + (e.message || 'No se pudo conectar'), 'put');
+            };
+            ws.onclose = (e) => {
+                console.log('WebSocket closed:', e.code, e.reason);
+                addLog('Desconectado (' + e.code + ')', 'put');
+                isConnected = false;
+            };
         }
 
         function disconnect() {
