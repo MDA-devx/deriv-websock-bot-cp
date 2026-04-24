@@ -388,7 +388,7 @@ button {
     <script type="module">
         import { calculateSMA, calculateEMA, calculateRSI, calculateBB } from './frontend/js/modules/indicators.js';
         
-        const currentSymbol = 'R_25';
+        let currentSymbol = 'R_25';
         let priceChart, rsiChart, candleSeries, smaSeries, emaSeries, bbUpperSeries, bbLowerSeries, rsiSeries;
         let dataHistory = [];
         let ws, isConnected = false;
