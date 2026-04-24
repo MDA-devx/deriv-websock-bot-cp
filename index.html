@@ -664,13 +664,7 @@ button {
         function applyMinCandles() {
             const minCandles = parseInt(document.getElementById('min-candles').value) || 24;
             const space = minCandles;
-            const visible = priceChart.timeScale().getVisibleRange();
-            if (visible) {
-                const diff = visible.to - visible.from;
-                if (diff < minCandles) {
-                    priceChart.timeScale().setVisibleRange({ from: visible.to - minCandles, to: visible.to + space });
-                }
-            }
+            priceChart.timeScale().setVisibleRange({ from: dataHistory[dataHistory.length - 1].time - minCandles, to: dataHistory[dataHistory.length - 1].time + space });
         }
 
         function scrollToEnd() {
