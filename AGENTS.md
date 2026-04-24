@@ -8,12 +8,9 @@
 - **Local Dashboard**: Run `npm run dashboard` and access at http://dashboard.deriv:3002/index.html (after configuring hosts file)
 
 ## Critical Files
-- `index.html` - Main application file (ALWAYS work on this file)
-- `free-index.html` - Backup/reference (DO NOT edit)
-- `index-old.html` - Original version with known issues (reference only)
-- `frontend/js/app.js` - Frontend trading logic & indicator calculations
-- `frontend/css/style.css` - UI styling
-- `backend/server.js` - Empty placeholder for backend implementation
+- `index.html` - Main application file
+- `backend/server.js` - Express server for serving static files
+- `frontend/js/modules/indicators.js` - Indicator calculation functions
 
 ## Key Technical Details
 - **WebSocket**: Connects to `wss://ws.binaryws.com/websockets/v3` for real-time data
