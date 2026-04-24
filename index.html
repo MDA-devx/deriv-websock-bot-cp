@@ -684,9 +684,13 @@ button {
             if (dataHistory.length > 0) {
                 const minCandles = parseInt(document.getElementById('min-candles').value) || 24;
                 const offset = clampZoom(minCandles);
-                console.log('[ZOOM] Setting rightOffset:', offset);
+                console.log('[ZOOM] applyMinCandles setting rightOffset:', offset);
                 priceChart.timeScale().applyOptions({ rightOffset: offset });
                 rsiChart.timeScale().applyOptions({ rightOffset: offset });
+                setTimeout(() => {
+                    priceChart.timeScale().applyOptions({ rightOffset: offset });
+                    console.log('[ZOOM] Double-apply rightOffset:', offset);
+                }, 50);
             }
         }
 
@@ -695,6 +699,7 @@ button {
                 const minCandles = parseInt(document.getElementById('min-candles').value) || 24;
                 const offset = clampZoom(minCandles);
                 priceChart.timeScale().applyOptions({ rightOffset: offset });
+                setTimeout(() => priceChart.timeScale().applyOptions({ rightOffset: offset }), 50);
             }
         }
 
@@ -704,6 +709,7 @@ button {
             const offset = clampZoom(candlesPerDay);
             console.log('[1D] Setting for', candlesPerDay, 'candles, offset:', offset);
             priceChart.timeScale().applyOptions({ rightOffset: offset });
+            setTimeout(() => priceChart.timeScale().applyOptions({ rightOffset: offset }), 50);
         }
 
         function processSignals(currentRsi, prevRsi) {
