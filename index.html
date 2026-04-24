@@ -350,7 +350,7 @@ button {
             </div>
         </div>
 
-        <button id="start-btn" onclick="window.startBot()">CONECTAR</button>
+        <button id="start-btn">CONECTAR</button>
 
         <div id="logs-container" style="z-index:100;position:relative;">
             <div class="log-entry"><span class="log-time">[--:--:--]</span>Sistema listo. Configure y conecte.</div>
@@ -564,7 +564,7 @@ button {
                         if (res.error) addLog('Token error: ' + res.error.message, 'put');
                         else { addLog('Autorizado.'); requestHistory(); }
                     }
-                    if (res.msg_type === 'error') addLog('API: ' + (res.error?.message || JSON.stringify(res)), 'put';
+                    if (res.msg_type === 'error') addLog('API: ' + (res.error?.message || JSON.stringify(res)), 'put');
                     if (res.msg_type === 'candles' && res.candles) {
                         const validCandles = res.candles.map(c => ({
                             time: parseInt(c.epoch), open: parseFloat(c.open), high: parseFloat(c.high),
