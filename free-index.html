@@ -28,6 +28,78 @@
             overflow: hidden;
         }
 
+        /* Responsive for small screens (mobile) like Samsung J2 Prime 720x480 */
+        @media (max-width: 600px), (max-height: 500px) {
+            body {
+                flex-direction: column;
+            }
+            
+            #sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 35vh;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                flex-shrink: 0;
+                padding: 8px;
+            }
+            
+            #sidebar h2 {
+                font-size: 1rem;
+                margin: 4px 0;
+            }
+            
+            #sidebar .input-group {
+                margin-bottom: 4px;
+            }
+            
+            #sidebar input, #sidebar select {
+                padding: 4px;
+                font-size: 11px;
+            }
+            
+            #sidebar details {
+                margin-top: 8px;
+                padding-top: 8px;
+            }
+            
+            #sidebar details summary {
+                font-size: 11px;
+            }
+            
+            #sidebar button {
+                padding: 6px;
+                font-size: 11px;
+            }
+            
+            #logs-container {
+                max-height: 80px;
+                font-size: 10px;
+            }
+            
+            #main-content {
+                flex-direction: column;
+                min-height: 0;
+            }
+            
+            #price-chart, #rsi-chart {
+                min-height: 25vh !important;
+            }
+            
+            #price-chart {
+                flex: 2;
+            }
+            
+            #rsi-chart {
+                flex: 1;
+            }
+            
+            .chart-label {
+                font-size: 10px;
+                padding: 2px 4px;
+            }
+        }
+
         /* Sidebar Styles */
         #sidebar {
             width: 320px;
