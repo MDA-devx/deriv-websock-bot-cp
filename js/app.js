@@ -100,27 +100,6 @@ function initCharts() {
     rsiSeries.createPriceLine({ price: highLevel, color: '#f23645', lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'HIGH' });
     rsiSeries.createPriceLine({ price: lowLevel, color: '#089981', lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'LOW' });
 
-    // Sync horizontal (time) scroll between charts, vertical independent
-    let isSyncing = false;
-    
-    const syncToTarget = (sourceChart, targetChart) => {
-        if (isSyncing) return;
-        isSyncing = true;
-        try {
-            const sourceRange = sourceChart.timeScale().getVisibleRange();
-            if (sourceRange) {
-                targetChart.timeScale().setVisibleRange(sourceRange);
-            }
-        } catch (e) { 
-            // Ignore errors 
-        }
-        setTimeout(() => { isSyncing = false; }, 100);
-    };
-    
-    // Sync both directions when crosshair moves
-    priceChart.subscribeCrosshairMove(() => syncToTarget(priceChart, rsiChart));
-    rsiChart.subscribeCrosshairMove(() => syncToTarget(rsiChart, priceChart));
-
     setupCrosshair();
 }
 
