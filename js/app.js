@@ -100,6 +100,31 @@ function initCharts() {
     rsiSeries.createPriceLine({ price: highLevel, color: '#f23645', lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'HIGH' });
     rsiSeries.createPriceLine({ price: lowLevel, color: '#089981', lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'LOW' });
 
+    // Sync horizontal scroll between price and RSI charts (vertical independent)
+    let scrollSyncEnabled = true;
+    
+    const syncCharts = (sourceChart, targetChart) => {
+        if (!scrollSyncEnabled) return;
+        scrollSyncEnabled = false;
+        try {
+            const sourceRange = sourceChart.timeScale().getVisibleRange();
+            if (sourceRange) {
+                targetChart.timeScale().setVisibleRange(sourceRange);
+            }
+        } catch (e) {}
+        setTimeout(() => { scrollSyncEnabled = true; }, 100);
+    };
+    
+    // Price chart scroll/zoom → sync to RSI
+    priceChart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
+        if (range) syncCharts(priceChart, rsiChart);
+    });
+    
+    // RSI chart scroll/zoom → sync to price
+    rsiChart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
+        if (range) syncCharts(rsiChart, priceChart);
+    });
+
     setupCrosshair();
 }
 
@@ -392,25 +417,6 @@ document.getElementById('view-1d').addEventListener('click', () => {
 
 ['sma-period', 'ema-period', 'bb-period', 'rsi-period', 'rsi-high', 'rsi-low'].forEach(id => {
     document.getElementById(id).addEventListener('input', updateIndicators);
-});
-
-// Keyboard sync: Home/End sync both charts
-document.addEventListener('keydown', (e) => {
-    if (!priceChart || !rsiChart) return;
-    
-    if (e.key === 'Home') {
-        // Show oldest data, fit content
-        priceChart.timeScale().fitContent();
-        rsiChart.timeScale().fitContent();
-    } else if (e.key === 'End') {
-        // Show latest data
-        if (dataHistory.length > 0) {
-            const lastTime = dataHistory[dataHistory.length - 1].time;
-            const firstTime = dataHistory[0].time;
-            priceChart.timeScale().setVisibleRange({ from: firstTime, to: lastTime + 60 });
-            rsiChart.timeScale().setVisibleRange({ from: firstTime, to: lastTime + 60 });
-        }
-    }
 });
 
 window.addEventListener('load', () => { initCharts(); window.dispatchEvent(new Event('resize')); });
