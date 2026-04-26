@@ -100,6 +100,19 @@ function initCharts() {
     rsiSeries.createPriceLine({ price: highLevel, color: '#f23645', lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'HIGH' });
     rsiSeries.createPriceLine({ price: lowLevel, color: '#089981', lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'LOW' });
 
+    // Sync time scales between price and RSI charts
+    priceChart.timeScale().subscribeVisibleLogicalRangeChange((logicalRange) => {
+        if (logicalRange) {
+            rsiChart.timeScale().setVisibleLogicalRange(logicalRange);
+        }
+    });
+    
+    rsiChart.timeScale().subscribeVisibleLogicalRangeChange((logicalRange) => {
+        if (logicalRange) {
+            priceChart.timeScale().setVisibleLogicalRange(logicalRange);
+        }
+    });
+
     setupCrosshair();
 }
 
