@@ -420,6 +420,33 @@ document.getElementById('view-1d').addEventListener('click', () => {
 
 window.addEventListener('load', () => { initCharts(); window.dispatchEvent(new Event('resize')); });
 
+// Load token from file when clicking the 📁 button
+const loadTokenBtn = document.getElementById('load-token-btn');
+const tokenFileInput = document.getElementById('token-file');
+const apiTokenInput = document.getElementById('api-token');
+
+if (loadTokenBtn && tokenFileInput) {
+    loadTokenBtn.addEventListener('click', () => {
+        tokenFileInput.click();
+    });
+    
+    tokenFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const token = event.target.result.trim();
+                if (token && token.length > 0) {
+                    apiTokenInput.value = token;
+                    addLog('Token cargado desde: ' + file.name);
+                }
+            };
+            reader.readAsText(file);
+        }
+        tokenFileInput.value = ''; // Reset for re-selecting same file
+    });
+}
+
 function addLog(message, type = '') {
     const container = document.getElementById('logs-container');
     const entry = document.createElement('div');
