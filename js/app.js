@@ -314,7 +314,7 @@ function disconnect() {
 
 function requestHistory() {
     const gran = parseInt(document.getElementById('timeframe').value) || 60;
-    ws.send(JSON.stringify({ ticks_history: currentSymbol, end: 'latest', start: Math.floor(Date.now() / 1000) - 28800, style: 'candles', granularity: gran }));
+    ws.send(JSON.stringify({ ticks_history: currentSymbol, end: 'latest', start: Math.floor(Date.now() / 1000) - 7200, style: 'candles', granularity: gran }));
 }
 
 function subscribeOHLC() {
