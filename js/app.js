@@ -420,6 +420,25 @@ document.getElementById('view-1d').addEventListener('click', () => {
     document.getElementById(id).addEventListener('input', updateIndicators);
 });
 
+// Keyboard sync: Home/End sync both charts
+document.addEventListener('keydown', (e) => {
+    if (!priceChart || !rsiChart) return;
+    
+    if (e.key === 'Home') {
+        // Show oldest data, fit content
+        priceChart.timeScale().fitContent();
+        rsiChart.timeScale().fitContent();
+    } else if (e.key === 'End') {
+        // Show latest data
+        if (dataHistory.length > 0) {
+            const lastTime = dataHistory[dataHistory.length - 1].time;
+            const firstTime = dataHistory[0].time;
+            priceChart.timeScale().setVisibleRange({ from: firstTime, to: lastTime + 60 });
+            rsiChart.timeScale().setVisibleRange({ from: firstTime, to: lastTime + 60 });
+        }
+    }
+});
+
 window.addEventListener('load', () => { initCharts(); window.dispatchEvent(new Event('resize')); });
 
 // Load token from file when clicking the 📁 button
