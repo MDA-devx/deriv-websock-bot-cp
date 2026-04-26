@@ -1,4 +1,4 @@
-import { calculateSMA, calculateEMA, calculateRSI, calculateBB } from './frontend/js/modules/indicators.js';
+import { calculateSMA, calculateEMA, calculateRSI, calculateBB } from '../frontend/js/modules/indicators.js';
 
 let currentSymbol = 'R_25';
 let priceChart, rsiChart, candleSeries, smaSeries, emaSeries, bbUpperSeries, bbLowerSeries, rsiSeries;
@@ -145,14 +145,22 @@ function updateIndicators() {
 
         const smaData = document.getElementById('sma-enabled').checked ? calculateSMA(dataHistory, smaP).filter(d => d.value !== null) : [];
         const emaData = document.getElementById('ema-enabled').checked ? calculateEMA(dataHistory, emaP) : [];
-        const rsiData = calculateRSI(dataHistory, rsiP).filter(d => d.value !== null);
+        const rsiData = document.getElementById('rsi-enabled').checked ? calculateRSI(dataHistory, rsiP).filter(d => d.value !== null) : [];
         const bb = document.getElementById('bb-enabled').checked ? calculateBB(dataHistory, bbP) : { upper: [], lower: [] };
 
         if (smaSeries) smaSeries.setData(smaData);
         if (emaSeries) emaSeries.setData(emaData);
         if (bbUpperSeries) bbUpperSeries.setData(bb.upper.filter(d => d.value !== null));
         if (bbLowerSeries) bbLowerSeries.setData(bb.lower.filter(d => d.value !== null));
-        if (rsiSeries) rsiSeries.setData(rsiData);
+        
+        if (rsiSeries) {
+            if (document.getElementById('rsi-enabled').checked) {
+                rsiSeries.setData(rsiData);
+                rsiSeries.applyOptions({ visible: true });
+            } else {
+                rsiSeries.applyOptions({ visible: false });
+            }
+        }
 
         if (rsiData.length >= 2) {
             const currentRsi = rsiData[rsiData.length - 1].value;
@@ -282,7 +290,7 @@ function disconnect() {
 
 function requestHistory() {
     const gran = parseInt(document.getElementById('timeframe').value) || 60;
-    ws.send(JSON.stringify({ ticks_history: currentSymbol, end: 'latest', start: Math.floor(Date.now() / 1000) - 3600, style: 'candles', granularity: gran }));
+    ws.send(JSON.stringify({ ticks_history: currentSymbol, end: 'latest', start: Math.floor(Date.now() / 1000) - 28800, style: 'candles', granularity: gran }));
 }
 
 function subscribeOHLC() {
@@ -378,12 +386,12 @@ document.getElementById('view-1d').addEventListener('click', () => {
     if (priceChart) set1DayView();
 });
 
-['sma-enabled', 'ema-enabled', 'bb-enabled'].forEach(id => {
+['sma-enabled', 'ema-enabled', 'bb-enabled', 'rsi-enabled'].forEach(id => {
     document.getElementById(id).addEventListener('change', updateIndicators);
 });
 
 ['sma-period', 'ema-period', 'bb-period', 'rsi-period', 'rsi-high', 'rsi-low'].forEach(id => {
-    document.getElementById(id).addEventListener('change', updateIndicators);
+    document.getElementById(id).addEventListener('input', updateIndicators);
 });
 
 window.addEventListener('load', () => { initCharts(); window.dispatchEvent(new Event('resize')); });

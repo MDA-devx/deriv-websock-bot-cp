@@ -86,7 +86,11 @@
 
         <div class="section">
             <label>RSI</label>
-            <div class="input-row">
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rsi-enabled" checked>
+                    <label for="rsi-enabled">RSI</label>
+                </div>
                 <div class="checkbox-item">
                     <input type="number" id="rsi-period" value="7" min="1">
                     <span>per</span>
@@ -130,7 +134,7 @@
             <div class="log-entry"><span class="log-time">[--:--:--]</span>Sistema listo. Configure y conecte.</div>
         </div>
     </div>
-
+// GRAFICO
     <div id="main-content">
         <div id="price-chart">
             <div class="chart-label">JUMP 25 INDEX</div>
