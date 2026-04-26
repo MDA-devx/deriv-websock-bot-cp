@@ -100,17 +100,28 @@ function initCharts() {
     rsiSeries.createPriceLine({ price: highLevel, color: '#f23645', lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'HIGH' });
     rsiSeries.createPriceLine({ price: lowLevel, color: '#089981', lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'LOW' });
 
-    // Sync time scales between price and RSI charts
-    priceChart.timeScale().subscribeVisibleLogicalRangeChange((logicalRange) => {
-        if (logicalRange) {
-            rsiChart.timeScale().setVisibleLogicalRange(logicalRange);
+    // Sync time indices between price and RSI charts (lock scrolling together)
+    let isSyncing = false;
+    
+    const syncTimeScale = (sourceChart, targetChart) => {
+        if (isSyncing) return;
+        isSyncing = true;
+        try {
+            const sourceRange = sourceChart.timeScale().getVisibleRange();
+            if (sourceRange) {
+                targetChart.timeScale().setVisibleRange(sourceRange);
+            }
+        } finally {
+            isSyncing = false;
         }
+    };
+    
+    priceChart.timeScale().subscribeVisibleRangeChange((range) => {
+        if (!isSyncing && range) syncTimeScale(priceChart, rsiChart);
     });
     
-    rsiChart.timeScale().subscribeVisibleLogicalRangeChange((logicalRange) => {
-        if (logicalRange) {
-            priceChart.timeScale().setVisibleLogicalRange(logicalRange);
-        }
+    rsiChart.timeScale().subscribeVisibleRangeChange((range) => {
+        if (!isSyncing && range) syncTimeScale(rsiChart, priceChart);
     });
 
     setupCrosshair();
