@@ -100,30 +100,42 @@ function initCharts() {
     rsiSeries.createPriceLine({ price: highLevel, color: '#f23645', lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'HIGH' });
     rsiSeries.createPriceLine({ price: lowLevel, color: '#089981', lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'LOW' });
 
-    // Sync horizontal scroll between price and RSI charts (vertical independent)
-    let scrollSyncEnabled = true;
+    // Sync horizontal (time) scroll between price and RSI charts
+    let isSyncing = false;
     
-    const syncCharts = (sourceChart, targetChart) => {
-        if (!scrollSyncEnabled) return;
-        scrollSyncEnabled = false;
+    const syncToTarget = (sourceChart, targetChart) => {
+        if (isSyncing) return;
+        isSyncing = true;
         try {
+            // Get visible time range (from/to timestamps)
             const sourceRange = sourceChart.timeScale().getVisibleRange();
             if (sourceRange) {
+                // Apply same time range to target - keeps zoom level same
                 targetChart.timeScale().setVisibleRange(sourceRange);
             }
-        } catch (e) {}
-        setTimeout(() => { scrollSyncEnabled = true; }, 100);
+        } catch (e) { console.warn('sync error', e); }
+        setTimeout(() => { isSyncing = false; }, 200);
     };
     
-    // Price chart scroll/zoom → sync to RSI
-    priceChart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
-        if (range) syncCharts(priceChart, rsiChart);
-    });
-    
-    // RSI chart scroll/zoom → sync to price
-    rsiChart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
-        if (range) syncCharts(rsiChart, priceChart);
-    });
+    // Sync when crosshair moves (dragging/scrolling on chart)
+    priceChart.subscribeCrosshairMove(() => syncToTarget(priceChart, rsiChart));
+    rsiChart.subscribeCrosshairMove(() => syncToTarget(rsiChart, priceChart));
+
+    // Also sync on zoom buttons
+    document.getElementById('zoom-in').onclick = () => {
+        const opts = priceChart.timeScale().options();
+        priceChart.timeScale().applyOptions({ rightOffset: clampZoom(opts.rightOffset + 5), barSpacing: Math.max(4, (opts.barSpacing || 8) - 1) });
+        syncToTarget(priceChart, rsiChart);
+    };
+    document.getElementById('zoom-out').onclick = () => {
+        const opts = priceChart.timeScale().options();
+        priceChart.timeScale().applyOptions({ rightOffset: clampZoom(opts.rightOffset - 5), barSpacing: (opts.barSpacing || 8) + 1 });
+        syncToTarget(priceChart, rsiChart);
+    };
+    document.getElementById('fit-content').onclick = () => {
+        priceChart.timeScale().fitContent();
+        rsiChart.timeScale().fitContent();
+    };
 
     setupCrosshair();
 }
