@@ -36,9 +36,14 @@ export function calculateRSI(data, period) {
 }
 
 export function calculateBB(data, period) {
-    let upper = [], lower = [];
+    let upper = [], middle = [], lower = [];
     data.forEach((d, i) => {
-        if (i < period - 1) { upper.push({ time: d.time, value: null }); lower.push({ time: d.time, value: null }); return; }
+        if (i < period - 1) { 
+            upper.push({ time: d.time, value: null }); 
+            middle.push({ time: d.time, value: null }); 
+            lower.push({ time: d.time, value: null }); 
+            return; 
+        }
         let sum = 0;
         for (let j = 0; j < period; j++) sum += data[i - j].close;
         let avg = sum / period;
@@ -46,7 +51,8 @@ export function calculateBB(data, period) {
         for (let j = 0; j < period; j++) sqSum += Math.pow(data[i - j].close - avg, 2);
         let sd = Math.sqrt(sqSum / period);
         upper.push({ time: d.time, value: avg + sd * 2 });
+        middle.push({ time: d.time, value: avg });
         lower.push({ time: d.time, value: avg - sd * 2 });
     });
-    return { upper, lower };
+    return { upper, middle, lower };
 }
