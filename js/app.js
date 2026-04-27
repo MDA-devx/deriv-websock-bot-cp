@@ -89,8 +89,8 @@ function initCharts() {
     
     smaSeries = priceChart.addLineSeries({ color: '#2962ff', lineWidth: 2, title: 'SMA' });
     emaSeries = priceChart.addLineSeries({ color: '#f23645', lineWidth: 1, title: 'EMA' });
-    bbUpperSeries = priceChart.addLineSeries({ color: '#00bcd4', lineWidth: 1, lineStyle: 2, title: 'BB Upper' });
-    bbLowerSeries = priceChart.addLineSeries({ color: '#00bcd4', lineWidth: 1, lineStyle: 2, title: 'BB Lower' });
+    bbUpperSeries = priceChart.addLineSeries({ color: 'rgba(0,188,212,0.5)', lineWidth: 2, lineStyle: 0, title: 'BB Upper' });
+    bbLowerSeries = priceChart.addLineSeries({ color: 'rgba(0,188,212,0.5)', lineWidth: 2, lineStyle: 0, title: 'BB Lower' });
 
     rsiSeries = rsiChart.addLineSeries({ color: '#ff9800', lineWidth: 2, title: 'RSI' });
 
