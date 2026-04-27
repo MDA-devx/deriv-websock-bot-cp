@@ -89,8 +89,8 @@ function initCharts() {
     
     smaSeries = priceChart.addLineSeries({ color: '#2962ff', lineWidth: 2, title: 'SMA' });
     emaSeries = priceChart.addLineSeries({ color: '#f23645', lineWidth: 1, title: 'EMA' });
-    bbUpperSeries = priceChart.addLineSeries({ color: 'rgba(255,255,255,0.15)', lineWidth: 1, lineStyle: 2 });
-    bbLowerSeries = priceChart.addLineSeries({ color: 'rgba(255,255,255,0.15)', lineWidth: 1, lineStyle: 2 });
+    bbUpperSeries = priceChart.addLineSeries({ color: '#00bcd4', lineWidth: 1, lineStyle: 2, title: 'BB Upper' });
+    bbLowerSeries = priceChart.addLineSeries({ color: '#00bcd4', lineWidth: 1, lineStyle: 2, title: 'BB Lower' });
 
     rsiSeries = rsiChart.addLineSeries({ color: '#ff9800', lineWidth: 2, title: 'RSI' });
 
@@ -184,11 +184,18 @@ function updateIndicators() {
         const emaData = document.getElementById('ema-enabled').checked ? calculateEMA(dataHistory, emaP) : [];
         const rsiData = document.getElementById('rsi-enabled').checked ? calculateRSI(dataHistory, rsiP).filter(d => d.value !== null) : [];
         const bb = document.getElementById('bb-enabled').checked ? calculateBB(dataHistory, bbP) : { upper: [], lower: [] };
-
+        
         if (smaSeries) smaSeries.setData(smaData);
         if (emaSeries) emaSeries.setData(emaData);
-        if (bbUpperSeries) bbUpperSeries.setData(bb.upper.filter(d => d.value !== null));
-        if (bbLowerSeries) bbLowerSeries.setData(bb.lower.filter(d => d.value !== null));
+        
+        // Debug BB data
+        if (bb.upper && bb.upper.length > 0 && bb.upper.filter(d => d.value !== null).length > 0) {
+            console.log('[BB] Upper data points:', bb.upper.filter(d => d.value !== null).length);
+            if (bbUpperSeries) bbUpperSeries.setData(bb.upper.filter(d => d.value !== null));
+            if (bbLowerSeries) bbLowerSeries.setData(bb.lower.filter(d => d.value !== null));
+        } else {
+            console.log('[BB] No valid data - upper:', bb.upper.length, 'period:', bbP);
+        }
         
         if (rsiSeries) {
             if (document.getElementById('rsi-enabled').checked) {
