@@ -491,6 +491,14 @@ document.getElementById('toggle-results')?.addEventListener('click', () => {
     }
 });
 
+// Close results panel via X button
+document.getElementById('close-results')?.addEventListener('click', () => {
+    const panel = document.getElementById('results-panel');
+    if (panel) {
+        panel.style.display = 'none';
+    }
+});
+
 function addLog(message, type = '') {
     const container = document.getElementById('logs-container');
     const entry = document.createElement('div');
