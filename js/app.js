@@ -1,7 +1,7 @@
 import { calculateSMA, calculateEMA, calculateRSI, calculateBB } from '../frontend/js/modules/indicators.js';
 
 let currentSymbol = 'R_25';
-let priceChart, rsiChart, candleSeries, smaSeries, emaSeries, bbUpperSeries, bbLowerSeries, rsiSeries;
+let priceChart, rsiChart, candleSeries, smaSeries, emaSeries, bbUpperSeries, bbMiddleSeries, bbLowerSeries, rsiSeries;
 let dataHistory = [];
 let ws, isConnected = false;
 
@@ -89,8 +89,16 @@ function initCharts() {
     
     smaSeries = priceChart.addLineSeries({ color: '#2962ff', lineWidth: 2, title: 'SMA' });
     emaSeries = priceChart.addLineSeries({ color: '#f23645', lineWidth: 1, title: 'EMA' });
-    bbUpperSeries = priceChart.addLineSeries({ color: 'rgba(255,255,255,0.15)', lineWidth: 1, lineStyle: 2 });
-    bbLowerSeries = priceChart.addLineSeries({ color: 'rgba(255,255,255,0.15)', lineWidth: 1, lineStyle: 2 });
+    // BB lines - solid cyan with area fill
+    bbUpperSeries = priceChart.addLineSeries({ color: '#00bcd4', lineWidth: 2, lineStyle: 0, title: 'BB Upper' });
+    bbMiddleSeries = priceChart.addAreaSeries({ 
+        topColor: 'rgba(0,188,212,0.3)', 
+        bottomColor: 'rgba(0,188,212,0.3)',
+        lineColor: 'transparent',
+        lineWidth: 0,
+        title: 'BB Band'
+    });
+    bbLowerSeries = priceChart.addLineSeries({ color: '#00bcd4', lineWidth: 2, lineStyle: 0, title: 'BB Lower' });
 
     rsiSeries = rsiChart.addLineSeries({ color: '#ff9800', lineWidth: 2, title: 'RSI' });
 
@@ -172,11 +180,19 @@ function updateIndicators() {
         const smaData = document.getElementById('sma-enabled').checked ? calculateSMA(dataHistory, smaP).filter(d => d.value !== null) : [];
         const emaData = document.getElementById('ema-enabled').checked ? calculateEMA(dataHistory, emaP) : [];
         const rsiData = document.getElementById('rsi-enabled').checked ? calculateRSI(dataHistory, rsiP).filter(d => d.value !== null) : [];
-        const bb = document.getElementById('bb-enabled').checked ? calculateBB(dataHistory, bbP) : { upper: [], lower: [] };
+        const bb = document.getElementById('bb-enabled').checked ? calculateBB(dataHistory, bbP) : { upper: [], middle: [], lower: [] };
 
         if (smaSeries) smaSeries.setData(smaData);
         if (emaSeries) emaSeries.setData(emaData);
         if (bbUpperSeries) bbUpperSeries.setData(bb.upper.filter(d => d.value !== null));
+        if (bbMiddleSeries && bb.middle) {
+            const areaData = bb.upper.map((d, i) => ({
+                time: d.time,
+                top: d.value,
+                bottom: bb.lower[i]?.value
+            })).filter(d => d.top !== null && d.bottom !== null);
+            bbMiddleSeries.setData(areaData);
+        }
         if (bbLowerSeries) bbLowerSeries.setData(bb.lower.filter(d => d.value !== null));
         
         if (rsiSeries) {
