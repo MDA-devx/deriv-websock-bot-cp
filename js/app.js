@@ -89,10 +89,16 @@ function initCharts() {
     
     smaSeries = priceChart.addLineSeries({ color: '#2962ff', lineWidth: 2, title: 'SMA' });
     emaSeries = priceChart.addLineSeries({ color: '#f23645', lineWidth: 1, title: 'EMA' });
-    bbUpperSeries = priceChart.addLineSeries({ color: 'rgba(0,188,212,0.5)', lineWidth: 2, lineStyle: 0, title: 'BB Upper' });
-    // Add middle line for area fill
-    bbMiddleSeries = priceChart.addLineSeries({ color: 'rgba(0,188,212,0.3)', lineWidth: 2, lineStyle: 0, title: 'BB Middle', visible: false });
-    bbLowerSeries = priceChart.addLineSeries({ color: 'rgba(0,188,212,0.5)', lineWidth: 2, lineStyle: 0, title: 'BB Lower' });
+bbUpperSeries = priceChart.addLineSeries({ color: '#00bcd4', lineWidth: 2, lineStyle: 0, title: 'BB Upper' });
+    // Use area series for middle fill
+    bbMiddleSeries = priceChart.addAreaSeries({ 
+        topColor: 'rgba(0,188,212,0.3)', 
+        bottomColor: 'rgba(0,188,212,0.3)',
+        lineColor: 'transparent',
+        lineWidth: 0,
+        title: 'BB Band'
+    });
+    bbLowerSeries = priceChart.addLineSeries({ color: '#00bcd4', lineWidth: 2, lineStyle: 0, title: 'BB Lower' });
 
     rsiSeries = rsiChart.addLineSeries({ color: '#ff9800', lineWidth: 2, title: 'RSI' });
 
@@ -194,7 +200,15 @@ function updateIndicators() {
         if (bb.upper && bb.upper.length > 0 && bb.upper.filter(d => d.value !== null).length > 0) {
             console.log('[BB] Upper data points:', bb.upper.filter(d => d.value !== null).length);
             if (bbUpperSeries) bbUpperSeries.setData(bb.upper.filter(d => d.value !== null));
-            if (bbMiddleSeries) bbMiddleSeries.setData(bb.middle.filter(d => d.value !== null));
+            if (bbMiddleSeries) {
+                // Area needs top/bottom data format
+                const areaData = bb.upper.map((d, i) => ({
+                    time: d.time,
+                    top: d.value,
+                    bottom: bb.lower[i]?.value
+                })).filter(d => d.top !== null && d.bottom !== null);
+                bbMiddleSeries.setData(areaData);
+            }
             if (bbLowerSeries) bbLowerSeries.setData(bb.lower.filter(d => d.value !== null));
         } else {
             console.log('[BB] No valid data - upper:', bb.upper.length, 'period:', bbP);
