@@ -1,7 +1,7 @@
 import { calculateSMA, calculateEMA, calculateRSI, calculateBB } from '../frontend/js/modules/indicators.js';
 
 let currentSymbol = 'R_25';
-let priceChart, rsiChart, candleSeries, smaSeries, emaSeries, bbUpperSeries, bbMiddleSeries, bbLowerSeries, rsiSeries;
+let priceChart, rsiChart, candleSeries, smaSeries, emaSeries, bbUpperSeries, bbLowerSeries, rsiSeries;
 let dataHistory = [];
 let ws, isConnected = false;
 
@@ -89,16 +89,8 @@ function initCharts() {
     
     smaSeries = priceChart.addLineSeries({ color: '#2962ff', lineWidth: 2, title: 'SMA' });
     emaSeries = priceChart.addLineSeries({ color: '#f23645', lineWidth: 1, title: 'EMA' });
-bbUpperSeries = priceChart.addLineSeries({ color: '#00bcd4', lineWidth: 2, lineStyle: 0, title: 'BB Upper' });
-    // Use area series for middle fill
-    bbMiddleSeries = priceChart.addAreaSeries({ 
-        topColor: 'rgba(0,188,212,0.3)', 
-        bottomColor: 'rgba(0,188,212,0.3)',
-        lineColor: 'transparent',
-        lineWidth: 0,
-        title: 'BB Band'
-    });
-    bbLowerSeries = priceChart.addLineSeries({ color: '#00bcd4', lineWidth: 2, lineStyle: 0, title: 'BB Lower' });
+    bbUpperSeries = priceChart.addLineSeries({ color: 'rgba(255,255,255,0.15)', lineWidth: 1, lineStyle: 2 });
+    bbLowerSeries = priceChart.addLineSeries({ color: 'rgba(255,255,255,0.15)', lineWidth: 1, lineStyle: 2 });
 
     rsiSeries = rsiChart.addLineSeries({ color: '#ff9800', lineWidth: 2, title: 'RSI' });
 
@@ -108,42 +100,31 @@ bbUpperSeries = priceChart.addLineSeries({ color: '#00bcd4', lineWidth: 2, lineS
     rsiSeries.createPriceLine({ price: highLevel, color: '#f23645', lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'HIGH' });
     rsiSeries.createPriceLine({ price: lowLevel, color: '#089981', lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'LOW' });
 
-    // Sync horizontal (time) scroll between price and RSI charts
+    // Sync scroll between price and RSI charts
     let isSyncing = false;
     
-    const syncToTarget = (sourceChart, targetChart) => {
+    const syncScroll = (source, target) => {
         if (isSyncing) return;
         isSyncing = true;
         try {
-            // Get visible time range (from/to timestamps)
-            const sourceRange = sourceChart.timeScale().getVisibleRange();
-            if (sourceRange) {
-                // Apply same time range to target - keeps zoom level same
-                targetChart.timeScale().setVisibleRange(sourceRange);
+            const visibleRange = source.timeScale().getVisibleRange();
+            if (visibleRange) {
+                target.timeScale().setVisibleRange(visibleRange);
             }
-        } catch (e) { console.warn('sync error', e); }
-        setTimeout(() => { isSyncing = false; }, 200);
+        } catch (e) { 
+            // Ignore sync errors 
+        }
+        setTimeout(() => { isSyncing = false; }, 50);
     };
     
-    // Sync when crosshair moves (dragging/scrolling on chart)
-    priceChart.subscribeCrosshairMove(() => syncToTarget(priceChart, rsiChart));
-    rsiChart.subscribeCrosshairMove(() => syncToTarget(rsiChart, priceChart));
-
-    // Also sync on zoom buttons
-    document.getElementById('zoom-in').onclick = () => {
-        const opts = priceChart.timeScale().options();
-        priceChart.timeScale().applyOptions({ rightOffset: clampZoom(opts.rightOffset + 5), barSpacing: Math.max(4, (opts.barSpacing || 8) - 1) });
-        syncToTarget(priceChart, rsiChart);
-    };
-    document.getElementById('zoom-out').onclick = () => {
-        const opts = priceChart.timeScale().options();
-        priceChart.timeScale().applyOptions({ rightOffset: clampZoom(opts.rightOffset - 5), barSpacing: (opts.barSpacing || 8) + 1 });
-        syncToTarget(priceChart, rsiChart);
-    };
-    document.getElementById('fit-content').onclick = () => {
-        priceChart.timeScale().fitContent();
-        rsiChart.timeScale().fitContent();
-    };
+    // Use subscribeCrosshairMove to sync when crosshair moves
+    priceChart.subscribeCrosshairMove(() => {
+        if (!isSyncing) syncScroll(priceChart, rsiChart);
+    });
+    
+    rsiChart.subscribeCrosshairMove(() => {
+        if (!isSyncing) syncScroll(rsiChart, priceChart);
+    });
 
     setupCrosshair();
 }
@@ -192,27 +173,11 @@ function updateIndicators() {
         const emaData = document.getElementById('ema-enabled').checked ? calculateEMA(dataHistory, emaP) : [];
         const rsiData = document.getElementById('rsi-enabled').checked ? calculateRSI(dataHistory, rsiP).filter(d => d.value !== null) : [];
         const bb = document.getElementById('bb-enabled').checked ? calculateBB(dataHistory, bbP) : { upper: [], lower: [] };
-        
+
         if (smaSeries) smaSeries.setData(smaData);
         if (emaSeries) emaSeries.setData(emaData);
-        
-        // Debug BB data
-        if (bb.upper && bb.upper.length > 0 && bb.upper.filter(d => d.value !== null).length > 0) {
-            console.log('[BB] Upper data points:', bb.upper.filter(d => d.value !== null).length);
-            if (bbUpperSeries) bbUpperSeries.setData(bb.upper.filter(d => d.value !== null));
-            if (bbMiddleSeries) {
-                // Area needs top/bottom data format
-                const areaData = bb.upper.map((d, i) => ({
-                    time: d.time,
-                    top: d.value,
-                    bottom: bb.lower[i]?.value
-                })).filter(d => d.top !== null && d.bottom !== null);
-                bbMiddleSeries.setData(areaData);
-            }
-            if (bbLowerSeries) bbLowerSeries.setData(bb.lower.filter(d => d.value !== null));
-        } else {
-            console.log('[BB] No valid data - upper:', bb.upper.length, 'period:', bbP);
-        }
+        if (bbUpperSeries) bbUpperSeries.setData(bb.upper.filter(d => d.value !== null));
+        if (bbLowerSeries) bbLowerSeries.setData(bb.lower.filter(d => d.value !== null));
         
         if (rsiSeries) {
             if (document.getElementById('rsi-enabled').checked) {
@@ -455,48 +420,36 @@ document.getElementById('view-1d').addEventListener('click', () => {
     document.getElementById(id).addEventListener('input', updateIndicators);
 });
 
-window.addEventListener('load', () => { initCharts(); window.dispatchEvent(new Event('resize')); });
-
-// Load token from file when clicking the 📁 button
-const loadTokenBtn = document.getElementById('load-token-btn');
-const tokenFileInput = document.getElementById('token-file');
-const apiTokenInput = document.getElementById('api-token');
-
-if (loadTokenBtn && tokenFileInput) {
-    loadTokenBtn.addEventListener('click', () => {
-        tokenFileInput.click();
-    });
+// Keyboard sync: Home/End sync both charts
+document.addEventListener('keydown', (e) => {
+    if (!priceChart || !rsiChart) return;
     
-    tokenFileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const token = event.target.result.trim();
-                if (token && token.length > 0) {
-                    apiTokenInput.value = token;
-                    addLog('Token cargado desde: ' + file.name);
-                }
-            };
-            reader.readAsText(file);
+    if (e.key === 'Home') {
+        // Show oldest data, fit content
+        priceChart.timeScale().fitContent();
+        rsiChart.timeScale().fitContent();
+    } else if (e.key === 'End') {
+        // Show latest data
+        if (dataHistory.length > 0) {
+            const lastTime = dataHistory[dataHistory.length - 1].time;
+            const firstTime = dataHistory[0].time;
+            priceChart.timeScale().setVisibleRange({ from: firstTime, to: lastTime + 60 });
+            rsiChart.timeScale().setVisibleRange({ from: firstTime, to: lastTime + 60 });
         }
-        tokenFileInput.value = ''; // Reset for re-selecting same file
-    });
-
-// Toggle results panel visibility
-document.getElementById('toggle-results')?.addEventListener('click', () => {
-    const panel = document.getElementById('results-panel');
-    if (panel) {
-        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
     }
 });
 
-// Close results panel via X button
+window.addEventListener('load', () => { initCharts(); window.dispatchEvent(new Event('resize')); });
+
+// Toggle results panel
+document.getElementById('toggle-results')?.addEventListener('click', () => {
+    const panel = document.getElementById('results-panel');
+    if (panel) panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+});
+
 document.getElementById('close-results')?.addEventListener('click', () => {
     const panel = document.getElementById('results-panel');
-    if (panel) {
-        panel.style.display = 'none';
-    }
+    if (panel) panel.style.display = 'none';
 });
 
 function addLog(message, type = '') {
