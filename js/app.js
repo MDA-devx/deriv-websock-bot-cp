@@ -482,7 +482,14 @@ if (loadTokenBtn && tokenFileInput) {
         }
         tokenFileInput.value = ''; // Reset for re-selecting same file
     });
-}
+
+// Toggle results panel visibility
+document.getElementById('toggle-results')?.addEventListener('click', () => {
+    const panel = document.getElementById('results-panel');
+    if (panel) {
+        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
+});
 
 function addLog(message, type = '') {
     const container = document.getElementById('logs-container');
