@@ -1,40 +1,34 @@
-import RSIStrategy from './RSIStrategy.js';
-import SMAEMACrossoverStrategy from './SMAEMACrossoverStrategy.js';
-import BBStrategy from './BBStrategy.js';
+import MultiMomentumStrategy from './MultiMomentumStrategy.js';
 
 const strategies = {
-  'rsi': RSIStrategy,
-  'rsi-oversold': RSIStrategy,
-  'sma-ema-crossover': SMAEMACrossoverStrategy,
-  'bollinger-bands': BBStrategy,
-  'bb': BBStrategy
+  'multi-momentum': MultiMomentumStrategy
 };
 
 const metadata = {
-  'rsi': {
-    name: 'RSI',
-    description: 'RSI momentum strategy - Buy when oversold, Sell when overbought',
-    defaultParams: { period: 7, highLevel: 65, lowLevel: 35 }
-  },
-  'rsi-oversold': {
-    name: 'RSI (Oversold Only)',
-    description: 'RSI - Only buy when oversold',
-    defaultParams: { period: 7, highLevel: 80, lowLevel: 35 }
-  },
-  'sma-ema-crossover': {
-    name: 'SMA/EMA Crossover',
-    description: 'Buy when EMA crosses above SMA, Sell when EMA crosses below SMA',
-    defaultParams: { smaPeriod: 23, emaPeriod: 10 }
-  },
-  'bollinger-bands': {
-    name: 'Bollinger Bands',
-    description: 'Buy when price touches lower band, Sell when touches upper band',
-    defaultParams: { period: 20, stdDev: 2 }
-  },
-  'bb': {
-    name: 'Bollinger Bands',
-    description: 'Buy when price touches lower band, Sell when touches upper band',
-    defaultParams: { period: 20, stdDev: 2 }
+  'multi-momentum': {
+    name: 'Multi-Momentum',
+    description: 'Estrategia multi-indicador: RSI + Stochastic + MACD + SMA + BB para alto volumen',
+    defaultParams: {
+      minConfirmations: 3,
+      rsiPeriod: 7,
+      rsiHigh: 70,
+      rsiLow: 30,
+      stochPeriod: 14,
+      macdFast: 12,
+      macdSlow: 26,
+      macdSignal: 9,
+      smaFast: 9,
+      smaSlow: 21,
+      bbPeriod: 20,
+      bbStdDev: 2,
+      enabled: {
+        rsi: true,
+        stoch: true,
+        macd: true,
+        sma: true,
+        bb: true
+      }
+    }
   }
 };
 

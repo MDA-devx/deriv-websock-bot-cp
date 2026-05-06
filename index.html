@@ -54,9 +54,7 @@
         <div class="input-group">
             <label>Estrategia</label>
             <select id="strategy">
-                <option value="rsi" selected>RSI (momentum)</option>
-                <option value="sma-ema-crossover">SMA/EMA Crossover</option>
-                <option value="bollinger-bands">Bollinger Bands</option>
+                <option value="multi-momentum" selected>Multi-Momentum (Alto Volumen)</option>
             </select>
         </div>
 
@@ -122,15 +120,33 @@
     <div id="main-content">
         <div id="price-chart">
             <div class="chart-label">JUMP 25 INDEX</div>
+            <div class="indicator-leds">
+                <span class="led-item"><span class="mini-led" id="led-rsi"></span>RSI</span>
+                <span class="led-item"><span class="mini-led" id="led-stoch"></span>STOCH</span>
+                <span class="led-item"><span class="mini-led" id="led-macd"></span>MACD</span>
+                <span class="led-item"><span class="mini-led" id="led-sma"></span>SMA</span>
+                <span class="led-item"><span class="mini-led" id="led-bb"></span>BB</span>
+            </div>
             <div class="chart-controls">
                 <button id="zoom-out">-</button>
                 <button id="zoom-in">+</button>
                 <button id="fit-content">⊡</button>
                 <button id="toggle-results">📊</button>
             </div>
+            <div id="position-overlay" style="display:none;">
+                <div class="overlay-content">
+                    <div class="overlay-label">⏱️ POSICIÓN ACTIVA</div>
+                    <div class="overlay-countdown" id="overlay-countdown">60</div>
+                    <div class="overlay-type" id="overlay-type">▲ CALL</div>
+                    <div class="overlay-entry" id="overlay-entry">@ 0.00</div>
+                    <div class="overlay-progress">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div id="rsi-chart">
-            <div class="chart-label">RSI</div>
+            <div class="chart-label">RSI / MACD</div>
         </div>
         <div id="tooltip">
             <div class="tt-time"></div>
@@ -144,6 +160,8 @@
             <div class="result-stat"><span class="label">Señales HOY</span><span class="value" id="signal-count">0</span></div>
             <div class="result-stat"><span class="label">CALL</span><span class="value call" id="call-count">0</span></div>
             <div class="result-stat"><span class="label">PUT</span><span class="value put" id="put-count">0</span></div>
+            <div class="result-stat"><span class="label">Win</span><span class="value win" id="win-count">0</span></div>
+            <div class="result-stat"><span class="label">Lose</span><span class="value lose" id="lose-count">0</span></div>
             <div class="result-stat"><span class="label">Última</span><span class="value" id="last-signal">--</span></div>
         </div>
     </div>
