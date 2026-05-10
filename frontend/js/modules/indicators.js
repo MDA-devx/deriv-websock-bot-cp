@@ -48,12 +48,33 @@ export function calculateSMA(data, period) {
 
 export function calculateEMA(data, period) {
     if (data.length === 0) return [];
+    if (data.length < period) {
+        // Not enough data for EMA, return null values
+        return data.map(d => ({ time: d.time, value: null }));
+    }
+    
     let k = 2 / (period + 1);
-    let ema = data[0].close;
-    return data.map(d => {
-        ema = (d.close - ema) * k + ema;
-        return { time: d.time, value: ema };
-    });
+    
+    // Initialize with SMA of first 'period' values (correct EMA initialization)
+    let sum = 0;
+    for (let i = 0; i < period; i++) {
+        sum += data[i].close;
+    }
+    let ema = sum / period;
+    
+    let result = [];
+    // Fill null values for first period-1 candles
+    for (let i = 0; i < period - 1; i++) {
+        result.push({ time: data[i].time, value: null });
+    }
+    
+    // Calculate EMA for remaining candles
+    for (let i = period - 1; i < data.length; i++) {
+        ema = (data[i].close - ema) * k + ema;
+        result.push({ time: data[i].time, value: ema });
+    }
+    
+    return result;
 }
 
 export function calculateRSI(data, period) {

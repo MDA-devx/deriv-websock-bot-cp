@@ -1,24 +1,41 @@
 import { calculateSMA, calculateEMA, calculateRSI, calculateBB, calculateStochastic, calculateMACD } from '../frontend/js/modules/indicators.js';
 import { analyzeMultiIndicators, detectDojiSignal } from '../frontend/js/modules/multi-indicators.js';
+import { CONFIG } from './config.js';
 
-let currentSymbol = 'R_25';
+// ============================================
+// State Management - Centralized State Object
+// ============================================
+const state = {
+  // Connection state
+  ws: null,
+  isConnected: false,
+  reconnectAttempts: 0,
+  lastConnectedTime: null,
+  
+  // Market data
+  currentSymbol: 'R_25',
+  dataHistory: [],
+  
+  // Trade signals
+  signalHistory: [],
+  callCount: 0,
+  putCount: 0,
+  winCount: 0,
+  loseCount: 0,
+  pendingSignals: [],
+  signalTimeouts: {},
+  positionOpen: false,
+  positionTimer: null,
+  positionTimeLeft: 60,
+  activeIndicator: null,
+  activeSignalType: null,
+  updateInterval: null,
+};
+
+// Legacy globals for backward compatibility
 let priceChart, rsiChart, candleSeries, smaSeries, emaSeries, bbUpperSeries, bbMiddleSeries, bbLowerSeries, rsiSeries, stochSeries, macdSeries, macdSignalSeries;
-let dataHistory = [];
-let ws, isConnected = false;
-
-const signalHistory = [];
-let callCount = 0;
-let putCount = 0;
-let winCount = 0;
-let loseCount = 0;
-let pendingSignals = [];
-let signalTimeouts = {};
-let positionOpen = false;
-let positionTimer = null;
-let positionTimeLeft = 60;
-let activeIndicator = null;
-let activeSignalType = null;
-let updateInterval = null;
+let ws = null, isConnected = false, dataHistory = [];
+let currentSymbol = 'R_25';
 
 const chartOptions = {
     layout: { backgroundColor: '#0d1117', textColor: '#e6edf3' },
@@ -384,10 +401,27 @@ window.disconnectBot = function() {
 };
 
 function connect() {
-    const appId = document.getElementById('app-id').value || '1089';
-    const token = document.getElementById('api-token').value;
-    const granularity = parseInt(document.getElementById('timeframe').value) || 60;
-    currentSymbol = document.getElementById('symbol').value;
+    // Input validation
+    const appIdInput = document.getElementById('app-id').value;
+    const tokenInput = document.getElementById('api-token').value;
+    const symbolInput = document.getElementById('symbol').value;
+    const timeframeInput = document.getElementById('timeframe').value;
+    
+    // Validate required fields
+    if (!appIdInput || appIdInput.trim() === '') {
+        addLog('Error: Ingrese un App ID válido', 'put');
+        return;
+    }
+    
+    if (!/^\d+$/.test(appIdInput.trim())) {
+        addLog('Error: App ID debe ser numérico', 'put');
+        return;
+    }
+    
+    const appId = appIdInput.trim();
+    const token = tokenInput ? tokenInput.trim() : '';
+    const granularity = parseInt(timeframeInput) || 60;
+    currentSymbol = symbolInput;
 
     console.log('[APP] connect() started - appId:', appId, 'symbol:', currentSymbol, 'granularity:', granularity);
     addLog(`Conectando a ${currentSymbol} (${appId})...`);
@@ -436,6 +470,12 @@ function connect() {
                 console.log('[DATA] Valid candles:', validCandles.length);
                 if (validCandles.length > 0) {
                     dataHistory = validCandles;
+                    // Memory management: limit dataHistory to prevent unbounded growth
+                    const maxCandles = CONFIG.DATA.MAX_CANDLES || 500;
+                    if (dataHistory.length > maxCandles) {
+                        dataHistory = dataHistory.slice(-maxCandles);
+                        console.log('[DATA] Trimmed to', maxCandles, 'candles');
+                    }
                     candleSeries.setData(dataHistory);
                     applyMinCandles();
                     updateIndicators();
@@ -479,7 +519,23 @@ function connect() {
         console.log('[WS] onclose:', e.code, e.reason);
         addLog('Desconectado (' + e.code + ')', 'put');
         isConnected = false;
+        state.isConnected = false;
         if (updateInterval) { clearInterval(updateInterval); updateInterval = null; }
+        
+        // Auto-reconnection logic
+        if (e.code !== 1000 && state.reconnectAttempts < CONFIG.WS.MAX_RECONNECT_ATTEMPTS) {
+            state.reconnectAttempts++;
+            const delay = CONFIG.WS.RECONNECT_DELAY * state.reconnectAttempts;
+            console.log(`[WS] Reconnecting in ${delay}ms (attempt ${state.reconnectAttempts}/${CONFIG.WS.MAX_RECONNECT_ATTEMPTS})`);
+            addLog(`Reconectando en ${delay/1000}s... (intento ${state.reconnectAttempts})`);
+            setTimeout(() => {
+                const token = document.getElementById('api-token').value;
+                const appId = document.getElementById('app-id').value || '1089';
+                if (token && appId) connect(token, appId);
+            }, delay);
+        } else if (state.reconnectAttempts >= CONFIG.WS.MAX_RECONNECT_ATTEMPTS) {
+            addLog('Máximo de intentos alcanzado. Recargue la página.', 'put');
+        }
     };
 }
 
