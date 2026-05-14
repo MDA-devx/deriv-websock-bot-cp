@@ -1,0 +1,279 @@
+.page {
+    display: flex;
+}
+
+:root {
+    --bg-color: #131722;
+    --sidebar-bg: #1e222d;
+    --border-color: #2a2e39;
+    --text-color: #d1d4dc;
+    --accent-color: #2962ff;
+    --success: #089981;
+    --danger: #f23645;
+}
+
+* { box-sizing: border-box; }
+
+@media screen and (max-width: 600px) {
+  /* Mobile layout: viewport width ≤ 600px */
+  html, body {
+    min-height: 100svh;
+    height: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+/*    flex-grow: 1;*/
+  }
+
+  #sidebar {
+    width: 100% !important;
+    max-width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    min-height: 100svh;
+/*    max-height: 50svh;*/
+    flex-shrink: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px;
+  }
+
+  #main-content {
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 100;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #price-chart { flex: 2; min-height: 0; width: 100%; }
+  #rsi-chart { flex: 1; min-height: 0; width: 100%; }
+
+  /* Mobile-specific typography and spacing */
+  h2 { font-size: 1.2rem; }
+  h3 { font-size: 0.9rem; }
+  .input-group label { font-size: 0.9rem; }
+  input, select, button { font-size: 0.9rem; padding: 8px; }
+  .checkbox-group { gap: 8px; }
+  .checkbox-item { font-size: 0.9rem; }
+  #logs-container { font-size: 0.8rem; max-height: 15vh; }
+
+  /* Optional: Hide non-essential elements */
+  #view-1d { display: none; }
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#sidebar {
+    width: 340px;
+    
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    box-sizing: border-box;
+    z-index: 100;
+    overflow-y: auto;
+}
+
+h2 { font-size: 1.1rem; margin: 0 0 8px 0; color: #fff; }
+h3 { font-size: 0.85rem; margin: 7px 0 8px 0; color: var(--accent-color); text-transform: uppercase; }
+
+.input-group { margin-bottom: 2px; }
+.input-group label { display: block; font-size: 11px; color: #b2b5be; text-transform: uppercase; margin-bottom: 2px; }
+
+.input-row { display: flex; gap: 4px; align-items: center; }
+.input-row > * { flex: 1; }
+
+input, select {
+    background-color: #2a2e39;
+    border: 1px solid #363c4e;
+    color: #d1d4dc;
+    padding: 4px 4px;
+    border-radius: 4px;
+    font-size: 12px;
+    outline: none;
+}
+
+input:focus, select:focus { border-color: var(--accent-color); }
+input[type="checkbox"] { width: auto; margin-right: 5px; }
+
+button {
+    width: 100%;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 13px;
+    transition: opacity 0.2s;
+    z-index: 100;
+    position: relative;
+}
+button:hover { opacity: 0.9; }
+button:active { transform: scale(0.98); }
+
+.checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+}
+.checkbox-item input[type="number"] {
+    width: 50px;
+    padding: 4px;
+}
+
+.timeframe-btns {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+.timeframe-btns button {
+    flex: 1;
+    min-width: 45px;
+    padding: 6px 4px;
+    font-size: 11px;
+}
+.timeframe-btns button.active {
+    background-color: var(--success);
+}
+
+.section {
+    border-top: 1px solid var(--border-color);
+    padding-top: 12px;
+    margin-top: 12px;
+}
+
+#logs-container {
+    flex-grow: 1;
+    margin-top: 12px;
+    background-color: #0a0a0a;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 8px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 11px;
+    line-height: 1.5;
+    overflow-y: auto;
+    color: #4ade80;
+    min-height: 120px;
+    max-height: 180px;
+    z-index: 100;
+}
+
+.log-entry { margin-bottom: 4px; padding-bottom: 2px; word-break: break-word; }
+.log-time { color: #666; font-size: 10px; margin-right: 5px; }
+.signal-call { color: var(--success); font-weight: bold; }
+.signal-put { color: var(--danger); font-weight: bold; }
+
+#main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+#price-chart { flex: 2; position: relative; min-height: 300px; }
+#rsi-chart { flex: 1; border-top: 2px solid var(--border-color); position: relative; min-height: 120px; }
+
+.chart-label {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 5;
+    background: rgba(30, 34, 45, 0.9);
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    pointer-events: none;
+}
+
+.chart-controls {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 5;
+    display: flex;
+    gap: 4px;
+}
+.chart-controls button {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    font-size: 16px;
+    line-height: 1;
+}
+
+#tooltip {
+    position: absolute;
+    display: none;
+    background: rgba(30, 34, 45, 0.95);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 100;
+    white-space: nowrap;
+}
+#tooltip .tt-time { color: #888; font-size: 10px; margin-bottom: 4px; }
+#tooltip .tt-row { display: flex; justify-content: space-between; gap: 12px; }
+#tooltip .tt-label { color: #888; }
+#tooltip .tt-open, #tooltip .tt-high { color: var(--success); }
+#tooltip .tt-low, #tooltip .tt-close { color: var(--danger); }
+
+#results-panel {
+    position: absolute;
+    top: 45px;
+    right: 8px;
+    z-index: 5;
+    background: rgba(30, 34, 45, 0.95);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 10px;
+    min-width: 160px;
+}
+#results-panel h4 { margin: 0 0 8px 0; font-size: 11px; color: var(--accent-color); }
+.result-stat { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+.result-stat .label { color: #888; }
+.result-stat .value { font-weight: bold; }
+.result-stat .value.call { color: var(--success); }
+.result-stat .value.put { color: var(--danger); }
+
+#signal-history {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    z-index: 5;
+    background: rgba(30, 34, 45, 0.95);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 8px;
+    max-width: 300px;
+    max-height: 100px;
+    overflow-y: auto;
+    font-size: 11px;
+}
+.history-item { display: flex; align-items: center; gap: 6px; padding: 2px 0; border-bottom: 1px solid #222; }
+.history-item:last-child { border-bottom: none; }
+.history-icon { font-size: 10px; }
