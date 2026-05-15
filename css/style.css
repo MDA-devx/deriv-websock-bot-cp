@@ -413,3 +413,117 @@ button:active { transform: scale(0.98); }
     border-color: #f23645;
     box-shadow: 0 0 6px #f23645;
 }
+
+/* ===== TAB BAR ===== */
+.tab-bar {
+    display: flex;
+    background: #1e222d;
+    border-bottom: 1px solid #2a2e39;
+    flex-shrink: 0;
+    z-index: 10;
+}
+.tab-btn {
+    flex: none;
+    width: auto;
+    padding: 8px 20px;
+    background: transparent;
+    color: #888;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: color 0.2s, border-color 0.2s;
+}
+.tab-btn:hover {
+    color: #d1d4dc;
+    background: transparent;
+    opacity: 1;
+}
+.tab-btn.active {
+    color: #2962ff;
+    border-bottom-color: #2962ff;
+    background: transparent;
+}
+.tab-btn:active {
+    transform: none;
+}
+
+/* ===== VIEWS ===== */
+#trading-view, #estrategia-view {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ===== ANALYSIS SIDEBAR ===== */
+#sidebar-estrategia {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+    padding: 15px;
+    box-sizing: border-box;
+}
+#sidebar-estrategia h2 {
+    font-size: 1.1rem;
+    margin: 0 0 8px 0;
+    color: #fff;
+}
+
+/* ===== ANALYSIS MARKS LIST ===== */
+#estr-marks-list {
+    scrollbar-width: thin;
+    scrollbar-color: #333 transparent;
+}
+#estr-marks-list::-webkit-scrollbar {
+    width: 4px;
+}
+#estr-marks-list::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 2px;
+}
+
+/* ===== ANALYSIS LOGS ===== */
+#estr-logs {
+    scrollbar-width: thin;
+    scrollbar-color: #333 transparent;
+}
+#estr-logs::-webkit-scrollbar {
+    width: 4px;
+}
+#estr-logs::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 2px;
+}
+
+/* ===== ESTRATEGIA CHARTS ===== */
+#estr-price-chart {
+    flex: 2;
+    position: relative;
+    min-height: 300px;
+}
+#estr-rsi-chart {
+    flex: 1;
+    border-top: 2px solid var(--border-color);
+    position: relative;
+    min-height: 120px;
+}
+
+/* ===== MOBILE ===== */
+@media screen and (max-width: 600px) {
+    .tab-btn {
+        padding: 6px 12px;
+        font-size: 10px;
+    }
+    #sidebar-estrategia .checkbox-item {
+        font-size: 10px;
+    }
+    #sidebar-estrategia input[type="number"] {
+        width: 36px;
+        padding: 2px;
+    }
+}

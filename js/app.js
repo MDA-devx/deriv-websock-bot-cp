@@ -37,6 +37,11 @@ let priceChart, rsiChart, candleSeries, smaSeries, emaSeries, bbUpperSeries, bbM
 let ws = null, isConnected = false, dataHistory = [];
 let currentSymbol = 'R_25';
 
+// Analysis tab globals
+let currentTab = 'trading';
+let estrMarks = [];
+let estrMarkType = 'open';
+
 const chartOptions = {
     layout: { backgroundColor: '#0d1117', textColor: '#e6edf3' },
     grid: { 
@@ -477,13 +482,17 @@ function connect() {
                         console.log('[DATA] Trimmed to', maxCandles, 'candles');
                     }
                     candleSeries.setData(dataHistory);
+                    if (analysisChartsReady) updateAnalysisCharts();
                     applyMinCandles();
                     updateIndicators();
                     subscribeOHLC();
                     isConnected = true;
                     if (updateInterval) clearInterval(updateInterval);
                     updateInterval = setInterval(() => {
-                        if (isConnected && dataHistory.length > 0) updateIndicators();
+                        if (isConnected && dataHistory.length > 0) {
+                            updateIndicators();
+                            if (analysisChartsReady && currentTab === 'estrategia') updateAnalysisIndicators();
+                        }
                     }, 1000);
                     addLog(`Cargado: ${dataHistory.length} velas`);
                     console.log('[DATA] Charts updated, connected:', isConnected);
@@ -496,6 +505,10 @@ function connect() {
                 if (candle.time && candle.open > 0) {
                     const isNewCandle = dataHistory.length === 0 || dataHistory[dataHistory.length - 1].time !== candle.time;
                     if (candleSeries) candleSeries.update(candle);
+                    if (analysisChartsReady && currentTab === 'estrategia') {
+                        if (estrCandleSeries) estrCandleSeries.update(candle);
+                        updateAnalysisIndicators();
+                    }
                     if (dataHistory.length > 0 && dataHistory[dataHistory.length - 1].time === candle.time) {
                         dataHistory[dataHistory.length - 1] = candle;
                     } else {
@@ -763,3 +776,283 @@ function addLog(message, type = '') {
     while (container.children.length > 100) container.removeChild(container.firstChild);
     container.scrollTop = container.scrollHeight;
 }
+
+// ============================================
+// TAB SWITCHING
+// ============================================
+function switchTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    document.getElementById('sidebar-trading').style.display = tab === 'trading' ? '' : 'none';
+    document.getElementById('sidebar-estrategia').style.display = tab === 'estrategia' ? '' : 'none';
+    document.getElementById('trading-view').style.display = tab === 'trading' ? '' : 'none';
+    document.getElementById('estrategia-view').style.display = tab === 'estrategia' ? '' : 'none';
+
+    if (tab === 'estrategia') {
+        if (!analysisChartsReady) initAnalysisCharts();
+        if (dataHistory.length > 0) updateAnalysisCharts();
+    }
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+});
+
+// ============================================
+// ANALYSIS CHARTS
+// ============================================
+let analysisChartsReady = false;
+let estrPriceChart, estrRsiChart;
+let estrCandleSeries, estrSmaSeries, estrEmaSeries;
+let estrBbUpperSeries, estrBbMiddleSeries, estrBbLowerSeries;
+let estrRsiSeries, estrStochSeries, estrMacdSeries, estrMacdSignalSeries;
+
+function initAnalysisCharts() {
+    if (analysisChartsReady) return;
+    const pContainer = document.getElementById('estr-price-chart');
+    const rContainer = document.getElementById('estr-rsi-chart');
+    if (!pContainer || !rContainer) return;
+
+    pContainer.style.minHeight = '300px';
+    rContainer.style.minHeight = '100px';
+
+    document.getElementById('estr-zoom-in').onclick = () => {
+        const bs = Math.min(50, (estrPriceChart.timeScale().options().barSpacing || 8) + 2);
+        estrPriceChart.timeScale().applyOptions({ barSpacing: bs });
+        estrRsiChart.timeScale().applyOptions({ barSpacing: bs });
+    };
+    document.getElementById('estr-zoom-out').onclick = () => {
+        const bs = Math.max(4, (estrPriceChart.timeScale().options().barSpacing || 8) - 2);
+        estrPriceChart.timeScale().applyOptions({ barSpacing: bs });
+        estrRsiChart.timeScale().applyOptions({ barSpacing: bs });
+    };
+    document.getElementById('estr-fit-content').onclick = () => {
+        estrPriceChart.timeScale().fitContent();
+        estrRsiChart.timeScale().fitContent();
+    };
+
+    const estrOpts = JSON.parse(JSON.stringify(chartOptions));
+    estrOpts.timeScale.rightOffset = 4;
+
+    estrPriceChart = LightweightCharts.createChart(pContainer, { ...estrOpts, height: pContainer.clientHeight || 300 });
+    estrRsiChart = LightweightCharts.createChart(rContainer, { ...estrOpts, height: rContainer.clientHeight || 100 });
+
+    estrCandleSeries = estrPriceChart.addCandlestickSeries({
+        upColor: '#089981', downColor: '#f23645',
+        borderVisible: false, wickUpColor: '#089981', wickDownColor: '#f23645',
+    });
+
+    estrSmaSeries = estrPriceChart.addLineSeries({ color: '#2962ff', lineWidth: 1, title: 'SMA' });
+    estrEmaSeries = estrPriceChart.addLineSeries({ color: '#f23645', lineWidth: 1, title: 'EMA' });
+    estrBbUpperSeries = estrPriceChart.addLineSeries({ color: '#00bcd4', lineWidth: 1, lineStyle: 0, title: 'BB Upper' });
+    estrBbMiddleSeries = estrPriceChart.addLineSeries({ color: 'rgba(0,188,212,0.3)', lineWidth: 1, lineStyle: 2, title: 'BB Middle' });
+    estrBbLowerSeries = estrPriceChart.addLineSeries({ color: '#00bcd4', lineWidth: 1, lineStyle: 0, title: 'BB Lower' });
+
+    estrRsiSeries = estrRsiChart.addLineSeries({ color: '#ff9800', lineWidth: 1, title: 'RSI' });
+    estrStochSeries = estrRsiChart.addLineSeries({ color: '#9c27b0', lineWidth: 1, title: 'Stoch' });
+    estrMacdSeries = estrRsiChart.addLineSeries({ color: '#2196f3', lineWidth: 1, title: 'MACD' });
+    estrMacdSignalSeries = estrRsiChart.addLineSeries({ color: '#ff5722', lineWidth: 1, title: 'Signal' });
+
+    const high = parseFloat(document.getElementById('rsi-high').value) || 65;
+    const low = parseFloat(document.getElementById('rsi-low').value) || 35;
+    estrRsiSeries.createPriceLine({ price: high, color: '#f23645', lineWidth: 1, lineStyle: 2, title: 'HIGH' });
+    estrRsiSeries.createPriceLine({ price: low, color: '#089981', lineWidth: 1, lineStyle: 2, title: 'LOW' });
+
+    // Click to place manual marks on analysis chart
+    estrPriceChart.subscribeClick(param => {
+        const markMode = document.getElementById('estr-mark-mode');
+        if (!markMode || !markMode.checked) return;
+        if (!param.time || !dataHistory.length) return;
+        const time = Number(param.time);
+        if (estrMarks.some(m => m.time === time)) {
+            estrAddLog('Ya existe una marca en este momento');
+            return;
+        }
+        const candle = dataHistory.find(c => c.time === time);
+        if (!candle) return;
+
+        const ind = getIndicatorValuesAt(time);
+        estrMarks.push({ time, type: estrMarkType, price: candle.close, indicators: ind });
+        renderAnalysisMarksList();
+        updateAnalysisMarkers();
+        estrAddLog(`Marca ${estrMarkType === 'open' ? 'ABRIR' : 'CERRAR'} @ ${candle.close.toFixed(2)}`);
+    });
+
+    analysisChartsReady = true;
+    if (dataHistory.length > 0) updateAnalysisCharts();
+}
+
+function getIndicatorValuesAt(time) {
+    const rsiP = parseInt(document.getElementById('estr-rsi-period').value) || 7;
+    const smaP = parseInt(document.getElementById('estr-sma-period').value) || 23;
+    const bbP = parseInt(document.getElementById('estr-bb-period').value) || 20;
+    const stochP = parseInt(document.getElementById('estr-stoch-period').value) || 14;
+
+    const findVal = (arr) => {
+        if (!arr || !arr.length) return null;
+        const entry = [...arr].reverse().find(d => d.time <= time);
+        return entry && entry.value !== null ? +entry.value.toFixed(2) : null;
+    };
+
+    return {
+        sma: findVal(calculateSMA(dataHistory, smaP)),
+        rsi: findVal(calculateRSI(dataHistory, rsiP)),
+        bbUpper: findVal(calculateBB(dataHistory, bbP).upper),
+        bbLower: findVal(calculateBB(dataHistory, bbP).lower),
+        stoch: findVal(calculateStochastic(dataHistory, stochP).map(d => ({ time: d.time, value: d.k }))),
+        macd: findVal(calculateMACD(dataHistory, 12, 26, 9).map(d => ({ time: d.time, value: d.macd }))),
+    };
+}
+
+function updateAnalysisCharts() {
+    if (!analysisChartsReady || !dataHistory.length) return;
+    document.getElementById('estr-symbol-display').textContent = currentSymbol;
+    document.getElementById('estr-data-status').textContent = 'Conectado';
+    document.getElementById('estr-candle-count').style.display = '';
+    document.getElementById('estr-count-num').textContent = dataHistory.length;
+    estrCandleSeries.setData(dataHistory);
+    updateAnalysisIndicators();
+}
+
+function updateAnalysisIndicators() {
+    if (!analysisChartsReady || dataHistory.length < 2) return;
+
+    const smaP = parseInt(document.getElementById('estr-sma-period').value) || 23;
+    const emaP = parseInt(document.getElementById('estr-ema-period').value) || 10;
+    const rsiP = parseInt(document.getElementById('estr-rsi-period').value) || 7;
+    const bbP = parseInt(document.getElementById('estr-bb-period').value) || 20;
+
+    const smaData = document.getElementById('estr-sma-enable').checked ? calculateSMA(dataHistory, smaP).filter(d => d.value !== null) : [];
+    const emaData = document.getElementById('estr-ema-enable').checked ? calculateEMA(dataHistory, emaP) : [];
+    const rsiData = document.getElementById('estr-rsi-enable').checked ? calculateRSI(dataHistory, rsiP).filter(d => d.value !== null) : [];
+    const bb = document.getElementById('estr-bb-enable').checked ? calculateBB(dataHistory, bbP) : { upper: [], middle: [], lower: [] };
+    const stochData = calculateStochastic(dataHistory, parseInt(document.getElementById('estr-stoch-period').value) || 14);
+    const macdData = calculateMACD(dataHistory, 12, 26, 9);
+
+    if (estrSmaSeries) estrSmaSeries.setData(smaData);
+    if (estrEmaSeries) estrEmaSeries.setData(emaData);
+    if (estrBbUpperSeries) estrBbUpperSeries.setData(bb.upper.filter(d => d.value !== null));
+    if (estrBbMiddleSeries) estrBbMiddleSeries.setData(bb.middle?.filter(d => d.value !== null) || []);
+    if (estrBbLowerSeries) estrBbLowerSeries.setData(bb.lower.filter(d => d.value !== null));
+
+    if (estrRsiSeries) { estrRsiSeries.setData(rsiData); estrRsiSeries.applyOptions({ visible: rsiData.length > 0 }); }
+    if (estrStochSeries) { const plot = stochData.map(d => ({ time: d.time, value: d.k })).filter(d => d.value !== null); estrStochSeries.setData(plot); }
+    if (estrMacdSeries && estrMacdSignalSeries) {
+        const valid = macdData.filter(d => d.macd !== null);
+        if (valid.length > 0) {
+            const all = [...valid.map(d => d.macd), ...valid.map(d => d.signal)];
+            const min = Math.min(...all), max = Math.max(...all), range = max - min || 1;
+            const norm = v => ((v - min) / range) * 100;
+            estrMacdSeries.setData(macdData.map(d => ({ time: d.time, value: d.macd !== null ? norm(d.macd) : null })).filter(d => d.value !== null));
+            estrMacdSignalSeries.setData(macdData.map(d => ({ time: d.time, value: d.signal !== null ? norm(d.signal) : null })).filter(d => d.value !== null));
+        }
+    }
+
+    updateAnalysisMarkers();
+}
+
+function updateAnalysisMarkers() {
+    if (!analysisChartsReady || !estrCandleSeries) return;
+    const markers = estrMarks.map(m => ({
+        time: m.time,
+        position: m.type === 'open' ? 'aboveBar' : 'belowBar',
+        color: m.type === 'open' ? '#089981' : '#f23645',
+        shape: m.type === 'open' ? 'arrowUp' : 'arrowDown',
+        text: m.type === 'open' ? 'ABRIR' : 'CERRAR'
+    }));
+    estrCandleSeries.setMarkers(markers);
+}
+
+function renderAnalysisMarksList() {
+    const container = document.getElementById('estr-marks-list');
+    if (!container) return;
+    const countEl = document.getElementById('estr-mark-count');
+    if (countEl) countEl.textContent = `(${estrMarks.length})`;
+
+    if (estrMarks.length === 0) {
+        container.innerHTML = '<div style="color:#555;padding:8px;text-align:center;">Sin marcas</div>';
+        return;
+    }
+
+    container.innerHTML = estrMarks.map((m, i) => {
+        const d = new Date(m.time * 1000);
+        const ind = m.indicators || {};
+        const parts = [];
+        if (ind.rsi !== null) parts.push(`RSI ${ind.rsi}`);
+        if (ind.sma !== null) parts.push(`SMA ${ind.sma}`);
+        if (ind.stoch !== null) parts.push(`Stoch ${ind.stoch}`);
+        if (ind.macd !== null) parts.push(`MACD ${ind.macd}`);
+        if (ind.bbUpper !== null && ind.bbLower !== null) {
+            const price = m.price;
+            const inBand = price >= ind.bbLower && price <= ind.bbUpper;
+            parts.push(`BB ${inBand ? 'dentro' : 'fuera'}`);
+        }
+        return `<div style="display:flex;flex-direction:column;padding:3px 4px;border-bottom:1px solid #1a1a1a;cursor:pointer;" data-idx="${i}">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="color:${m.type === 'open' ? '#089981' : '#f23645'};font-weight:bold;">${m.type === 'open' ? '▲' : '▼'} ${m.type.toUpperCase()}</span>
+                <span style="color:#888;font-size:9px;">${d.toLocaleTimeString()}</span>
+                <span style="color:#aaa;">${m.price.toFixed(2)}</span>
+                <span style="color:#444;font-size:9px;">✕</span>
+            </div>
+            <div style="font-size:8px;color:#555;margin-top:1px;display:flex;flex-wrap:wrap;gap:2px;">${parts.map(p => `<span style="background:#1a1a1a;padding:0 3px;border-radius:2px;">${p}</span>`).join('') || '<span style="color:#444;">—</span>'}</div>
+        </div>`;
+    }).join('');
+
+    container.querySelectorAll('[data-idx]').forEach(el => {
+        el.addEventListener('click', () => {
+            const idx = parseInt(el.dataset.idx);
+            estrMarks.splice(idx, 1);
+            renderAnalysisMarksList();
+            updateAnalysisMarkers();
+            estrAddLog('Marca eliminada');
+        });
+    });
+}
+
+function estrAddLog(message) {
+    const container = document.getElementById('estr-logs');
+    if (!container) return;
+    const entry = document.createElement('div');
+    entry.innerHTML = `<span style="color:#666;">[${new Date().toLocaleTimeString()}]</span> ${message}`;
+    container.appendChild(entry);
+    while (container.children.length > 50) container.removeChild(container.firstChild);
+    container.scrollTop = container.scrollHeight;
+}
+
+// Sync: analysis input → trading input
+['sma-period', 'ema-period', 'bb-period', 'rsi-period', 'stoch-period'].forEach(id => {
+    document.getElementById(`estr-${id}`)?.addEventListener('input', () => {
+        const v = document.getElementById(`estr-${id}`).value;
+        const tradingEl = document.getElementById(id);
+        if (tradingEl) tradingEl.value = v;
+        updateIndicators();
+        updateAnalysisIndicators();
+    });
+});
+
+// Analysis indicator toggle listeners
+['sma', 'ema', 'bb', 'rsi', 'stoch', 'macd'].forEach(name => {
+    document.getElementById(`estr-${name}-enable`)?.addEventListener('change', updateAnalysisIndicators);
+});
+
+// Analysis mark controls
+document.getElementById('estr-mark-open')?.addEventListener('click', () => {
+    estrMarkType = 'open';
+    document.getElementById('estr-mark-open').style.opacity = '1';
+    document.getElementById('estr-mark-close').style.opacity = '0.5';
+});
+document.getElementById('estr-mark-close')?.addEventListener('click', () => {
+    estrMarkType = 'close';
+    document.getElementById('estr-mark-close').style.opacity = '1';
+    document.getElementById('estr-mark-open').style.opacity = '0.5';
+});
+document.getElementById('estr-clear-marks')?.addEventListener('click', () => {
+    estrMarks = [];
+    renderAnalysisMarksList();
+    updateAnalysisMarkers();
+    estrAddLog('Todas las marcas eliminadas');
+});
+document.getElementById('estr-mark-mode')?.addEventListener('change', (e) => {
+    estrAddLog(e.target.checked ? 'Modo marcado activado — haga clic en el grafico' : 'Modo marcado desactivado');
+});

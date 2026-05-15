@@ -9,160 +9,268 @@
 </head>
 <body>
     <div id="sidebar">
-        <h2>Deriv Trading Bot</h2>
-        
-        <div class="input-group">
-            <label>Símbolo</label>
-            <select id="symbol">
-                <option value="R_25" selected>Jump 25 Index</option>
-                <option value="R_50">Jump 50 Index</option>
-                <option value="R_75">Jump 75 Index</option>
-                <option value="R_100">Jump 100 Index</option>
-                <option value="R_10">Jump 10 Index</option>
-            </select>
-        </div>
+        <!-- ========== TRADING SIDEBAR ========== -->
+        <div id="sidebar-trading">
+            <h2>Deriv Trading Bot</h2>
 
-        <div class="input-group">
-            <label>API Token (Opcional) <span style="font-size:9px;color:#666;cursor:pointer;" id="load-token-btn" title="Cargar desde archivo">📁</span></label>
-            <input type="password" id="api-token" placeholder="Ingrese su token">
-            <input type="file" id="token-file" accept=".txt,.md,.env" style="display:none;">
-        </div>
-
-        <div class="input-group">
-            <label>App ID</label>
-            <input type="text" id="app-id" value="1089" placeholder="Ej: 1089">
-        </div>
-        <button id="start-btn">CONECTAR</button>
-
-        <div class="input-group">
-            <label>Temporalidad</label>
-            <div class="timeframe-btns" id="timeframe-btns">
-                <button data-value="1">1s</button>
-                <button data-value="60" class="active">1m</button>
-                <button data-value="300">5m</button>
-                <button data-value="900">15m</button>
-                <button id="view-1d" title="Ver 1 día">1D</button>
+            <div class="input-group">
+                <label>Símbolo</label>
+                <select id="symbol">
+                    <option value="R_25" selected>Jump 25 Index</option>
+                    <option value="R_50">Jump 50 Index</option>
+                    <option value="R_75">Jump 75 Index</option>
+                    <option value="R_100">Jump 100 Index</option>
+                    <option value="R_10">Jump 10 Index</option>
+                </select>
             </div>
-            <select id="timeframe" style="display:none;">
-                <option value="1">1 Segundo</option>
-                <option value="60" selected>1 Minuto</option>
-                <option value="300">5 Minutos</option>
-                <option value="900">15 Minutos</option>
-            </select>
-        </div>
 
-        <div class="input-group">
-            <label>Estrategia</label>
-            <select id="strategy">
-                <option value="multi-momentum" selected>Multi-Momentum (Alto Volumen)</option>
-            </select>
-        </div>
+            <div class="input-group">
+                <label>API Token (Opcional) <span style="font-size:9px;color:#666;cursor:pointer;" id="load-token-btn" title="Cargar desde archivo">📁</span></label>
+                <input type="password" id="api-token" placeholder="Ingrese su token">
+                <input type="file" id="token-file" accept=".txt,.md,.env" style="display:none;">
+            </div>
 
-        <div class="section">
-            <label>Indicadores</label>
-            <div class="checkbox-group">
-                <div class="checkbox-item">
-                    <input type="checkbox" id="sma-enabled" checked>
-                    <label for="sma-enabled">SMA</label>
-                    <input type="number" id="sma-period" value="23" min="1">
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="ema-enabled" checked>
-                    <label for="ema-enabled">EMA</label>
-                    <input type="number" id="ema-period" value="10" min="1">
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="bb-enabled" checked>
-                    <label for="bb-enabled">BB</label>
-                    <input type="number" id="bb-period" value="20" min="1">
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="rsi-enabled" checked>
-                    <label for="rsi-enabled">RSI</label>
-                    <input type="number" id="rsi-period" value="7" min="1">
-                    <span>per</span>
-                    <input type="number" id="rsi-high" value="65" min="0" max="100">
-                    <span>high</span>
-                    <input type="number" id="rsi-low" value="35" min="0" max="100">
-                    <span>low</span>
-                </div>
+            <div class="input-group">
+                <label>App ID</label>
+                <input type="text" id="app-id" value="1089" placeholder="Ej: 1089">
             </div>
-        </div>
+            <button id="start-btn">CONECTAR</button>
 
-        <div class="section">
-            <label>Configuración</label>
-            <div class="checkbox-group">
-                <div class="checkbox-item">
-                    <input type="checkbox" id="auto-scroll" checked>
-                    <label for="auto-scroll">Auto-scroll</label>
+            <div class="input-group">
+                <label>Temporalidad</label>
+                <div class="timeframe-btns" id="timeframe-btns">
+                    <button data-value="1">1s</button>
+                    <button data-value="60" class="active">1m</button>
+                    <button data-value="300">5m</button>
+                    <button data-value="900">15m</button>
+                    <button id="view-1d" title="Ver 1 día">1D</button>
                 </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="show-tooltip" checked>
-                    <label for="show-tooltip">Tooltip</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="sound-alert">
-                    <label for="sound-alert">Sonido</label>
-                </div>
+                <select id="timeframe" style="display:none;">
+                    <option value="1">1 Segundo</option>
+                    <option value="60" selected>1 Minuto</option>
+                    <option value="300">5 Minutos</option>
+                    <option value="900">15 Minutos</option>
+                </select>
             </div>
-            <div class="input-row" style="margin-top:8px;">
-              <div class="checkbox-item">
-                    <label>Min velas</label>
-                    <input type="number" id="min-candles" value="24" min="10" max="100">
-                </div>
-            </div>
-        </div>
 
-        <div id="logs-container" style="z-index:100;position:relative;">
-            <div class="log-entry"><span class="log-time">[--:--:--]</span>Sistema listo. Configure y conecte.</div>
-        </div>
-    </div>
-    <div id="main-content">
-        <div id="price-chart">
-            <div class="chart-label">JUMP 25 INDEX</div>
-            <div class="indicator-leds">
-                <span class="led-item"><span class="mini-led" id="led-rsi"></span>RSI</span>
-                <span class="led-item"><span class="mini-led" id="led-stoch"></span>STOCH</span>
-                <span class="led-item"><span class="mini-led" id="led-macd"></span>MACD</span>
-                <span class="led-item"><span class="mini-led" id="led-sma"></span>SMA</span>
-                <span class="led-item"><span class="mini-led" id="led-bb"></span>BB</span>
+            <div class="input-group">
+                <label>Estrategia</label>
+                <select id="strategy">
+                    <option value="multi-momentum" selected>Multi-Momentum (Alto Volumen)</option>
+                </select>
             </div>
-            <div class="chart-controls">
-                <button id="zoom-out">-</button>
-                <button id="zoom-in">+</button>
-                <button id="fit-content">⊡</button>
-                <button id="toggle-results">📊</button>
-            </div>
-            <div id="position-overlay" style="display:none;">
-                <div class="overlay-content">
-                    <div class="overlay-label">⏱️ POSICIÓN ACTIVA</div>
-                    <div class="overlay-countdown" id="overlay-countdown">60</div>
-                    <div class="overlay-type" id="overlay-type">▲ CALL</div>
-                    <div class="overlay-entry" id="overlay-entry">@ 0.00</div>
-                    <div class="overlay-progress">
-                        <div class="progress-fill" id="progress-fill"></div>
+
+            <div class="section">
+                <label>Indicadores</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="sma-enabled" checked>
+                        <label for="sma-enabled">SMA</label>
+                        <input type="number" id="sma-period" value="23" min="1">
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="ema-enabled" checked>
+                        <label for="ema-enabled">EMA</label>
+                        <input type="number" id="ema-period" value="10" min="1">
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="bb-enabled" checked>
+                        <label for="bb-enabled">BB</label>
+                        <input type="number" id="bb-period" value="20" min="1">
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="rsi-enabled" checked>
+                        <label for="rsi-enabled">RSI</label>
+                        <input type="number" id="rsi-period" value="7" min="1">
+                        <span>per</span>
+                        <input type="number" id="rsi-high" value="65" min="0" max="100">
+                        <span>high</span>
+                        <input type="number" id="rsi-low" value="35" min="0" max="100">
+                        <span>low</span>
                     </div>
                 </div>
             </div>
+
+            <div class="section">
+                <label>Configuración</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="auto-scroll" checked>
+                        <label for="auto-scroll">Auto-scroll</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="show-tooltip" checked>
+                        <label for="show-tooltip">Tooltip</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="sound-alert">
+                        <label for="sound-alert">Sonido</label>
+                    </div>
+                </div>
+                <div class="input-row" style="margin-top:8px;">
+                  <div class="checkbox-item">
+                        <label>Min velas</label>
+                        <input type="number" id="min-candles" value="24" min="10" max="100">
+                    </div>
+                </div>
+            </div>
+
+            <div id="logs-container" style="z-index:100;position:relative;">
+                <div class="log-entry"><span class="log-time">[--:--:--]</span>Sistema listo. Configure y conecte.</div>
+            </div>
         </div>
-        <div id="rsi-chart">
-            <div class="chart-label">RSI / MACD</div>
+
+        <!-- ========== ESTRATEGIA SIDEBAR ========== -->
+        <div id="sidebar-estrategia" style="display:none;">
+            <h2>📊 Analisis</h2>
+
+            <div class="input-group">
+                <label>Datos</label>
+                <div style="font-size:12px;color:#888;">
+                    <span id="estr-symbol-display">R_25</span> &middot;
+                    <span id="estr-data-status">Sin datos</span>
+                    <span id="estr-candle-count" style="display:none;"> &middot; <span id="estr-count-num">0</span> velas</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <label>Indicadores</label>
+                <div class="checkbox-group" style="gap:4px;">
+                    <div class="checkbox-item" style="flex-basis:48%;">
+                        <input type="checkbox" id="estr-sma-enable" checked>
+                        <label for="estr-sma-enable">SMA</label>
+                        <input type="number" id="estr-sma-period" value="23" min="1" style="width:40px;">
+                    </div>
+                    <div class="checkbox-item" style="flex-basis:48%;">
+                        <input type="checkbox" id="estr-ema-enable" checked>
+                        <label for="estr-ema-enable">EMA</label>
+                        <input type="number" id="estr-ema-period" value="10" min="1" style="width:40px;">
+                    </div>
+                    <div class="checkbox-item" style="flex-basis:48%;">
+                        <input type="checkbox" id="estr-bb-enable" checked>
+                        <label for="estr-bb-enable">BB</label>
+                        <input type="number" id="estr-bb-period" value="20" min="1" style="width:40px;">
+                    </div>
+                    <div class="checkbox-item" style="flex-basis:48%;">
+                        <input type="checkbox" id="estr-rsi-enable" checked>
+                        <label for="estr-rsi-enable">RSI</label>
+                        <input type="number" id="estr-rsi-period" value="7" min="1" style="width:40px;">
+                    </div>
+                    <div class="checkbox-item" style="flex-basis:48%;">
+                        <input type="checkbox" id="estr-stoch-enable" checked>
+                        <label for="estr-stoch-enable">Stoch</label>
+                        <input type="number" id="estr-stoch-period" value="14" min="1" style="width:40px;">
+                    </div>
+                    <div class="checkbox-item" style="flex-basis:48%;">
+                        <input type="checkbox" id="estr-macd-enable" checked>
+                        <label for="estr-macd-enable">MACD</label>
+                        <span style="font-size:9px;">12/26/9</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <label>Marcado Manual</label>
+                <div class="checkbox-item" style="margin-bottom:6px;">
+                    <input type="checkbox" id="estr-mark-mode">
+                    <label for="estr-mark-mode">Modo marcado</label>
+                </div>
+                <div class="input-row" style="gap:4px;">
+                    <button id="estr-mark-open" style="flex:1;background:#089981;font-size:11px;">ABRIR</button>
+                    <button id="estr-mark-close" style="flex:1;background:#f23645;font-size:11px;opacity:0.5;">CERRAR</button>
+                </div>
+                <button id="estr-clear-marks" style="margin-top:4px;background:#555;font-size:11px;">Limpiar marcas</button>
+            </div>
+
+            <div class="section" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
+                <label>Marcas <span id="estr-mark-count" style="color:#888;">(0)</span></label>
+                <div id="estr-marks-list" style="font-size:10px;overflow-y:auto;background:#0a0a0a;border:1px solid var(--border-color);border-radius:3px;padding:4px;max-height:150px;">
+                    <div style="color:#555;padding:4px;text-align:center;">Sin marcas</div>
+                </div>
+            </div>
+
+            <div class="section" style="margin-top:4px;">
+                <label style="font-size:10px;color:#555;">Proximamente</label>
+                <div style="font-size:9px;color:#444;line-height:1.4;">
+                    Backtest Multi-Momentum, RSI, BB, SMA/EMA &middot; Optimizador de parametros &middot; Carga de CSV
+                </div>
+            </div>
+
+            <div id="estr-logs" style="flex-shrink:0;margin-top:4px;background:#0a0a0a;border:1px solid var(--border-color);border-radius:3px;padding:4px;font-size:10px;overflow-y:auto;max-height:80px;color:#4ade80;">
+                <div style="color:#555;">Cambie a la pestana ESTRATEGIA para analisis</div>
+            </div>
         </div>
-        <div id="tooltip">
-            <div class="tt-time"></div>
-            <div class="tt-row"><span class="tt-label">O</span><span class="tt-open"></span></div>
-            <div class="tt-row"><span class="tt-label">H</span><span class="tt-high"></span></div>
-            <div class="tt-row"><span class="tt-label">L</span><span class="tt-low"></span></div>
-            <div class="tt-row"><span class="tt-label">C</span><span class="tt-close"></span></div>
+    </div>
+
+    <div id="main-content">
+        <div class="tab-bar">
+            <button class="tab-btn active" data-tab="trading">TRADING</button>
+            <button class="tab-btn" data-tab="estrategia">ESTRATEGIA</button>
         </div>
-<div id="results-panel" style="display:none;">
-            <h4>RESULTADOS <span style="float:right;cursor:pointer;" id="close-results">✕</span></h4>
-            <div class="result-stat"><span class="label">Señales HOY</span><span class="value" id="signal-count">0</span></div>
-            <div class="result-stat"><span class="label">CALL</span><span class="value call" id="call-count">0</span></div>
-            <div class="result-stat"><span class="label">PUT</span><span class="value put" id="put-count">0</span></div>
-            <div class="result-stat"><span class="label">Win</span><span class="value win" id="win-count">0</span></div>
-            <div class="result-stat"><span class="label">Lose</span><span class="value lose" id="lose-count">0</span></div>
-            <div class="result-stat"><span class="label">Última</span><span class="value" id="last-signal">--</span></div>
+
+        <!-- ========== TRADING VIEW ========== -->
+        <div id="trading-view">
+            <div id="price-chart">
+                <div class="chart-label">JUMP 25 INDEX</div>
+                <div class="indicator-leds">
+                    <span class="led-item"><span class="mini-led" id="led-rsi"></span>RSI</span>
+                    <span class="led-item"><span class="mini-led" id="led-stoch"></span>STOCH</span>
+                    <span class="led-item"><span class="mini-led" id="led-macd"></span>MACD</span>
+                    <span class="led-item"><span class="mini-led" id="led-sma"></span>SMA</span>
+                    <span class="led-item"><span class="mini-led" id="led-bb"></span>BB</span>
+                </div>
+                <div class="chart-controls">
+                    <button id="zoom-out">-</button>
+                    <button id="zoom-in">+</button>
+                    <button id="fit-content">&#x22A1;</button>
+                    <button id="toggle-results">&#x1F4CA;</button>
+                </div>
+                <div id="position-overlay" style="display:none;">
+                    <div class="overlay-content">
+                        <div class="overlay-label">&#x23F1;&#xFE0F; POSICION ACTIVA</div>
+                        <div class="overlay-countdown" id="overlay-countdown">60</div>
+                        <div class="overlay-type" id="overlay-type">&#x25B2; CALL</div>
+                        <div class="overlay-entry" id="overlay-entry">@ 0.00</div>
+                        <div class="overlay-progress">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="rsi-chart">
+                <div class="chart-label">RSI / MACD</div>
+            </div>
+            <div id="tooltip">
+                <div class="tt-time"></div>
+                <div class="tt-row"><span class="tt-label">O</span><span class="tt-open"></span></div>
+                <div class="tt-row"><span class="tt-label">H</span><span class="tt-high"></span></div>
+                <div class="tt-row"><span class="tt-label">L</span><span class="tt-low"></span></div>
+                <div class="tt-row"><span class="tt-label">C</span><span class="tt-close"></span></div>
+            </div>
+            <div id="results-panel" style="display:none;">
+                <h4>RESULTADOS <span style="float:right;cursor:pointer;" id="close-results">&#x2715;</span></h4>
+                <div class="result-stat"><span class="label">Senales HOY</span><span class="value" id="signal-count">0</span></div>
+                <div class="result-stat"><span class="label">CALL</span><span class="value call" id="call-count">0</span></div>
+                <div class="result-stat"><span class="label">PUT</span><span class="value put" id="put-count">0</span></div>
+                <div class="result-stat"><span class="label">Win</span><span class="value win" id="win-count">0</span></div>
+                <div class="result-stat"><span class="label">Lose</span><span class="value lose" id="lose-count">0</span></div>
+                <div class="result-stat"><span class="label">Ultima</span><span class="value" id="last-signal">--</span></div>
+            </div>
+        </div>
+
+        <!-- ========== ESTRATEGIA VIEW ========== -->
+        <div id="estrategia-view" style="display:none;">
+            <div id="estr-price-chart">
+                <div class="chart-label">ANALISIS - ESTRATEGIA</div>
+                <div class="chart-controls">
+                    <button id="estr-zoom-out">-</button>
+                    <button id="estr-zoom-in">+</button>
+                    <button id="estr-fit-content">&#x22A1;</button>
+                </div>
+            </div>
+            <div id="estr-rsi-chart">
+                <div class="chart-label">RSI / STOCH / MACD</div>
+            </div>
         </div>
     </div>
 
