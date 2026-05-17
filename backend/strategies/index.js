@@ -1,7 +1,9 @@
 import MultiMomentumStrategy from './MultiMomentumStrategy.js';
+import AdaptiveConfluenceStrategy from './AdaptiveConfluenceStrategy.js';
 
 const strategies = {
-  'multi-momentum': MultiMomentumStrategy
+  'multi-momentum': MultiMomentumStrategy,
+  'adaptive-confluence': AdaptiveConfluenceStrategy
 };
 
 const metadata = {
@@ -28,6 +30,26 @@ const metadata = {
         sma: true,
         bb: true
       }
+    }
+  },
+  'adaptive-confluence': {
+    name: 'Adaptive Confluence',
+    description: 'Confluencia adaptativa: EMA20/50 + RSI de régimen + cruce MACD + estructura Bollinger + fuerza de vela',
+    defaultParams: {
+      emaFast: 20,
+      emaSlow: 50,
+      rsiPeriod: 14,
+      rsiBullMin: 45,
+      rsiBullMax: 70,
+      rsiBearMin: 30,
+      rsiBearMax: 55,
+      macdFast: 12,
+      macdSlow: 26,
+      macdSignal: 9,
+      bbPeriod: 20,
+      bbStdDev: 2,
+      minScore: 3,
+      coolDownCandles: 8
     }
   }
 };

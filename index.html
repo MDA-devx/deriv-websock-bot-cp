@@ -57,6 +57,7 @@
                 <label>Estrategia</label>
                 <select id="strategy">
                     <option value="multi-momentum" selected>Multi-Momentum (Alto Volumen)</option>
+                    <option value="adaptive-confluence">Adaptive Confluence (Tendencia + Momentum)</option>
                 </select>
             </div>
 
@@ -190,9 +191,36 @@
             </div>
 
             <div class="section" style="margin-top:4px;">
-                <label style="font-size:10px;color:#555;">Proximamente</label>
-                <div style="font-size:9px;color:#444;line-height:1.4;">
-                    Backtest Multi-Momentum, RSI, BB, SMA/EMA &middot; Optimizador de parametros &middot; Carga de CSV
+                <label>Backtest</label>
+                <button id="estr-run-backtest" style="width:100%;background:#1f6feb;">Ejecutar backtest</button>
+                <div style="display:flex;gap:4px;margin-top:6px;">
+                    <button id="estr-export-marks" style="flex:1;background:#374151;">Exportar marcas</button>
+                    <button id="estr-import-marks" style="flex:1;background:#374151;">Importar marcas</button>
+                    <input type="file" id="estr-import-file" accept="application/json,.json" style="display:none;">
+                </div>
+                <div id="estr-backtest-summary" style="font-size:10px;color:#888;margin-top:6px;">Sin ejecutar</div>
+            </div>
+
+            <div class="section" style="margin-top:4px;">
+                <label>Optimizador de parámetros</label>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+                    <input type="number" id="opt-rsi-min" value="5" min="2" placeholder="RSI min" style="font-size:10px;">
+                    <input type="number" id="opt-rsi-max" value="21" min="2" placeholder="RSI max" style="font-size:10px;">
+                    <input type="number" id="opt-sma-min" value="10" min="2" placeholder="SMA min" style="font-size:10px;">
+                    <input type="number" id="opt-sma-max" value="50" min="2" placeholder="SMA max" style="font-size:10px;">
+                </div>
+                <button id="estr-run-optimizer" style="width:100%;background:#9333ea;margin-top:6px;">Escanear parámetros</button>
+                <div id="estr-optimizer-summary" style="font-size:10px;color:#888;margin-top:6px;">Sin optimización</div>
+                <div id="estr-optimizer-results" style="max-height:120px;overflow-y:auto;font-size:9px;background:#0a0a0a;border:1px solid var(--border-color);border-radius:3px;padding:4px;color:#d1d5db;">
+                    Ejecute escaneo para ver ranking
+                </div>
+            </div>
+
+            <div class="section" style="margin-top:4px;">
+                <label style="font-size:10px;color:#9ca3af;">Comparativa (Auto vs Manual)</label>
+                <div id="estr-compare-stats" style="font-size:10px;color:#888;margin-bottom:4px;">Aún no hay resultados</div>
+                <div id="estr-compare-table" style="max-height:120px;overflow-y:auto;font-size:9px;background:#0a0a0a;border:1px solid var(--border-color);border-radius:3px;padding:4px;color:#d1d5db;">
+                    Ejecute backtest para ver coincidencias
                 </div>
             </div>
 

@@ -41,6 +41,7 @@ let currentSymbol = 'R_25';
 let currentTab = 'trading';
 let estrMarks = [];
 let estrMarkType = 'open';
+let estrAutoSignals = [];
 
 const chartOptions = {
     layout: { backgroundColor: '#0d1117', textColor: '#e6edf3' },
@@ -876,6 +877,7 @@ function initAnalysisCharts() {
         estrMarks.push({ time, type: estrMarkType, price: candle.close, indicators: ind });
         renderAnalysisMarksList();
         updateAnalysisMarkers();
+        renderComparison();
         estrAddLog(`Marca ${estrMarkType === 'open' ? 'ABRIR' : 'CERRAR'} @ ${candle.close.toFixed(2)}`);
     });
 
@@ -954,14 +956,299 @@ function updateAnalysisIndicators() {
 
 function updateAnalysisMarkers() {
     if (!analysisChartsReady || !estrCandleSeries) return;
-    const markers = estrMarks.map(m => ({
+    const manualMarkers = estrMarks.map(m => ({
         time: m.time,
         position: m.type === 'open' ? 'aboveBar' : 'belowBar',
         color: m.type === 'open' ? '#089981' : '#f23645',
         shape: m.type === 'open' ? 'arrowUp' : 'arrowDown',
         text: m.type === 'open' ? 'ABRIR' : 'CERRAR'
     }));
+
+    const autoMarkers = estrAutoSignals.map(s => ({
+        time: s.time,
+        position: s.type === 'CALL' ? 'aboveBar' : 'belowBar',
+        color: s.type === 'CALL' ? 'rgba(8,153,129,0.55)' : 'rgba(242,54,69,0.55)',
+        shape: s.type === 'CALL' ? 'circle' : 'square',
+        text: s.type
+    }));
+
+    const markers = [...manualMarkers, ...autoMarkers].sort((a, b) => a.time - b.time);
     estrCandleSeries.setMarkers(markers);
+}
+
+function normalizeManualType(type) {
+    return type === 'open' ? 'CALL' : 'PUT';
+}
+
+function findAutoSignalAt(time) {
+    return estrAutoSignals.find(s => s.time === time) || null;
+}
+
+function renderComparison() {
+    const statsEl = document.getElementById('estr-compare-stats');
+    const tableEl = document.getElementById('estr-compare-table');
+    if (!statsEl || !tableEl) return;
+
+    if (!estrAutoSignals.length) {
+        statsEl.textContent = 'Aún no hay resultados';
+        tableEl.textContent = 'Ejecute backtest para ver coincidencias';
+        return;
+    }
+
+    let hits = 0;
+    let directionMatches = 0;
+    const rows = [];
+
+    estrMarks.forEach((m) => {
+        const auto = findAutoSignalAt(m.time);
+        const manualType = normalizeManualType(m.type);
+        const sameCandle = !!auto;
+        const sameDirection = !!auto && auto.type === manualType;
+
+        if (sameCandle) hits += 1;
+        if (sameDirection) directionMatches += 1;
+
+        rows.push({
+            time: new Date(m.time * 1000).toLocaleTimeString(),
+            manual: manualType,
+            auto: auto ? auto.type : '—',
+            match: sameDirection ? '✓' : (sameCandle ? '✗' : '∅')
+        });
+    });
+
+    const omissions = Math.max(estrMarks.length - hits, 0);
+    const falsePositives = Math.max(estrAutoSignals.length - hits, 0);
+    statsEl.textContent = `Aciertos: ${directionMatches} · Fallos dir.: ${hits - directionMatches} · Omisiones: ${omissions} · Falsos+: ${falsePositives}`;
+
+    if (!rows.length) {
+        tableEl.textContent = 'No hay marcas manuales para comparar';
+        return;
+    }
+
+    tableEl.innerHTML = rows.map(r => (
+        `<div style="display:grid;grid-template-columns:1fr 52px 52px 22px;gap:4px;padding:2px 0;border-bottom:1px solid #1a1a1a;">` +
+        `<span style="color:#9ca3af;">${r.time}</span>` +
+        `<span>${r.manual}</span>` +
+        `<span>${r.auto}</span>` +
+        `<span style="text-align:center;">${r.match}</span>` +
+        `</div>`
+    )).join('');
+}
+
+async function runStrategyBacktest() {
+    if (!dataHistory.length) {
+        estrAddLog('Sin datos para backtest');
+        return;
+    }
+
+    const strategyId = document.getElementById('strategy')?.value || 'multi-momentum';
+    const params = {
+        minConfirmations: 3,
+        rsiPeriod: parseInt(document.getElementById('estr-rsi-period').value) || 7,
+        rsiHigh: parseFloat(document.getElementById('rsi-high').value) || 65,
+        rsiLow: parseFloat(document.getElementById('rsi-low').value) || 35,
+        stochPeriod: parseInt(document.getElementById('estr-stoch-period').value) || 14,
+        smaFast: parseInt(document.getElementById('estr-sma-period').value) || 23,
+        smaSlow: 21,
+        bbPeriod: parseInt(document.getElementById('estr-bb-period').value) || 20,
+        bbStdDev: 2
+    };
+
+    estrAddLog(`Backtest ${strategyId} iniciado (${dataHistory.length} velas)`);
+
+    try {
+        const res = await fetch(`/api/strategies/${strategyId}/backtest`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ candles: dataHistory, params })
+        });
+
+        const result = await res.json();
+        if (!res.ok || !result.success) {
+            throw new Error(result.error || `HTTP ${res.status}`);
+        }
+
+        estrAutoSignals = Array.isArray(result.signals) ? result.signals : [];
+        updateAnalysisMarkers();
+        renderComparison();
+
+        const summary = document.getElementById('estr-backtest-summary');
+        if (summary) {
+            summary.textContent = `Señales: ${result.stats?.signalsCount || 0} (CALL ${result.stats?.callCount || 0} / PUT ${result.stats?.putCount || 0})`;
+        }
+        estrAddLog(`Backtest completado: ${result.stats?.signalsCount || 0} señales`);
+    } catch (error) {
+        estrAddLog(`Backtest error: ${error.message}`);
+    }
+}
+
+function exportMarksJson() {
+    const payload = {
+        exportedAt: new Date().toISOString(),
+        symbol: currentSymbol,
+        marks: estrMarks
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `estr-marks-${currentSymbol}-${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    estrAddLog(`Marcas exportadas: ${estrMarks.length}`);
+}
+
+function importMarksJson(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+        try {
+            const parsed = JSON.parse(String(reader.result || '{}'));
+            const srcMarks = Array.isArray(parsed) ? parsed : (Array.isArray(parsed.marks) ? parsed.marks : []);
+            const normalized = srcMarks
+                .map(m => ({
+                    time: Number(m.time),
+                    type: m.type === 'close' ? 'close' : 'open',
+                    price: Number(m.price),
+                    indicators: m.indicators || {}
+                }))
+                .filter(m => Number.isFinite(m.time) && Number.isFinite(m.price));
+
+            if (!normalized.length) {
+                estrAddLog('Importación sin marcas válidas');
+                return;
+            }
+
+            const byTime = new Map();
+            [...estrMarks, ...normalized].forEach(m => byTime.set(m.time, m));
+            estrMarks = Array.from(byTime.values()).sort((a, b) => a.time - b.time);
+            renderAnalysisMarksList();
+            updateAnalysisMarkers();
+            renderComparison();
+            estrAddLog(`Marcas importadas: +${normalized.length}`);
+        } catch (e) {
+            estrAddLog(`Error importando JSON: ${e.message}`);
+        }
+    };
+    reader.readAsText(file);
+}
+
+function buildOptimizerParamSets() {
+    const rsiMin = parseInt(document.getElementById('opt-rsi-min')?.value || '5', 10);
+    const rsiMax = parseInt(document.getElementById('opt-rsi-max')?.value || '21', 10);
+    const smaMin = parseInt(document.getElementById('opt-sma-min')?.value || '10', 10);
+    const smaMax = parseInt(document.getElementById('opt-sma-max')?.value || '50', 10);
+
+    const sets = [];
+    for (let r = rsiMin; r <= rsiMax; r += 2) {
+        for (let s = smaMin; s <= smaMax; s += 5) {
+            sets.push({
+                rsiPeriod: r,
+                smaFast: s,
+                smaSlow: Math.max(s + 8, 21)
+            });
+        }
+    }
+    return sets;
+}
+
+function scoreSignalsAgainstMarks(signals, marks) {
+    const map = new Map(signals.map(s => [s.time, s]));
+    let hits = 0;
+    let matches = 0;
+    for (const m of marks) {
+        const sig = map.get(m.time);
+        if (!sig) continue;
+        hits += 1;
+        if (sig.type === normalizeManualType(m.type)) matches += 1;
+    }
+    const omissions = Math.max(marks.length - hits, 0);
+    const falsePositives = Math.max(signals.length - hits, 0);
+    const score = (matches * 3) - ((hits - matches) * 2) - omissions - falsePositives;
+    return { score, matches, hits, omissions, falsePositives };
+}
+
+async function runOptimizerScan() {
+    if (!dataHistory.length) {
+        estrAddLog('Sin datos para optimizar');
+        return;
+    }
+    if (!estrMarks.length) {
+        estrAddLog('Agregue/importe marcas manuales antes de optimizar');
+        return;
+    }
+
+    const strategyId = document.getElementById('strategy')?.value || 'multi-momentum';
+    const paramSets = buildOptimizerParamSets();
+    const resultsEl = document.getElementById('estr-optimizer-results');
+    const summaryEl = document.getElementById('estr-optimizer-summary');
+    if (resultsEl) resultsEl.textContent = 'Escaneando parámetros...';
+
+    const ranking = [];
+    for (let i = 0; i < paramSets.length; i++) {
+        const p = paramSets[i];
+        const params = {
+            minConfirmations: 3,
+            rsiPeriod: p.rsiPeriod,
+            rsiHigh: parseFloat(document.getElementById('rsi-high').value) || 65,
+            rsiLow: parseFloat(document.getElementById('rsi-low').value) || 35,
+            stochPeriod: parseInt(document.getElementById('estr-stoch-period').value) || 14,
+            smaFast: p.smaFast,
+            smaSlow: p.smaSlow,
+            bbPeriod: parseInt(document.getElementById('estr-bb-period').value) || 20,
+            bbStdDev: 2
+        };
+
+        try {
+            const res = await fetch(`/api/strategies/${strategyId}/backtest`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ candles: dataHistory, params })
+            });
+            const result = await res.json();
+            if (!res.ok || !result.success) continue;
+
+            const scored = scoreSignalsAgainstMarks(result.signals || [], estrMarks);
+            ranking.push({ params, stats: scored, signals: result.signals || [] });
+        } catch (_) {
+            // skip failed combo
+        }
+
+        if (i % 10 === 0) {
+            estrAddLog(`Optimizando... ${i + 1}/${paramSets.length}`);
+        }
+    }
+
+    ranking.sort((a, b) => b.stats.score - a.stats.score);
+    const top = ranking.slice(0, 10);
+
+    if (!top.length) {
+        if (summaryEl) summaryEl.textContent = 'Sin resultados válidos';
+        if (resultsEl) resultsEl.textContent = 'No se pudieron evaluar combinaciones';
+        return;
+    }
+
+    const best = top[0];
+    estrAutoSignals = best.signals;
+    updateAnalysisMarkers();
+    renderComparison();
+
+    if (summaryEl) {
+        summaryEl.textContent = `Mejor: score ${best.stats.score} · RSI ${best.params.rsiPeriod} · SMA ${best.params.smaFast}/${best.params.smaSlow}`;
+    }
+
+    if (resultsEl) {
+        resultsEl.innerHTML = top.map((r, idx) => (
+            `<div style="border-bottom:1px solid #1a1a1a;padding:3px 0;">` +
+            `<div><strong>#${idx + 1}</strong> score ${r.stats.score} · RSI ${r.params.rsiPeriod} · SMA ${r.params.smaFast}/${r.params.smaSlow}</div>` +
+            `<div style="color:#9ca3af;">Aciertos ${r.stats.matches} · Hits ${r.stats.hits} · Omis ${r.stats.omissions} · FP ${r.stats.falsePositives}</div>` +
+            `</div>`
+        )).join('');
+    }
+
+    estrAddLog(`Optimización completa (${ranking.length} combinaciones evaluadas)`);
 }
 
 function renderAnalysisMarksList() {
@@ -1005,6 +1292,7 @@ function renderAnalysisMarksList() {
             estrMarks.splice(idx, 1);
             renderAnalysisMarksList();
             updateAnalysisMarkers();
+            renderComparison();
             estrAddLog('Marca eliminada');
         });
     });
@@ -1051,8 +1339,31 @@ document.getElementById('estr-clear-marks')?.addEventListener('click', () => {
     estrMarks = [];
     renderAnalysisMarksList();
     updateAnalysisMarkers();
+    renderComparison();
     estrAddLog('Todas las marcas eliminadas');
 });
 document.getElementById('estr-mark-mode')?.addEventListener('change', (e) => {
     estrAddLog(e.target.checked ? 'Modo marcado activado — haga clic en el grafico' : 'Modo marcado desactivado');
+});
+
+document.getElementById('estr-run-backtest')?.addEventListener('click', () => {
+    runStrategyBacktest();
+});
+
+document.getElementById('estr-export-marks')?.addEventListener('click', () => {
+    exportMarksJson();
+});
+
+document.getElementById('estr-import-marks')?.addEventListener('click', () => {
+    document.getElementById('estr-import-file')?.click();
+});
+
+document.getElementById('estr-import-file')?.addEventListener('change', (e) => {
+    const file = e.target?.files?.[0];
+    importMarksJson(file);
+    e.target.value = '';
+});
+
+document.getElementById('estr-run-optimizer')?.addEventListener('click', () => {
+    runOptimizerScan();
 });

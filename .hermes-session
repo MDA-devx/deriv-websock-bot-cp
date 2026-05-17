@@ -1,0 +1,5 @@
+# Hermes project session config
+# Auto-generated for this repo
+SESSION_ID=20260516_032851_6fc7fa
+RESUME_CMD="hermes --resume 20260516_032851_6fc7fa"
+NEW_CMD="hermes"

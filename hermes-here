@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Repo-local Hermes launcher
+# Default: resume pinned session from .hermes-session
+# Usage:
+#   ./hermes-here         -> resume saved session
+#   ./hermes-here new     -> start brand new session
+#   ./hermes-here -- ...  -> pass extra args to hermes resume
+
+CFG="$(dirname "$0")/.hermes-session"
+if [[ ! -f "$CFG" ]]; then
+  echo "Missing $CFG" >&2
+  exit 1
+fi
+
+# shellcheck disable=SC1090
+source "$CFG"
+
+if [[ "${1:-}" == "new" ]]; then
+  shift
+  exec hermes "$@"
+fi
+
+if [[ "${1:-}" == "--" ]]; then
+  shift
+fi
+
+exec hermes --resume "$SESSION_ID" "$@"

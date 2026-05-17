@@ -116,6 +116,72 @@ class StrategyEngine {
     return result;
   }
 
+  runBacktest(strategyName, candles = [], params = {}) {
+    const setResult = this.setStrategy(strategyName, params);
+    if (!setResult.success) {
+      return { success: false, error: setResult.error || 'Could not set strategy' };
+    }
+
+    if (!Array.isArray(candles) || candles.length < 2) {
+      return { success: false, error: 'candles must be an array with at least 2 items' };
+    }
+
+    const normalized = candles
+      .map((c) => ({
+        time: Number(c.time),
+        open: Number(c.open),
+        high: Number(c.high),
+        low: Number(c.low),
+        close: Number(c.close)
+      }))
+      .filter((c) => Number.isFinite(c.time) && Number.isFinite(c.open) && Number.isFinite(c.high) && Number.isFinite(c.low) && Number.isFinite(c.close))
+      .sort((a, b) => a.time - b.time);
+
+    if (normalized.length < 2) {
+      return { success: false, error: 'No valid candles after normalization' };
+    }
+
+    this.reset();
+    this.activateStrategy();
+
+    const signals = [];
+    const warmup = 30;
+
+    for (let i = 0; i < normalized.length; i++) {
+      const slice = normalized.slice(0, i + 1);
+      this.setHistory(slice);
+      if (slice.length < warmup) continue;
+
+      const result = this.analyze();
+      if (!result || !result.signal) continue;
+
+      const last = slice[slice.length - 1];
+      signals.push({
+        time: last.time,
+        type: String(result.signal).toUpperCase(),
+        price: last.close,
+        strategyId: strategyName,
+        source: 'backend-backtest',
+        reason: result.reason || '',
+        indicators: result.indicators || {}
+      });
+    }
+
+    this.deactivateStrategy();
+
+    return {
+      success: true,
+      strategyId: strategyName,
+      processed: normalized.length,
+      signals,
+      stats: {
+        signalsCount: signals.length,
+        callCount: signals.filter((s) => s.type === 'CALL').length,
+        putCount: signals.filter((s) => s.type === 'PUT').length
+      }
+    };
+  }
+
   getActiveStrategy() {
     return this.activeStrategy ? this.activeStrategy.getMetadata() : null;
   }

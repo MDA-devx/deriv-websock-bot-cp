@@ -1,0 +1,2092 @@
+{
+  "success": true,
+  "strategyId": "adaptive-confluence",
+  "processed": 1440,
+  "signals": [
+    {
+      "time": 1778850780,
+      "type": "CALL",
+      "price": 2818.277,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "RSI=54.3 in bull zone; MACD bullish cross; Strong bullish body",
+      "indicators": {
+        "emaFast": 2818.1873579721605,
+        "emaSlow": 2820.1587590136787,
+        "rsi": 54.25798625151598,
+        "macdHist": 0.03966927725750247,
+        "bbUpper": 2821.0646360483734,
+        "bbMid": 2817.99475,
+        "bbLower": 2814.9248639516263,
+        "bbPos": 0.5459707617078726,
+        "bullishCount": 3,
+        "bearishCount": 2
+      }
+    },
+    {
+      "time": 1778851860,
+      "type": "PUT",
+      "price": 2818.54,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=55.0 in bear zone; MACD bearish cross; Strong bearish body",
+      "indicators": {
+        "emaFast": 2819.423492080565,
+        "emaSlow": 2819.9159820890036,
+        "rsi": 54.97414684591534,
+        "macdHist": -0.008644519204353052,
+        "bbUpper": 2821.9088983763836,
+        "bbMid": 2819.46605,
+        "bbLower": 2817.0232016236164,
+        "bbPos": 0.3104569221420619,
+        "bullishCount": 1,
+        "bearishCount": 4
+      }
+    },
+    {
+      "time": 1778853360,
+      "type": "CALL",
+      "price": 2824.249,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=46.9 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2824.6765816240427,
+        "emaSlow": 2822.8662981929524,
+        "rsi": 46.936227429886735,
+        "macdHist": -0.5263095353168352,
+        "bbUpper": 2830.3420321105714,
+        "bbMid": 2825.2043,
+        "bbLower": 2820.0665678894284,
+        "bbPos": 0.4070309643009185,
+        "bullishCount": 3,
+        "bearishCount": 1
+      }
+    },
+    {
+      "time": 1778853840,
+      "type": "CALL",
+      "price": 2831.731,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=63.0 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2826.7155993470383,
+        "emaSlow": 2824.319615730375,
+        "rsi": 62.99303202710531,
+        "macdHist": 0.2705205073897696,
+        "bbUpper": 2830.7849615735176,
+        "bbMid": 2827.0894500000004,
+        "bbLower": 2823.393938426483,
+        "bbPos": 1.127998303842703,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778854860,
+      "type": "CALL",
+      "price": 2836.762,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=59.2 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2833.931120181608,
+        "emaSlow": 2829.743805290618,
+        "rsi": 59.192278860568855,
+        "macdHist": -0.2093046379284873,
+        "bbUpper": 2839.0744060498764,
+        "bbMid": 2834.2819499999996,
+        "bbLower": 2829.489493950123,
+        "bbPos": 0.7587452001843938,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778855340,
+      "type": "CALL",
+      "price": 2839.064,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=60.7 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2835.963161868675,
+        "emaSlow": 2831.863058195057,
+        "rsi": 60.678915374632,
+        "macdHist": -0.08774711158080573,
+        "bbUpper": 2838.9910054589236,
+        "bbMid": 2836.3576999999996,
+        "bbLower": 2833.7243945410755,
+        "bbPos": 1.0138598696989118,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778855820,
+      "type": "CALL",
+      "price": 2838.452,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=56.8 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2837.1619218270257,
+        "emaSlow": 2833.5930435193436,
+        "rsi": 56.80192672602518,
+        "macdHist": -0.33790448741284784,
+        "bbUpper": 2839.975293643878,
+        "bbMid": 2837.4132,
+        "bbLower": 2834.851106356122,
+        "bbPos": 0.7027248306248232,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778857200,
+      "type": "CALL",
+      "price": 2850.966,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=66.1 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2848.0700857610555,
+        "emaSlow": 2842.4823572631394,
+        "rsi": 66.0519382762489,
+        "macdHist": -0.16599485186230778,
+        "bbUpper": 2853.069831221666,
+        "bbMid": 2848.5417500000003,
+        "bbLower": 2844.0136687783347,
+        "bbPos": 0.7676906487896251,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778857740,
+      "type": "CALL",
+      "price": 2852.606,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=63.7 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2850.1947908205543,
+        "emaSlow": 2845.240723963805,
+        "rsi": 63.654104159042355,
+        "macdHist": -0.31822970907922565,
+        "bbUpper": 2853.274614925571,
+        "bbMid": 2850.72035,
+        "bbLower": 2848.1660850744292,
+        "bbPos": 0.8691179370477359,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778858220,
+      "type": "CALL",
+      "price": 2854.826,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=61.9 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2851.894411304675,
+        "emaSlow": 2847.444332040785,
+        "rsi": 61.88968065452643,
+        "macdHist": -0.2104689964357198,
+        "bbUpper": 2854.654121650174,
+        "bbMid": 2852.1740499999996,
+        "bbLower": 2849.693978349825,
+        "bbPos": 1.0346518919753345,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778859000,
+      "type": "CALL",
+      "price": 2851.884,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=45.2 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2852.263840855272,
+        "emaSlow": 2849.568692624472,
+        "rsi": 45.18398706025106,
+        "macdHist": -0.566814350666247,
+        "bbUpper": 2855.8093259419916,
+        "bbMid": 2852.9831999999997,
+        "bbLower": 2850.1570740580078,
+        "bbPos": 0.3055288365484308,
+        "bullishCount": 3,
+        "bearishCount": 1
+      }
+    },
+    {
+      "time": 1778860380,
+      "type": "CALL",
+      "price": 2851.108,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=54.5 in bull zone; MACD bullish cross; Strong bullish body",
+      "indicators": {
+        "emaFast": 2850.4966829055033,
+        "emaSlow": 2850.149382457573,
+        "rsi": 54.46906035141263,
+        "macdHist": 0.08658216501186777,
+        "bbUpper": 2852.450205303212,
+        "bbMid": 2850.44505,
+        "bbLower": 2848.4398946967876,
+        "bbPos": 0.6653113848434447,
+        "bullishCount": 4,
+        "bearishCount": 1
+      }
+    },
+    {
+      "time": 1778860980,
+      "type": "CALL",
+      "price": 2852.169,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=68.6 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2850.991009274574,
+        "emaSlow": 2850.4871416059736,
+        "rsi": 68.58175473579165,
+        "macdHist": 0.2711530531619406,
+        "bbUpper": 2852.46919079227,
+        "bbMid": 2850.5078000000003,
+        "bbLower": 2848.5464092077304,
+        "bbPos": 0.9234750174586802,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778861640,
+      "type": "PUT",
+      "price": 2850.777,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "RSI=45.6 in bear zone; MACD bearish cross; Strong bearish body",
+      "indicators": {
+        "emaFast": 2851.631958127798,
+        "emaSlow": 2850.9866546911458,
+        "rsi": 45.57747727776515,
+        "macdHist": -0.012308263346694659,
+        "bbUpper": 2854.0972949930124,
+        "bbMid": 2851.51965,
+        "bbLower": 2848.942005006988,
+        "bbPos": 0.3559440881088343,
+        "bullishCount": 2,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778862360,
+      "type": "PUT",
+      "price": 2848.72,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=32.6 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2849.8815739123447,
+        "emaSlow": 2850.287438167459,
+        "rsi": 32.60250869611025,
+        "macdHist": -0.1408872083774158,
+        "bbUpper": 2854.0679085519077,
+        "bbMid": 2850.4308500000006,
+        "bbLower": 2846.7937914480935,
+        "bbPos": 0.26480307155025634,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778863440,
+      "type": "PUT",
+      "price": 2843.957,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=40.0 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2845.5981479844895,
+        "emaSlow": 2847.6117884124287,
+        "rsi": 40.03704107201182,
+        "macdHist": -0.01599608406313946,
+        "bbUpper": 2849.218445204276,
+        "bbMid": 2845.6963000000005,
+        "bbLower": 2842.174154795725,
+        "bbPos": 0.25309081552213286,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778864160,
+      "type": "PUT",
+      "price": 2843.541,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=44.5 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2844.464245155766,
+        "emaSlow": 2846.1873914008947,
+        "rsi": 44.52331549634277,
+        "macdHist": 0.31392456884765285,
+        "bbUpper": 2845.4652534650672,
+        "bbMid": 2843.8869999999993,
+        "bbLower": 2842.3087465349313,
+        "bbPos": 0.39038516066739876,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778864940,
+      "type": "PUT",
+      "price": 2844.975,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=48.1 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2844.7417210569133,
+        "emaSlow": 2845.6216902730002,
+        "rsi": 48.10152845978276,
+        "macdHist": 0.22006523484616283,
+        "bbUpper": 2846.468995630203,
+        "bbMid": 2844.59105,
+        "bbLower": 2842.713104369797,
+        "bbPos": 0.602226069228207,
+        "bullishCount": 1,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778866260,
+      "type": "PUT",
+      "price": 2839.621,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=50.8 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2839.9877977939536,
+        "emaSlow": 2842.1521185279016,
+        "rsi": 50.76808721506505,
+        "macdHist": 0.30505521891638376,
+        "bbUpper": 2842.7671448016413,
+        "bbMid": 2839.5834499999996,
+        "bbLower": 2836.399755198358,
+        "bbPos": 0.5058972361265758,
+        "bullishCount": 1,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778867040,
+      "type": "PUT",
+      "price": 2841.467,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=53.5 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2840.702491396652,
+        "emaSlow": 2841.6264013216114,
+        "rsi": 53.532277710109234,
+        "macdHist": 0.32008388518251096,
+        "bbUpper": 2842.48087199878,
+        "bbMid": 2840.1917,
+        "bbLower": 2837.9025280012197,
+        "bbPos": 0.7785504978830389,
+        "bullishCount": 1,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778867820,
+      "type": "PUT",
+      "price": 2837.928,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=32.9 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2840.340403237665,
+        "emaSlow": 2841.1199218029296,
+        "rsi": 32.92642692180763,
+        "macdHist": -0.17823915624054285,
+        "bbUpper": 2843.263287708937,
+        "bbMid": 2840.74795,
+        "bbLower": 2838.232612291063,
+        "bbPos": -0.06055097293316784,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778868960,
+      "type": "CALL",
+      "price": 2845.003,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=67.2 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2842.185097282337,
+        "emaSlow": 2841.5600482371715,
+        "rsi": 67.24168593277595,
+        "macdHist": 0.43627773713284723,
+        "bbUpper": 2845.4217856727114,
+        "bbMid": 2841.36895,
+        "bbLower": 2837.3161143272887,
+        "bbPos": 0.948334239711344,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778869560,
+      "type": "CALL",
+      "price": 2846.479,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=69.2 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2844.9578287291783,
+        "emaSlow": 2843.2275018949717,
+        "rsi": 69.17847489556908,
+        "macdHist": -0.04006757021417262,
+        "bbUpper": 2849.2160658808966,
+        "bbMid": 2844.7781000000004,
+        "bbLower": 2840.3401341191043,
+        "bbPos": 0.6916305854582073,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778870040,
+      "type": "CALL",
+      "price": 2851.334,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=61.0 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2847.1818038967476,
+        "emaSlow": 2844.7806853040483,
+        "rsi": 61.04861649857739,
+        "macdHist": 0.15414662630894416,
+        "bbUpper": 2850.6985900047302,
+        "bbMid": 2847.3265,
+        "bbLower": 2843.95440999527,
+        "bbPos": 1.0942160491532367,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778870580,
+      "type": "CALL",
+      "price": 2848.117,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=52.1 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2847.8508416101904,
+        "emaSlow": 2845.9269513584754,
+        "rsi": 52.050395256917604,
+        "macdHist": -0.5390319352650883,
+        "bbUpper": 2852.4626420750074,
+        "bbMid": 2848.3628,
+        "bbLower": 2844.2629579249924,
+        "bbPos": 0.47002323559020964,
+        "bullishCount": 3,
+        "bearishCount": 1
+      }
+    },
+    {
+      "time": 1778872920,
+      "type": "CALL",
+      "price": 2849.74,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=46.7 in bull zone; MACD bullish cross; Strong bullish body",
+      "indicators": {
+        "emaFast": 2849.4990175136513,
+        "emaSlow": 2849.362471959996,
+        "rsi": 46.70951156812237,
+        "macdHist": 0.05341932792789139,
+        "bbUpper": 2851.9383736529926,
+        "bbMid": 2849.3898999999997,
+        "bbLower": 2846.8414263470067,
+        "bbPos": 0.5686881733285636,
+        "bullishCount": 4,
+        "bearishCount": 1
+      }
+    },
+    {
+      "time": 1778873940,
+      "type": "PUT",
+      "price": 2845.62,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=33.6 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2847.500088266382,
+        "emaSlow": 2848.2866612797893,
+        "rsi": 33.58406701427528,
+        "macdHist": 0.04353850652782476,
+        "bbUpper": 2850.338921001561,
+        "bbMid": 2847.5984,
+        "bbLower": 2844.8578789984385,
+        "bbPos": 0.13904673620949476,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778874660,
+      "type": "PUT",
+      "price": 2844.386,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=35.3 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2844.9399714669844,
+        "emaSlow": 2846.603041637988,
+        "rsi": 35.2521739130454,
+        "macdHist": 0.12059105030690032,
+        "bbUpper": 2848.8167746668487,
+        "bbMid": 2845.0863,
+        "bbLower": 2841.355825333151,
+        "bbPos": 0.406137949920521,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778875140,
+      "type": "PUT",
+      "price": 2842.769,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=52.4 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2843.9845822248412,
+        "emaSlow": 2845.6705035645987,
+        "rsi": 52.4449068381716,
+        "macdHist": 0.14418386354272328,
+        "bbUpper": 2846.01578499765,
+        "bbMid": 2843.62775,
+        "bbLower": 2841.2397150023503,
+        "bbPos": 0.32019735873940963,
+        "bullishCount": 1,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778875680,
+      "type": "PUT",
+      "price": 2842.945,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=53.2 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2843.5201824996375,
+        "emaSlow": 2844.9077157584234,
+        "rsi": 53.24898785425224,
+        "macdHist": 0.20221677110612668,
+        "bbUpper": 2844.999159623802,
+        "bbMid": 2843.3596000000002,
+        "bbLower": 2841.7200403761985,
+        "bbPos": 0.37356361001415717,
+        "bullishCount": 1,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778876220,
+      "type": "PUT",
+      "price": 2842.213,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=46.9 in bear zone; MACD bearish cross",
+      "indicators": {
+        "emaFast": 2843.541781653542,
+        "emaSlow": 2844.541947338022,
+        "rsi": 46.91264105490291,
+        "macdHist": -0.05717950046956799,
+        "bbUpper": 2845.2123152871277,
+        "bbMid": 2843.4347500000003,
+        "bbLower": 2841.657184712873,
+        "bbPos": 0.15634173640547974,
+        "bullishCount": 1,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778877060,
+      "type": "CALL",
+      "price": 2842.106,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "RSI=49.5 in bull zone; MACD bullish cross; Strong bullish body",
+      "indicators": {
+        "emaFast": 2841.1777294280078,
+        "emaSlow": 2842.803254242351,
+        "rsi": 49.48984456946706,
+        "macdHist": 0.06603959809528581,
+        "bbUpper": 2844.4321182849985,
+        "bbMid": 2841.3632,
+        "bbLower": 2838.294281715001,
+        "bbPos": 0.6210198400575444,
+        "bullishCount": 3,
+        "bearishCount": 2
+      }
+    },
+    {
+      "time": 1778877780,
+      "type": "PUT",
+      "price": 2840.513,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; MACD bearish cross; Strong bearish body",
+      "indicators": {
+        "emaFast": 2841.992583371126,
+        "emaSlow": 2842.6863190215513,
+        "rsi": 55.77201273025387,
+        "macdHist": -0.03836989901692065,
+        "bbUpper": 2844.622026614241,
+        "bbMid": 2841.57125,
+        "bbLower": 2838.520473385759,
+        "bbPos": 0.3265605559154732,
+        "bullishCount": 1,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778878320,
+      "type": "CALL",
+      "price": 2842.088,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "RSI=47.8 in bull zone; MACD bullish cross; Strong bullish body",
+      "indicators": {
+        "emaFast": 2841.304631735417,
+        "emaSlow": 2842.1045309861684,
+        "rsi": 47.77063862928528,
+        "macdHist": 0.04033293444758562,
+        "bbUpper": 2844.1825846920074,
+        "bbMid": 2841.7195,
+        "bbLower": 2839.256415307993,
+        "bbPos": 0.5748045735487363,
+        "bullishCount": 3,
+        "bearishCount": 2
+      }
+    },
+    {
+      "time": 1778878860,
+      "type": "CALL",
+      "price": 2844.155,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=63.9 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2842.4519149286352,
+        "emaSlow": 2842.44858210753,
+        "rsi": 63.851656936107226,
+        "macdHist": 0.20248323961312145,
+        "bbUpper": 2844.6894158096966,
+        "bbMid": 2841.8848,
+        "bbLower": 2839.080184190303,
+        "bbPos": 0.9047256654817609,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778879580,
+      "type": "PUT",
+      "price": 2839.701,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=32.0 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2842.086922328999,
+        "emaSlow": 2842.3816551151963,
+        "rsi": 31.970300225977937,
+        "macdHist": -0.4639426969999854,
+        "bbUpper": 2845.678060171858,
+        "bbMid": 2842.7631499999998,
+        "bbLower": 2839.8482398281417,
+        "bbPos": -0.025256323430338817,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778880180,
+      "type": "PUT",
+      "price": 2837.958,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=33.7 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2840.265704212291,
+        "emaSlow": 2841.3620051944954,
+        "rsi": 33.69228864958717,
+        "macdHist": -0.2081436139749766,
+        "bbUpper": 2844.3520143481546,
+        "bbMid": 2840.693,
+        "bbLower": 2837.033985651846,
+        "bbPos": 0.12626547209637956,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778880840,
+      "type": "PUT",
+      "price": 2838.168,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=43.0 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2839.5685500703617,
+        "emaSlow": 2840.5999108226392,
+        "rsi": 42.99666110183662,
+        "macdHist": 0.1010309425768634,
+        "bbUpper": 2840.612197905683,
+        "bbMid": 2839.2084,
+        "bbLower": 2837.804602094317,
+        "bbPos": 0.129433839519191,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778881800,
+      "type": "PUT",
+      "price": 2839.449,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=54.0 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2840.4332595681767,
+        "emaSlow": 2840.537789032146,
+        "rsi": 53.97780225366358,
+        "macdHist": 0.001870081416482261,
+        "bbUpper": 2843.42066422017,
+        "bbMid": 2840.1416,
+        "bbLower": 2836.86253577983,
+        "bbPos": 0.3943906014802022,
+        "bullishCount": 1,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778882700,
+      "type": "PUT",
+      "price": 2834.848,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=35.0 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2837.124668293021,
+        "emaSlow": 2838.6832442532473,
+        "rsi": 35.00377105505494,
+        "macdHist": -0.23483515695933654,
+        "bbUpper": 2841.894990703512,
+        "bbMid": 2837.6346500000004,
+        "bbLower": 2833.3743092964887,
+        "bbPos": 0.1729545599834901,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778883180,
+      "type": "PUT",
+      "price": 2832.368,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=35.9 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2835.2655502253965,
+        "emaSlow": 2837.354723802384,
+        "rsi": 35.9245455236925,
+        "macdHist": -0.14412016991276233,
+        "bbUpper": 2838.6152960965037,
+        "bbMid": 2835.3554,
+        "bbLower": 2832.095503903496,
+        "bbPos": 0.041795211938817814,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778883720,
+      "type": "PUT",
+      "price": 2832.384,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=42.8 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2833.8327818031385,
+        "emaSlow": 2835.974417520501,
+        "rsi": 42.767345014536104,
+        "macdHist": 0.20633298789481813,
+        "bbUpper": 2836.012571514918,
+        "bbMid": 2833.5914499999994,
+        "bbLower": 2831.170328485081,
+        "bbPos": 0.2506424207625764,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778884260,
+      "type": "CALL",
+      "price": 2831.909,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "RSI=45.9 in bull zone; MACD bullish cross; Strong bullish body",
+      "indicators": {
+        "emaFast": 2831.721130948563,
+        "emaSlow": 2834.2480557306017,
+        "rsi": 45.92431491953032,
+        "macdHist": 0.09666530781870764,
+        "bbUpper": 2834.6924364642323,
+        "bbMid": 2831.6704500000005,
+        "bbLower": 2828.6484635357688,
+        "bbPos": 0.5394690715565831,
+        "bullishCount": 3,
+        "bearishCount": 2
+      }
+    },
+    {
+      "time": 1778884860,
+      "type": "PUT",
+      "price": 2826.629,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=36.5 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2829.835939607121,
+        "emaSlow": 2832.522347528923,
+        "rsi": 36.45429819500407,
+        "macdHist": -0.19940029934347026,
+        "bbUpper": 2833.099626386352,
+        "bbMid": 2829.8413,
+        "bbLower": 2826.582973613648,
+        "bbPos": 0.007062887644521367,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778885520,
+      "type": "PUT",
+      "price": 2827.557,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=45.2 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2828.7624695740105,
+        "emaSlow": 2830.969432739055,
+        "rsi": 45.21131374904278,
+        "macdHist": 0.22788022467200908,
+        "bbUpper": 2830.9955977402083,
+        "bbMid": 2828.43065,
+        "bbLower": 2825.8657022597913,
+        "bbPos": 0.32969438591193545,
+        "bullishCount": 1,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778886120,
+      "type": "PUT",
+      "price": 2828.076,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=47.7 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2828.6146380532255,
+        "emaSlow": 2830.1466396458213,
+        "rsi": 47.6937618147455,
+        "macdHist": 0.2190174597492044,
+        "bbUpper": 2829.8185759360586,
+        "bbMid": 2828.3713500000003,
+        "bbLower": 2826.924124063942,
+        "bbPos": 0.397959954751513,
+        "bullishCount": 1,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778886720,
+      "type": "PUT",
+      "price": 2826.4,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=40.5 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2827.8043202507783,
+        "emaSlow": 2829.252992890119,
+        "rsi": 40.529369684444966,
+        "macdHist": -0.10253110073963406,
+        "bbUpper": 2830.071472968613,
+        "bbMid": 2827.973,
+        "bbLower": 2825.874527031387,
+        "bbPos": 0.12520365438883194,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778887200,
+      "type": "PUT",
+      "price": 2827.239,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=51.3 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2827.8113841211416,
+        "emaSlow": 2828.859241325226,
+        "rsi": 51.27835520825426,
+        "macdHist": 0.09324446358860805,
+        "bbUpper": 2829.7283749268177,
+        "bbMid": 2827.74275,
+        "bbLower": 2825.757125073182,
+        "bbPos": 0.373150766492647,
+        "bullishCount": 1,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778887800,
+      "type": "PUT",
+      "price": 2826.441,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=41.4 in bear zone; MACD bearish cross; Strong bearish body",
+      "indicators": {
+        "emaFast": 2827.668236018972,
+        "emaSlow": 2828.467117771772,
+        "rsi": 41.44681867016878,
+        "macdHist": -0.07059233296988496,
+        "bbUpper": 2829.254979455109,
+        "bbMid": 2827.67035,
+        "bbLower": 2826.0857205448906,
+        "bbPos": 0.11210174528931469,
+        "bullishCount": 0,
+        "bearishCount": 4
+      }
+    },
+    {
+      "time": 1778888700,
+      "type": "PUT",
+      "price": 2822.626,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=37.6 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2823.3808678653363,
+        "emaSlow": 2825.6714612440474,
+        "rsi": 37.58241758241852,
+        "macdHist": 0.1370920320490685,
+        "bbUpper": 2828.9937182386293,
+        "bbMid": 2823.6119999999996,
+        "bbLower": 2818.23028176137,
+        "bbPos": 0.4083935690908186,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778889180,
+      "type": "PUT",
+      "price": 2821.207,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=51.7 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2822.8862897719023,
+        "emaSlow": 2824.824698401822,
+        "rsi": 51.6927293245207,
+        "macdHist": 0.12603778945119193,
+        "bbUpper": 2824.6453882590695,
+        "bbMid": 2822.04115,
+        "bbLower": 2819.4369117409306,
+        "bbPos": 0.33984760282682586,
+        "bullishCount": 1,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778889840,
+      "type": "PUT",
+      "price": 2822.553,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=44.3 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2822.328781350094,
+        "emaSlow": 2823.788412316191,
+        "rsi": 44.26605504587123,
+        "macdHist": 0.3272691975178169,
+        "bbUpper": 2824.385001357146,
+        "bbMid": 2822.1929,
+        "bbLower": 2820.000798642854,
+        "bbPos": 0.5821358006156973,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778890440,
+      "type": "CALL",
+      "price": 2821.703,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "RSI=52.5 in bull zone; MACD bullish cross; Strong bullish body",
+      "indicators": {
+        "emaFast": 2821.0237441915515,
+        "emaSlow": 2822.637759953706,
+        "rsi": 52.50356579836327,
+        "macdHist": 0.041240079814063635,
+        "bbUpper": 2823.9999344002194,
+        "bbMid": 2821.09285,
+        "bbLower": 2818.1857655997806,
+        "bbPos": 0.6049419136152218,
+        "bullishCount": 3,
+        "bearishCount": 2
+      }
+    },
+    {
+      "time": 1778891040,
+      "type": "PUT",
+      "price": 2819.799,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; MACD bearish cross; Strong bearish body",
+      "indicators": {
+        "emaFast": 2821.556189912944,
+        "emaSlow": 2822.4348399280593,
+        "rsi": 58.91734256812161,
+        "macdHist": -0.0812819574942823,
+        "bbUpper": 2824.3691348928537,
+        "bbMid": 2821.2274999999995,
+        "bbLower": 2818.0858651071453,
+        "bbPos": 0.27265022055097443,
+        "bullishCount": 1,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778891820,
+      "type": "PUT",
+      "price": 2815.82,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=34.0 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2819.3114314307663,
+        "emaSlow": 2820.964669501384,
+        "rsi": 33.980154355015756,
+        "macdHist": -0.3710852632399524,
+        "bbUpper": 2824.5324047889308,
+        "bbMid": 2820.0859500000006,
+        "bbLower": 2815.6394952110704,
+        "bbPos": 0.02029760758831065,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778892480,
+      "type": "PUT",
+      "price": 2812.497,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=35.7 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2815.6311399440738,
+        "emaSlow": 2818.4722623626735,
+        "rsi": 35.65563253784829,
+        "macdHist": -0.1992311671611653,
+        "bbUpper": 2820.995989352973,
+        "bbMid": 2815.94705,
+        "bbLower": 2810.8981106470274,
+        "bbPos": 0.15833913235965588,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778893200,
+      "type": "PUT",
+      "price": 2809.293,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=37.6 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2812.0940338558607,
+        "emaSlow": 2815.5428322909,
+        "rsi": 37.60399334442664,
+        "macdHist": 0.02833768753837873,
+        "bbUpper": 2816.2179189401177,
+        "bbMid": 2812.0701,
+        "bbLower": 2807.922281059882,
+        "bbPos": 0.16523369991640138,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778893980,
+      "type": "PUT",
+      "price": 2810.039,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=45.1 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2809.9919593306417,
+        "emaSlow": 2812.9071219732305,
+        "rsi": 45.099202984568585,
+        "macdHist": 0.520430459430155,
+        "bbUpper": 2811.483119055971,
+        "bbMid": 2809.2316499999993,
+        "bbLower": 2806.9801809440273,
+        "bbPos": 0.6792940475596335,
+        "bullishCount": 1,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778894760,
+      "type": "PUT",
+      "price": 2810.928,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=50.7 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2810.22164300385,
+        "emaSlow": 2811.766124315967,
+        "rsi": 50.711879143570606,
+        "macdHist": 0.40314666115101105,
+        "bbUpper": 2811.989751876979,
+        "bbMid": 2809.7954000000004,
+        "bbLower": 2807.601048123022,
+        "bbPos": 0.758071645637563,
+        "bullishCount": 1,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778895240,
+      "type": "CALL",
+      "price": 2811.385,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "RSI=54.0 in bull zone; MACD bullish cross; Strong bullish body",
+      "indicators": {
+        "emaFast": 2810.0272522807722,
+        "emaSlow": 2811.2434593531198,
+        "rsi": 54.03161706261601,
+        "macdHist": 0.060447821915508265,
+        "bbUpper": 2811.9423281755808,
+        "bbMid": 2809.99475,
+        "bbLower": 2808.047171824419,
+        "bbPos": 0.8569176368454864,
+        "bullishCount": 3,
+        "bearishCount": 2
+      }
+    },
+    {
+      "time": 1778895900,
+      "type": "CALL",
+      "price": 2814.392,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=68.1 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2812.506808757857,
+        "emaSlow": 2812.1254783267846,
+        "rsi": 68.08458723057939,
+        "macdHist": 0.18751270744755777,
+        "bbUpper": 2816.048431235651,
+        "bbMid": 2812.0288499999997,
+        "bbLower": 2808.0092687643482,
+        "bbPos": 0.7939547506889899,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778896740,
+      "type": "CALL",
+      "price": 2816.1,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=58.2 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2815.1605119547253,
+        "emaSlow": 2813.7736207040043,
+        "rsi": 58.173813169985195,
+        "macdHist": -0.12413882291653833,
+        "bbUpper": 2817.696255634644,
+        "bbMid": 2815.28705,
+        "bbLower": 2812.877844365356,
+        "bbPos": 0.668717437048527,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778897820,
+      "type": "PUT",
+      "price": 2812.272,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=47.6 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2813.3704518567165,
+        "emaSlow": 2813.480831642832,
+        "rsi": 47.59657918018273,
+        "macdHist": -0.21651624791312035,
+        "bbUpper": 2815.813168264209,
+        "bbMid": 2813.5683999999997,
+        "bbLower": 2811.3236317357905,
+        "bbPos": 0.2112396810241662,
+        "bullishCount": 1,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778898480,
+      "type": "PUT",
+      "price": 2812.347,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=54.8 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2812.5213206035673,
+        "emaSlow": 2812.9531904606138,
+        "rsi": 54.755277197866455,
+        "macdHist": 0.14936514319168187,
+        "bbUpper": 2814.0400859419406,
+        "bbMid": 2812.3203500000004,
+        "bbLower": 2810.6006140580603,
+        "bbPos": 0.5077482825560199,
+        "bullishCount": 1,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778899380,
+      "type": "PUT",
+      "price": 2812.855,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "RSI=50.3 in bear zone; MACD bearish cross; Strong bearish body",
+      "indicators": {
+        "emaFast": 2814.050021940387,
+        "emaSlow": 2813.6258898085903,
+        "rsi": 50.29314767313965,
+        "macdHist": -0.10568732037647699,
+        "bbUpper": 2816.669043155753,
+        "bbMid": 2813.93025,
+        "bbLower": 2811.1914568442467,
+        "bbPos": 0.3037000352251589,
+        "bullishCount": 2,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778899920,
+      "type": "PUT",
+      "price": 2811.248,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=30.6 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2813.134932221225,
+        "emaSlow": 2813.308981802912,
+        "rsi": 30.581803982818442,
+        "macdHist": -0.2822847005872434,
+        "bbUpper": 2816.8014137315536,
+        "bbMid": 2813.8418,
+        "bbLower": 2810.8821862684467,
+        "bbPos": 0.06180092483915316,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778901180,
+      "type": "PUT",
+      "price": 2805.654,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=44.1 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2806.7507387570713,
+        "emaSlow": 2809.3168089467663,
+        "rsi": 44.10295142923514,
+        "macdHist": 0.2752571530176364,
+        "bbUpper": 2810.8615236489704,
+        "bbMid": 2806.4776,
+        "bbLower": 2802.09367635103,
+        "bbPos": 0.4060658823068664,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778901720,
+      "type": "PUT",
+      "price": 2805.467,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=51.0 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2806.186107748877,
+        "emaSlow": 2808.231069810239,
+        "rsi": 50.95474758043394,
+        "macdHist": 0.4038131245807741,
+        "bbUpper": 2807.4799399834533,
+        "bbMid": 2805.4372,
+        "bbLower": 2803.3944600165464,
+        "bbPos": 0.5072941246173365,
+        "bullishCount": 1,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778902200,
+      "type": "PUT",
+      "price": 2799.972,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=31.5 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2804.143848113199,
+        "emaSlow": 2806.700534567563,
+        "rsi": 31.468324452338976,
+        "macdHist": -0.3057280040019583,
+        "bbUpper": 2808.2945733094734,
+        "bbMid": 2804.5913999999993,
+        "bbLower": 2800.8882266905252,
+        "bbPos": -0.12370831904909599,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778903040,
+      "type": "PUT",
+      "price": 2798.694,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=41.7 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2800.5274611056743,
+        "emaSlow": 2803.5697406556965,
+        "rsi": 41.72494172493986,
+        "macdHist": 0.1556544412984906,
+        "bbUpper": 2803.358220860508,
+        "bbMid": 2800.2919500000003,
+        "bbLower": 2797.2256791394925,
+        "bbPos": 0.23943104300060128,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778903520,
+      "type": "PUT",
+      "price": 2796.272,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=38.8 in bear zone; MACD bearish cross",
+      "indicators": {
+        "emaFast": 2799.0515939835636,
+        "emaSlow": 2802.0358214593175,
+        "rsi": 38.751135921067885,
+        "macdHist": -0.027102304175001368,
+        "bbUpper": 2800.796045408003,
+        "bbMid": 2798.8206,
+        "bbLower": 2796.845154591997,
+        "bbPos": -0.14506971179135,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778904540,
+      "type": "PUT",
+      "price": 2793.55,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=48.6 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2794.725801085497,
+        "emaSlow": 2797.927300885295,
+        "rsi": 48.561341571050086,
+        "macdHist": 0.36667962076186567,
+        "bbUpper": 2797.011980468821,
+        "bbMid": 2794.1947,
+        "bbLower": 2791.377419531179,
+        "bbPos": 0.3855811469367814,
+        "bullishCount": 1,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778905440,
+      "type": "PUT",
+      "price": 2795.59,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=54.7 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2795.3048802880558,
+        "emaSlow": 2796.785667092493,
+        "rsi": 54.65801886792593,
+        "macdHist": 0.22954964937107047,
+        "bbUpper": 2797.005895418784,
+        "bbMid": 2795.0228,
+        "bbLower": 2793.0397045812165,
+        "bbPos": 0.6430087515274072,
+        "bullishCount": 1,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778905980,
+      "type": "PUT",
+      "price": 2791.88,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=33.1 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2794.1774887993083,
+        "emaSlow": 2795.812042712963,
+        "rsi": 33.08876593697501,
+        "macdHist": -0.31788705802453315,
+        "bbUpper": 2797.470368298286,
+        "bbMid": 2794.7740000000003,
+        "bbLower": 2792.077631701715,
+        "bbPos": -0.03664775725192871,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778907300,
+      "type": "CALL",
+      "price": 2797.851,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=53.9 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2796.908706964358,
+        "emaSlow": 2796.383453465018,
+        "rsi": 53.876392225376776,
+        "macdHist": 0.04912300543047887,
+        "bbUpper": 2799.688959436687,
+        "bbMid": 2796.79705,
+        "bbLower": 2793.905140563313,
+        "bbPos": 0.6822238944673525,
+        "bullishCount": 3,
+        "bearishCount": 1
+      }
+    },
+    {
+      "time": 1778908560,
+      "type": "CALL",
+      "price": 2800.854,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=63.8 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2796.077048715936,
+        "emaSlow": 2795.9735688492833,
+        "rsi": 63.82147134842105,
+        "macdHist": 0.7775967502503652,
+        "bbUpper": 2800.8433143812863,
+        "bbMid": 2795.5006000000003,
+        "bbLower": 2790.1578856187143,
+        "bbPos": 1.0010000177766336,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778909280,
+      "type": "CALL",
+      "price": 2802.034,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=65.2 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2800.571540169897,
+        "emaSlow": 2798.531989685299,
+        "rsi": 65.15576761156392,
+        "macdHist": -0.11821247611860475,
+        "bbUpper": 2807.880263929826,
+        "bbMid": 2800.180950000001,
+        "bbLower": 2792.4816360701757,
+        "bbPos": 0.6203386442538092,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778910120,
+      "type": "CALL",
+      "price": 2803.214,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=55.8 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2802.306525472593,
+        "emaSlow": 2800.432989311715,
+        "rsi": 55.79909573422345,
+        "macdHist": -0.33371025229652274,
+        "bbUpper": 2804.874801304038,
+        "bbMid": 2802.6241,
+        "bbLower": 2800.373398695962,
+        "bbPos": 0.6310480424349452,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778910600,
+      "type": "CALL",
+      "price": 2804.256,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=56.0 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2802.8408847260434,
+        "emaSlow": 2801.1995137592144,
+        "rsi": 56.04963805584094,
+        "macdHist": -0.06895949075920482,
+        "bbUpper": 2804.9708157918,
+        "bbMid": 2803.2142000000003,
+        "bbLower": 2801.457584208201,
+        "bbPos": 0.7965361022208152,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778911200,
+      "type": "CALL",
+      "price": 2805.849,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=67.6 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2804.442478280357,
+        "emaSlow": 2802.580931251732,
+        "rsi": 67.56903674711991,
+        "macdHist": -0.021912052607733212,
+        "bbUpper": 2806.7782124020177,
+        "bbMid": 2804.2387000000003,
+        "bbLower": 2801.699187597983,
+        "bbPos": 0.8170490521567427,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778911680,
+      "type": "CALL",
+      "price": 2805.78,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=49.5 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2804.5599636316033,
+        "emaSlow": 2803.1443759178364,
+        "rsi": 49.50433705080662,
+        "macdHist": -0.13713281691773338,
+        "bbUpper": 2806.719610270629,
+        "bbMid": 2804.9267499999996,
+        "bbLower": 2803.1338897293704,
+        "bbPos": 0.7379577521959074,
+        "bullishCount": 3,
+        "bearishCount": 1
+      }
+    },
+    {
+      "time": 1778912400,
+      "type": "CALL",
+      "price": 2807.061,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=64.1 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2806.371442245196,
+        "emaSlow": 2804.6851086280085,
+        "rsi": 64.11933789275535,
+        "macdHist": -0.10447132697279193,
+        "bbUpper": 2809.202669225029,
+        "bbMid": 2806.1723,
+        "bbLower": 2803.1419307749716,
+        "bbPos": 0.646632296926059,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778912880,
+      "type": "CALL",
+      "price": 2807.103,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=45.7 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2806.7537323720935,
+        "emaSlow": 2805.355617277756,
+        "rsi": 45.650999459751695,
+        "macdHist": -0.20760020807760649,
+        "bbUpper": 2808.7093729762955,
+        "bbMid": 2807.1922000000004,
+        "bbLower": 2805.6750270237053,
+        "bbPos": 0.4706032201357258,
+        "bullishCount": 3,
+        "bearishCount": 1
+      }
+    },
+    {
+      "time": 1778913600,
+      "type": "CALL",
+      "price": 2807.241,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=51.6 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2806.3174395003634,
+        "emaSlow": 2805.635606019243,
+        "rsi": 51.649278919913385,
+        "macdHist": -0.03199033016068476,
+        "bbUpper": 2808.466982628168,
+        "bbMid": 2806.5098000000007,
+        "bbLower": 2804.5526173718335,
+        "bbPos": 0.6867991237700701,
+        "bullishCount": 3,
+        "bearishCount": 1
+      }
+    },
+    {
+      "time": 1778914140,
+      "type": "CALL",
+      "price": 2805.239,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=49.1 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2805.4020844819033,
+        "emaSlow": 2805.396705570531,
+        "rsi": 49.12223312615825,
+        "macdHist": -0.16489557425227436,
+        "bbUpper": 2807.5866446689506,
+        "bbMid": 2805.5717999999997,
+        "bbLower": 2803.556955331049,
+        "bbPos": 0.41741298842333013,
+        "bullishCount": 3,
+        "bearishCount": 1
+      }
+    },
+    {
+      "time": 1778915640,
+      "type": "CALL",
+      "price": 2801.018,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "RSI=46.8 in bull zone; MACD bullish cross; Strong bullish body",
+      "indicators": {
+        "emaFast": 2800.9679249357746,
+        "emaSlow": 2802.6127641188154,
+        "rsi": 46.82303711045185,
+        "macdHist": 0.10071964815487289,
+        "bbUpper": 2802.80808142322,
+        "bbMid": 2800.79395,
+        "bbLower": 2798.7798185767806,
+        "bbPos": 0.5556195085923585,
+        "bullishCount": 3,
+        "bearishCount": 2
+      }
+    },
+    {
+      "time": 1778918040,
+      "type": "CALL",
+      "price": 2809.694,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=69.7 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2807.1718029383205,
+        "emaSlow": 2805.160780281282,
+        "rsi": 69.67701076630425,
+        "macdHist": 0.0833796427136857,
+        "bbUpper": 2810.226612054714,
+        "bbMid": 2807.2606500000006,
+        "bbLower": 2804.294687945287,
+        "bbPos": 0.9102125979885987,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778919060,
+      "type": "CALL",
+      "price": 2808.047,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=49.2 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2807.355946654437,
+        "emaSlow": 2806.3329977339895,
+        "rsi": 49.16170903191059,
+        "macdHist": -0.21048109070881021,
+        "bbUpper": 2809.9249601674974,
+        "bbMid": 2807.9013499999996,
+        "bbLower": 2805.877739832502,
+        "bbPos": 0.5359876626288373,
+        "bullishCount": 3,
+        "bearishCount": 1
+      }
+    },
+    {
+      "time": 1778919840,
+      "type": "CALL",
+      "price": 2811.744,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=69.0 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2809.481389331991,
+        "emaSlow": 2807.8887495401013,
+        "rsi": 68.98729529265091,
+        "macdHist": 0.12185710306978759,
+        "bbUpper": 2812.44558233743,
+        "bbMid": 2809.01765,
+        "bbLower": 2805.5897176625695,
+        "bbPos": 0.8976668340606919,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778920740,
+      "type": "CALL",
+      "price": 2810.263,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=53.7 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2808.6180313524037,
+        "emaSlow": 2808.036677634987,
+        "rsi": 53.67850553505468,
+        "macdHist": 0.1371232070522646,
+        "bbUpper": 2811.324305697634,
+        "bbMid": 2808.6811000000007,
+        "bbLower": 2806.0378943023675,
+        "bbPos": 0.7992389130773454,
+        "bullishCount": 3,
+        "bearishCount": 1
+      }
+    },
+    {
+      "time": 1778921520,
+      "type": "CALL",
+      "price": 2809.45,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=51.2 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2809.164100553734,
+        "emaSlow": 2808.627538557548,
+        "rsi": 51.23424823062329,
+        "macdHist": -0.10131539292938502,
+        "bbUpper": 2811.1042050118567,
+        "bbMid": 2809.2498499999992,
+        "bbLower": 2807.3954949881418,
+        "bbPos": 0.5539675517149462,
+        "bullishCount": 3,
+        "bearishCount": 1
+      }
+    },
+    {
+      "time": 1778922540,
+      "type": "PUT",
+      "price": 2803.224,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=36.6 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2805.2084843617076,
+        "emaSlow": 2806.6446444926373,
+        "rsi": 36.5960846983609,
+        "macdHist": -0.09042381129780397,
+        "bbUpper": 2809.6554302664968,
+        "bbMid": 2805.4572500000004,
+        "bbLower": 2801.259069733504,
+        "bbPos": 0.234021664359829,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778923020,
+      "type": "PUT",
+      "price": 2801.545,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=37.2 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2803.369550968764,
+        "emaSlow": 2805.3565892901643,
+        "rsi": 37.21671388101946,
+        "macdHist": -0.06367665916974485,
+        "bbUpper": 2805.924683201242,
+        "bbMid": 2803.30865,
+        "bbLower": 2800.692616798758,
+        "bbPos": 0.16291521086914248,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778923800,
+      "type": "PUT",
+      "price": 2799.905,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=39.0 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2800.945558872059,
+        "emaSlow": 2803.180833400872,
+        "rsi": 38.967268623024765,
+        "macdHist": 0.23104084068412067,
+        "bbUpper": 2802.6488295527834,
+        "bbMid": 2800.5996000000005,
+        "bbLower": 2798.5503704472176,
+        "bbPos": 0.33052167116734554,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778924400,
+      "type": "PUT",
+      "price": 2798.99,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=43.4 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2800.1903546094354,
+        "emaSlow": 2802.062656011079,
+        "rsi": 43.38340953624776,
+        "macdHist": 0.13380412657639895,
+        "bbUpper": 2801.018793580225,
+        "bbMid": 2799.9087499999996,
+        "bbLower": 2798.798706419774,
+        "bbPos": 0.08616489642091019,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778924940,
+      "type": "CALL",
+      "price": 2798.464,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "RSI=47.8 in bull zone; MACD bullish cross; Strong bullish body",
+      "indicators": {
+        "emaFast": 2798.469481287672,
+        "emaSlow": 2800.599298613093,
+        "rsi": 47.83208344108201,
+        "macdHist": 0.09661291440579767,
+        "bbUpper": 2801.732880610735,
+        "bbMid": 2798.6353,
+        "bbLower": 2795.537719389265,
+        "bbPos": 0.4723493878728578,
+        "bullishCount": 3,
+        "bearishCount": 2
+      }
+    },
+    {
+      "time": 1778925480,
+      "type": "PUT",
+      "price": 2796.901,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=51.8 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2798.496031899546,
+        "emaSlow": 2799.974784077545,
+        "rsi": 51.798330122028375,
+        "macdHist": 0.15542936550579312,
+        "bbUpper": 2800.383951448962,
+        "bbMid": 2798.0107,
+        "bbLower": 2795.637448551038,
+        "bbPos": 0.2662068213451818,
+        "bullishCount": 1,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778927400,
+      "type": "PUT",
+      "price": 2797.409,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "RSI=44.2 in bear zone; MACD bearish cross; Strong bearish body",
+      "indicators": {
+        "emaFast": 2799.0506483040913,
+        "emaSlow": 2798.7615394122217,
+        "rsi": 44.211073177972466,
+        "macdHist": -0.11605672928364386,
+        "bbUpper": 2802.301812149732,
+        "bbMid": 2799.10225,
+        "bbLower": 2795.9026878502677,
+        "bbPos": 0.23539348186414438,
+        "bullishCount": 1,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778927880,
+      "type": "CALL",
+      "price": 2801.144,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=51.5 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2799.48316032863,
+        "emaSlow": 2799.0383368120524,
+        "rsi": 51.512121969506886,
+        "macdHist": -0.009080569298732799,
+        "bbUpper": 2801.9382282811703,
+        "bbMid": 2799.75465,
+        "bbLower": 2797.5710717188294,
+        "bbPos": 0.8181360640881676,
+        "bullishCount": 3,
+        "bearishCount": 1
+      }
+    },
+    {
+      "time": 1778928600,
+      "type": "CALL",
+      "price": 2803.573,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendUp; RSI=64.1 in bull zone; Strong bullish body",
+      "indicators": {
+        "emaFast": 2801.73691087229,
+        "emaSlow": 2800.366135137312,
+        "rsi": 64.13960915519769,
+        "macdHist": 0.17987122802361788,
+        "bbUpper": 2804.9303505882885,
+        "bbMid": 2801.3288000000002,
+        "bbLower": 2797.727249411712,
+        "bbPos": 0.81156024953494,
+        "bullishCount": 3,
+        "bearishCount": 0
+      }
+    },
+    {
+      "time": 1778929920,
+      "type": "PUT",
+      "price": 2797.97,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=44.1 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2799.790254349485,
+        "emaSlow": 2800.128366626982,
+        "rsi": 44.09652736903993,
+        "macdHist": -0.2723281747376672,
+        "bbUpper": 2802.5533544346786,
+        "bbMid": 2800.0123,
+        "bbLower": 2797.471245565321,
+        "bbPos": 0.0981392660999203,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778930640,
+      "type": "PUT",
+      "price": 2794.637,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=36.2 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2797.420844436739,
+        "emaSlow": 2798.7713039868945,
+        "rsi": 36.22780634520229,
+        "macdHist": -0.1699229528033106,
+        "bbUpper": 2800.7699105545735,
+        "bbMid": 2797.65905,
+        "bbLower": 2794.548189445427,
+        "bbPos": 0.01427427443552053,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778931480,
+      "type": "PUT",
+      "price": 2792.627,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=34.4 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2794.685698758501,
+        "emaSlow": 2796.6604856401036,
+        "rsi": 34.3992548897819,
+        "macdHist": 0.03361261934894477,
+        "bbUpper": 2796.824712083418,
+        "bbMid": 2794.5005499999997,
+        "bbLower": 2792.1763879165815,
+        "bbPos": 0.09694076128196459,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    },
+    {
+      "time": 1778931960,
+      "type": "PUT",
+      "price": 2792.29,
+      "strategyId": "adaptive-confluence",
+      "source": "backend-backtest",
+      "reason": "TrendDown; RSI=35.5 in bear zone; Strong bearish body",
+      "indicators": {
+        "emaFast": 2793.5358936576663,
+        "emaSlow": 2795.5493904629884,
+        "rsi": 35.533056843131575,
+        "macdHist": 0.10735164381384399,
+        "bbUpper": 2795.112261476072,
+        "bbMid": 2793.3542500000003,
+        "bbLower": 2791.5962385239286,
+        "bbPos": 0.19731426259559234,
+        "bullishCount": 0,
+        "bearishCount": 3
+      }
+    }
+  ],
+  "stats": {
+    "signalsCount": 104,
+    "callCount": 45,
+    "putCount": 59
+  }
+}

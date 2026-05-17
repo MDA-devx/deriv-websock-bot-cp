@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "strategyId": "multi-momentum",
+  "processed": 1440,
+  "signals": [],
+  "stats": {
+    "signalsCount": 0,
+    "callCount": 0,
+    "putCount": 0
+  }
+}

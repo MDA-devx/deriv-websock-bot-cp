@@ -1,0 +1,957 @@
+{
+  "strategy": "adaptive-confluence",
+  "dataset": "candles_1440_R25_M1",
+  "timeframe": "1m",
+  "horizonCandles": 5,
+  "totals": {
+    "signals": 104,
+    "evaluated": 104,
+    "skipped": 0,
+    "callCount": 45,
+    "putCount": 59,
+    "wins": 64,
+    "losses": 40,
+    "flats": 0,
+    "winRate": 0.6153846153846154,
+    "lossRate": 0.38461538461538464
+  },
+  "notes": "Proxy quality metric: compares entry close vs close after N candles. Not a full PnL model (no spread/slippage/expiry modeling).",
+  "perSignal": [
+    {
+      "time": 1778850780,
+      "type": "CALL",
+      "entry": 2818.277,
+      "future": 2817.774,
+      "horizon": 5,
+      "delta": -0.5030000000001564,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778851860,
+      "type": "PUT",
+      "entry": 2818.54,
+      "future": 2819.336,
+      "horizon": 5,
+      "delta": 0.7959999999998217,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778853360,
+      "type": "CALL",
+      "entry": 2824.249,
+      "future": 2828.836,
+      "horizon": 5,
+      "delta": 4.586999999999989,
+      "outcome": "win"
+    },
+    {
+      "time": 1778853840,
+      "type": "CALL",
+      "entry": 2831.731,
+      "future": 2833.352,
+      "horizon": 5,
+      "delta": 1.6209999999996398,
+      "outcome": "win"
+    },
+    {
+      "time": 1778854860,
+      "type": "CALL",
+      "entry": 2836.762,
+      "future": 2836.921,
+      "horizon": 5,
+      "delta": 0.15899999999965075,
+      "outcome": "win"
+    },
+    {
+      "time": 1778855340,
+      "type": "CALL",
+      "entry": 2839.064,
+      "future": 2839.418,
+      "horizon": 5,
+      "delta": 0.3540000000002692,
+      "outcome": "win"
+    },
+    {
+      "time": 1778855820,
+      "type": "CALL",
+      "entry": 2838.452,
+      "future": 2844.335,
+      "horizon": 5,
+      "delta": 5.882999999999811,
+      "outcome": "win"
+    },
+    {
+      "time": 1778857200,
+      "type": "CALL",
+      "entry": 2850.966,
+      "future": 2850.913,
+      "horizon": 5,
+      "delta": -0.052999999999883585,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778857740,
+      "type": "CALL",
+      "entry": 2852.606,
+      "future": 2851.041,
+      "horizon": 5,
+      "delta": -1.5650000000000546,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778858220,
+      "type": "CALL",
+      "entry": 2854.826,
+      "future": 2854.264,
+      "horizon": 5,
+      "delta": -0.5619999999998981,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778859000,
+      "type": "CALL",
+      "entry": 2851.884,
+      "future": 2851.015,
+      "horizon": 5,
+      "delta": -0.8690000000001419,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778860380,
+      "type": "CALL",
+      "entry": 2851.108,
+      "future": 2850.818,
+      "horizon": 5,
+      "delta": -0.2899999999999636,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778860980,
+      "type": "CALL",
+      "entry": 2852.169,
+      "future": 2852.485,
+      "horizon": 5,
+      "delta": 0.3160000000002583,
+      "outcome": "win"
+    },
+    {
+      "time": 1778861640,
+      "type": "PUT",
+      "entry": 2850.777,
+      "future": 2848.967,
+      "horizon": 5,
+      "delta": -1.8099999999999454,
+      "outcome": "win"
+    },
+    {
+      "time": 1778862360,
+      "type": "PUT",
+      "entry": 2848.72,
+      "future": 2844.888,
+      "horizon": 5,
+      "delta": -3.83199999999988,
+      "outcome": "win"
+    },
+    {
+      "time": 1778863440,
+      "type": "PUT",
+      "entry": 2843.957,
+      "future": 2843.494,
+      "horizon": 5,
+      "delta": -0.46299999999973807,
+      "outcome": "win"
+    },
+    {
+      "time": 1778864160,
+      "type": "PUT",
+      "entry": 2843.541,
+      "future": 2844.666,
+      "horizon": 5,
+      "delta": 1.125,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778864940,
+      "type": "PUT",
+      "entry": 2844.975,
+      "future": 2841.189,
+      "horizon": 5,
+      "delta": -3.786000000000058,
+      "outcome": "win"
+    },
+    {
+      "time": 1778866260,
+      "type": "PUT",
+      "entry": 2839.621,
+      "future": 2840.336,
+      "horizon": 5,
+      "delta": 0.7149999999996908,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778867040,
+      "type": "PUT",
+      "entry": 2841.467,
+      "future": 2839.724,
+      "horizon": 5,
+      "delta": -1.7429999999999382,
+      "outcome": "win"
+    },
+    {
+      "time": 1778867820,
+      "type": "PUT",
+      "entry": 2837.928,
+      "future": 2841.125,
+      "horizon": 5,
+      "delta": 3.1970000000001164,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778868960,
+      "type": "CALL",
+      "entry": 2845.003,
+      "future": 2848.374,
+      "horizon": 5,
+      "delta": 3.37099999999964,
+      "outcome": "win"
+    },
+    {
+      "time": 1778869560,
+      "type": "CALL",
+      "entry": 2846.479,
+      "future": 2848.11,
+      "horizon": 5,
+      "delta": 1.6310000000003129,
+      "outcome": "win"
+    },
+    {
+      "time": 1778870040,
+      "type": "CALL",
+      "entry": 2851.334,
+      "future": 2847.141,
+      "horizon": 5,
+      "delta": -4.192999999999756,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778870580,
+      "type": "CALL",
+      "entry": 2848.117,
+      "future": 2851.789,
+      "horizon": 5,
+      "delta": 3.6720000000000255,
+      "outcome": "win"
+    },
+    {
+      "time": 1778872920,
+      "type": "CALL",
+      "entry": 2849.74,
+      "future": 2846.843,
+      "horizon": 5,
+      "delta": -2.8969999999999345,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778873940,
+      "type": "PUT",
+      "entry": 2845.62,
+      "future": 2841.993,
+      "horizon": 5,
+      "delta": -3.6269999999999527,
+      "outcome": "win"
+    },
+    {
+      "time": 1778874660,
+      "type": "PUT",
+      "entry": 2844.386,
+      "future": 2842.718,
+      "horizon": 5,
+      "delta": -1.66800000000012,
+      "outcome": "win"
+    },
+    {
+      "time": 1778875140,
+      "type": "PUT",
+      "entry": 2842.769,
+      "future": 2843.302,
+      "horizon": 5,
+      "delta": 0.5330000000003565,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778875680,
+      "type": "PUT",
+      "entry": 2842.945,
+      "future": 2843.481,
+      "horizon": 5,
+      "delta": 0.5360000000000582,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778876220,
+      "type": "PUT",
+      "entry": 2842.213,
+      "future": 2839.996,
+      "horizon": 5,
+      "delta": -2.2170000000000982,
+      "outcome": "win"
+    },
+    {
+      "time": 1778877060,
+      "type": "CALL",
+      "entry": 2842.106,
+      "future": 2842.494,
+      "horizon": 5,
+      "delta": 0.38799999999991996,
+      "outcome": "win"
+    },
+    {
+      "time": 1778877780,
+      "type": "PUT",
+      "entry": 2840.513,
+      "future": 2841.374,
+      "horizon": 5,
+      "delta": 0.8609999999998763,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778878320,
+      "type": "CALL",
+      "entry": 2842.088,
+      "future": 2842.728,
+      "horizon": 5,
+      "delta": 0.6399999999998727,
+      "outcome": "win"
+    },
+    {
+      "time": 1778878860,
+      "type": "CALL",
+      "entry": 2844.155,
+      "future": 2843.142,
+      "horizon": 5,
+      "delta": -1.0130000000003747,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778879580,
+      "type": "PUT",
+      "entry": 2839.701,
+      "future": 2838.618,
+      "horizon": 5,
+      "delta": -1.0830000000000837,
+      "outcome": "win"
+    },
+    {
+      "time": 1778880180,
+      "type": "PUT",
+      "entry": 2837.958,
+      "future": 2837.947,
+      "horizon": 5,
+      "delta": -0.010999999999967258,
+      "outcome": "win"
+    },
+    {
+      "time": 1778880840,
+      "type": "PUT",
+      "entry": 2838.168,
+      "future": 2839.891,
+      "horizon": 5,
+      "delta": 1.7229999999999563,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778881800,
+      "type": "PUT",
+      "entry": 2839.449,
+      "future": 2837.81,
+      "horizon": 5,
+      "delta": -1.6390000000001237,
+      "outcome": "win"
+    },
+    {
+      "time": 1778882700,
+      "type": "PUT",
+      "entry": 2834.848,
+      "future": 2834.26,
+      "horizon": 5,
+      "delta": -0.5879999999997381,
+      "outcome": "win"
+    },
+    {
+      "time": 1778883180,
+      "type": "PUT",
+      "entry": 2832.368,
+      "future": 2832.356,
+      "horizon": 5,
+      "delta": -0.011999999999716238,
+      "outcome": "win"
+    },
+    {
+      "time": 1778883720,
+      "type": "PUT",
+      "entry": 2832.384,
+      "future": 2829.916,
+      "horizon": 5,
+      "delta": -2.467999999999847,
+      "outcome": "win"
+    },
+    {
+      "time": 1778884260,
+      "type": "CALL",
+      "entry": 2831.909,
+      "future": 2828.802,
+      "horizon": 5,
+      "delta": -3.106999999999971,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778884860,
+      "type": "PUT",
+      "entry": 2826.629,
+      "future": 2828.753,
+      "horizon": 5,
+      "delta": 2.124000000000251,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778885520,
+      "type": "PUT",
+      "entry": 2827.557,
+      "future": 2828.217,
+      "horizon": 5,
+      "delta": 0.6600000000003092,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778886120,
+      "type": "PUT",
+      "entry": 2828.076,
+      "future": 2827.7,
+      "horizon": 5,
+      "delta": -0.3760000000002037,
+      "outcome": "win"
+    },
+    {
+      "time": 1778886720,
+      "type": "PUT",
+      "entry": 2826.4,
+      "future": 2827.66,
+      "horizon": 5,
+      "delta": 1.2599999999997635,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778887200,
+      "type": "PUT",
+      "entry": 2827.239,
+      "future": 2827.544,
+      "horizon": 5,
+      "delta": 0.3049999999998363,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778887800,
+      "type": "PUT",
+      "entry": 2826.441,
+      "future": 2821.686,
+      "horizon": 5,
+      "delta": -4.754999999999654,
+      "outcome": "win"
+    },
+    {
+      "time": 1778888700,
+      "type": "PUT",
+      "entry": 2822.626,
+      "future": 2823.953,
+      "horizon": 5,
+      "delta": 1.3269999999997708,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778889180,
+      "type": "PUT",
+      "entry": 2821.207,
+      "future": 2820.49,
+      "horizon": 5,
+      "delta": -0.7170000000000982,
+      "outcome": "win"
+    },
+    {
+      "time": 1778889840,
+      "type": "PUT",
+      "entry": 2822.553,
+      "future": 2818.94,
+      "horizon": 5,
+      "delta": -3.612999999999829,
+      "outcome": "win"
+    },
+    {
+      "time": 1778890440,
+      "type": "CALL",
+      "entry": 2821.703,
+      "future": 2823.808,
+      "horizon": 5,
+      "delta": 2.105000000000018,
+      "outcome": "win"
+    },
+    {
+      "time": 1778891040,
+      "type": "PUT",
+      "entry": 2819.799,
+      "future": 2820.313,
+      "horizon": 5,
+      "delta": 0.5140000000001237,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778891820,
+      "type": "PUT",
+      "entry": 2815.82,
+      "future": 2815.568,
+      "horizon": 5,
+      "delta": -0.2519999999999527,
+      "outcome": "win"
+    },
+    {
+      "time": 1778892480,
+      "type": "PUT",
+      "entry": 2812.497,
+      "future": 2811.036,
+      "horizon": 5,
+      "delta": -1.4609999999997854,
+      "outcome": "win"
+    },
+    {
+      "time": 1778893200,
+      "type": "PUT",
+      "entry": 2809.293,
+      "future": 2807.375,
+      "horizon": 5,
+      "delta": -1.91800000000012,
+      "outcome": "win"
+    },
+    {
+      "time": 1778893980,
+      "type": "PUT",
+      "entry": 2810.039,
+      "future": 2809.673,
+      "horizon": 5,
+      "delta": -0.3660000000004402,
+      "outcome": "win"
+    },
+    {
+      "time": 1778894760,
+      "type": "PUT",
+      "entry": 2810.928,
+      "future": 2809.945,
+      "horizon": 5,
+      "delta": -0.9829999999997199,
+      "outcome": "win"
+    },
+    {
+      "time": 1778895240,
+      "type": "CALL",
+      "entry": 2811.385,
+      "future": 2812.9,
+      "horizon": 5,
+      "delta": 1.5149999999998727,
+      "outcome": "win"
+    },
+    {
+      "time": 1778895900,
+      "type": "CALL",
+      "entry": 2814.392,
+      "future": 2816.455,
+      "horizon": 5,
+      "delta": 2.063000000000102,
+      "outcome": "win"
+    },
+    {
+      "time": 1778896740,
+      "type": "CALL",
+      "entry": 2816.1,
+      "future": 2814.477,
+      "horizon": 5,
+      "delta": -1.6230000000000473,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778897820,
+      "type": "PUT",
+      "entry": 2812.272,
+      "future": 2810.951,
+      "horizon": 5,
+      "delta": -1.3209999999999127,
+      "outcome": "win"
+    },
+    {
+      "time": 1778898480,
+      "type": "PUT",
+      "entry": 2812.347,
+      "future": 2813.835,
+      "horizon": 5,
+      "delta": 1.487999999999829,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778899380,
+      "type": "PUT",
+      "entry": 2812.855,
+      "future": 2813.004,
+      "horizon": 5,
+      "delta": 0.14899999999988722,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778899920,
+      "type": "PUT",
+      "entry": 2811.248,
+      "future": 2808.296,
+      "horizon": 5,
+      "delta": -2.9520000000002256,
+      "outcome": "win"
+    },
+    {
+      "time": 1778901180,
+      "type": "PUT",
+      "entry": 2805.654,
+      "future": 2805.79,
+      "horizon": 5,
+      "delta": 0.13599999999996726,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778901720,
+      "type": "PUT",
+      "entry": 2805.467,
+      "future": 2803.503,
+      "horizon": 5,
+      "delta": -1.9639999999999418,
+      "outcome": "win"
+    },
+    {
+      "time": 1778902200,
+      "type": "PUT",
+      "entry": 2799.972,
+      "future": 2799.711,
+      "horizon": 5,
+      "delta": -0.261000000000422,
+      "outcome": "win"
+    },
+    {
+      "time": 1778903040,
+      "type": "PUT",
+      "entry": 2798.694,
+      "future": 2798.029,
+      "horizon": 5,
+      "delta": -0.6649999999999636,
+      "outcome": "win"
+    },
+    {
+      "time": 1778903520,
+      "type": "PUT",
+      "entry": 2796.272,
+      "future": 2793.256,
+      "horizon": 5,
+      "delta": -3.0160000000000764,
+      "outcome": "win"
+    },
+    {
+      "time": 1778904540,
+      "type": "PUT",
+      "entry": 2793.55,
+      "future": 2795.302,
+      "horizon": 5,
+      "delta": 1.7519999999999527,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778905440,
+      "type": "PUT",
+      "entry": 2795.59,
+      "future": 2794.015,
+      "horizon": 5,
+      "delta": -1.5750000000002728,
+      "outcome": "win"
+    },
+    {
+      "time": 1778905980,
+      "type": "PUT",
+      "entry": 2791.88,
+      "future": 2795.366,
+      "horizon": 5,
+      "delta": 3.4859999999998763,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778907300,
+      "type": "CALL",
+      "entry": 2797.851,
+      "future": 2797.023,
+      "horizon": 5,
+      "delta": -0.8279999999999745,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778908560,
+      "type": "CALL",
+      "entry": 2800.854,
+      "future": 2805.679,
+      "horizon": 5,
+      "delta": 4.825000000000273,
+      "outcome": "win"
+    },
+    {
+      "time": 1778909280,
+      "type": "CALL",
+      "entry": 2802.034,
+      "future": 2805.501,
+      "horizon": 5,
+      "delta": 3.4670000000000982,
+      "outcome": "win"
+    },
+    {
+      "time": 1778910120,
+      "type": "CALL",
+      "entry": 2803.214,
+      "future": 2803.279,
+      "horizon": 5,
+      "delta": 0.06500000000005457,
+      "outcome": "win"
+    },
+    {
+      "time": 1778910600,
+      "type": "CALL",
+      "entry": 2804.256,
+      "future": 2805.536,
+      "horizon": 5,
+      "delta": 1.2800000000002,
+      "outcome": "win"
+    },
+    {
+      "time": 1778911200,
+      "type": "CALL",
+      "entry": 2805.849,
+      "future": 2805.162,
+      "horizon": 5,
+      "delta": -0.6870000000003529,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778911680,
+      "type": "CALL",
+      "entry": 2805.78,
+      "future": 2807.323,
+      "horizon": 5,
+      "delta": 1.5429999999996653,
+      "outcome": "win"
+    },
+    {
+      "time": 1778912400,
+      "type": "CALL",
+      "entry": 2807.061,
+      "future": 2807.591,
+      "horizon": 5,
+      "delta": 0.5299999999997453,
+      "outcome": "win"
+    },
+    {
+      "time": 1778912880,
+      "type": "CALL",
+      "entry": 2807.103,
+      "future": 2807.302,
+      "horizon": 5,
+      "delta": 0.19900000000006912,
+      "outcome": "win"
+    },
+    {
+      "time": 1778913600,
+      "type": "CALL",
+      "entry": 2807.241,
+      "future": 2804.88,
+      "horizon": 5,
+      "delta": -2.3609999999998763,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778914140,
+      "type": "CALL",
+      "entry": 2805.239,
+      "future": 2802.992,
+      "horizon": 5,
+      "delta": -2.2469999999998436,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778915640,
+      "type": "CALL",
+      "entry": 2801.018,
+      "future": 2801.388,
+      "horizon": 5,
+      "delta": 0.36999999999989086,
+      "outcome": "win"
+    },
+    {
+      "time": 1778918040,
+      "type": "CALL",
+      "entry": 2809.694,
+      "future": 2807.974,
+      "horizon": 5,
+      "delta": -1.7199999999998,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778919060,
+      "type": "CALL",
+      "entry": 2808.047,
+      "future": 2808.874,
+      "horizon": 5,
+      "delta": 0.8269999999997708,
+      "outcome": "win"
+    },
+    {
+      "time": 1778919840,
+      "type": "CALL",
+      "entry": 2811.744,
+      "future": 2807.793,
+      "horizon": 5,
+      "delta": -3.951000000000022,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778920740,
+      "type": "CALL",
+      "entry": 2810.263,
+      "future": 2810.358,
+      "horizon": 5,
+      "delta": 0.09500000000025466,
+      "outcome": "win"
+    },
+    {
+      "time": 1778921520,
+      "type": "CALL",
+      "entry": 2809.45,
+      "future": 2804.262,
+      "horizon": 5,
+      "delta": -5.187999999999647,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778922540,
+      "type": "PUT",
+      "entry": 2803.224,
+      "future": 2802.531,
+      "horizon": 5,
+      "delta": -0.693000000000211,
+      "outcome": "win"
+    },
+    {
+      "time": 1778923020,
+      "type": "PUT",
+      "entry": 2801.545,
+      "future": 2799.491,
+      "horizon": 5,
+      "delta": -2.0540000000000873,
+      "outcome": "win"
+    },
+    {
+      "time": 1778923800,
+      "type": "PUT",
+      "entry": 2799.905,
+      "future": 2798.967,
+      "horizon": 5,
+      "delta": -0.9380000000001019,
+      "outcome": "win"
+    },
+    {
+      "time": 1778924400,
+      "type": "PUT",
+      "entry": 2798.99,
+      "future": 2797.739,
+      "horizon": 5,
+      "delta": -1.250999999999749,
+      "outcome": "win"
+    },
+    {
+      "time": 1778924940,
+      "type": "CALL",
+      "entry": 2798.464,
+      "future": 2798.591,
+      "horizon": 5,
+      "delta": 0.1269999999999527,
+      "outcome": "win"
+    },
+    {
+      "time": 1778925480,
+      "type": "PUT",
+      "entry": 2796.901,
+      "future": 2794.613,
+      "horizon": 5,
+      "delta": -2.288000000000011,
+      "outcome": "win"
+    },
+    {
+      "time": 1778927400,
+      "type": "PUT",
+      "entry": 2797.409,
+      "future": 2799.561,
+      "horizon": 5,
+      "delta": 2.1520000000000437,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778927880,
+      "type": "CALL",
+      "entry": 2801.144,
+      "future": 2800.365,
+      "horizon": 5,
+      "delta": -0.7789999999999964,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778928600,
+      "type": "CALL",
+      "entry": 2803.573,
+      "future": 2801.591,
+      "horizon": 5,
+      "delta": -1.981999999999971,
+      "outcome": "loss"
+    },
+    {
+      "time": 1778929920,
+      "type": "PUT",
+      "entry": 2797.97,
+      "future": 2796.888,
+      "horizon": 5,
+      "delta": -1.08199999999988,
+      "outcome": "win"
+    },
+    {
+      "time": 1778930640,
+      "type": "PUT",
+      "entry": 2794.637,
+      "future": 2793.923,
+      "horizon": 5,
+      "delta": -0.7140000000003965,
+      "outcome": "win"
+    },
+    {
+      "time": 1778931480,
+      "type": "PUT",
+      "entry": 2792.627,
+      "future": 2792.242,
+      "horizon": 5,
+      "delta": -0.38499999999976353,
+      "outcome": "win"
+    },
+    {
+      "time": 1778931960,
+      "type": "PUT",
+      "entry": 2792.29,
+      "future": 2792.133,
+      "horizon": 5,
+      "delta": -0.1570000000001528,
+      "outcome": "win"
+    }
+  ]
+}
