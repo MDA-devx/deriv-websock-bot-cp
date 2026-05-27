@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Restart Deriv webserver
+# Kill existing node server process (if any)
+pkill -f "node backend/server.js" 2>/dev/null
+# Give it a moment to shut down
+sleep 1
+# Start the server with low‑priority scheduling
+nice -n 5 ionice -c2 node backend/server.js &
+echo "Webserver restarted (PID $!)"
