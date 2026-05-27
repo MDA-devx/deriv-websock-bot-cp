@@ -301,14 +301,15 @@ function processMultiSignals(result) {
         
         showPositionTimer(signalType, entryPrice);
         
-        candleSeries.setMarkers([{ 
-            time: signalTime, 
-            position: 'aboveBar', 
-            color: color, 
-            shape: 'arrowUp', 
-            text: signalType === 'call' ? 'CALL' : 'PUT'
+        candleSeries.setMarkers([{
+            time: signalTime,
+            position: 'aboveBar',
+            color: color,
+            shape: signalType === 'call' ? 'arrowUp' : 'arrowDown',
+            text: signalType,
+            labelTextColor: signalType === 'call' ? '#089981' : '#f23645',
+            labelBackgroundColor: signalType === 'call' ? '#089981' : '#f23645',
         }]);
-        
         addLog(`¡SEÑAL ${signalType.toUpperCase()}! ${result.reason}`, signalType);
         
         signalHistory.unshift({ type: signalType, time: signalTime, price: entryPrice, reason: result.reason, verified: false });
@@ -1346,9 +1347,12 @@ document.getElementById('estr-mark-mode')?.addEventListener('change', (e) => {
     estrAddLog(e.target.checked ? 'Modo marcado activado — haga clic en el grafico' : 'Modo marcado desactivado');
 });
 
-document.getElementById('estr-run-backtest')?.addEventListener('click', () => {
+document.getElementById('run-backtest-trading')?.addEventListener('click', () => {
     runStrategyBacktest();
 });
+
+
+
 
 document.getElementById('estr-export-marks')?.addEventListener('click', () => {
     exportMarksJson();
