@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+PIDFILE=/tmp/wsrest.pid
+LOG=/tmp/wsrest.log
+CMD="nice -n 5 ionice -c2 node $(realpath backend/server.js)"
+if [[ -f $PIDFILE ]] && kill -0 $(cat $PIDFILE) 2>/dev/null; then
+  kill $(cat $PIDFILE); rm -f $PIDFILE
+fi
+$CMD >>$LOG 2>&1 & echo $! >$PIDFILE

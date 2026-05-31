@@ -1,0 +1,15 @@
+{
+  "out": "/home/salmarina/deriv/temp/quality_report_adaptive_confluence_1440_R25_M1.json",
+  "totals": {
+    "signals": 104,
+    "evaluated": 104,
+    "skipped": 0,
+    "callCount": 45,
+    "putCount": 59,
+    "wins": 64,
+    "losses": 40,
+    "flats": 0,
+    "winRate": 0.6153846153846154,
+    "lossRate": 0.38461538461538464
+  }
+}

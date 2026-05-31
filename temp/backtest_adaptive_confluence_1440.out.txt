@@ -1,0 +1,19 @@
+[StrategyEngine] Strategy set to: adaptive-confluence
+[Strategy:Adaptive-Confluence] Activated
+[StrategyEngine] Strategy activated
+[Strategy:Adaptive-Confluence] Deactivated
+[StrategyEngine] Strategy deactivated
+{
+  "strategy": "adaptive-confluence",
+  "symbol": "R_25",
+  "timeframe": "1m",
+  "candles": 1440,
+  "success": true,
+  "processed": 1440,
+  "signalsTotal": 104,
+  "callSignals": 45,
+  "putSignals": 59,
+  "firstEpoch": 1778847120,
+  "lastEpoch": 1778933460,
+  "outputJson": "/home/salmarina/deriv/temp/backtest_result_adaptive_confluence_1440_R25_M1.json"
+}

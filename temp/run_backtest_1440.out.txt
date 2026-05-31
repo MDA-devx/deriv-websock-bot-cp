@@ -1,0 +1,20 @@
+[StrategyEngine] Strategy set to: multi-momentum
+[Strategy:Multi-Momentum] Activated
+[StrategyEngine] Strategy activated
+[Strategy:Multi-Momentum] Deactivated
+[StrategyEngine] Strategy deactivated
+BACKTEST RESULT TABLE
+----------------------------------------------
+Symbol           | R_25
+Granularity      | 60s (1m)
+Candles          | 1440
+Backtest success | true
+Strategy         | multi-momentum
+Processed        | 1440
+Signals total    | 0
+CALL signals     | 0
+PUT signals      | 0
+First epoch      | 1778847120
+Last epoch       | 1778933460
+----------------------------------------------
+Saved: /home/salmarina/deriv/temp/backtest_result_1440_R25_M1.json

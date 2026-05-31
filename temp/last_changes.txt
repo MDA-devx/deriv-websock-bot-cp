@@ -1,0 +1,12 @@
+Recent files modified in the Deriv project (most recent first):
+
+1) /home/salmarina/deriv/server.log (modified @ 1779795954.1898878540)
+2) /home/salmarina/deriv/.git/index (modified @ 1779795819.6046124470)
+3) /home/salmarina/deriv/.git/logs/HEAD (modified @ 1779795817.0245879920)
+4) /home/salmarina/deriv/.git/ORIG_HEAD (modified @ 1779795817.0165879160)
+5) /home/salmarina/deriv/js/app.js (modified @ 1779795816.6935848550)
+6) /home/salmarina/deriv/index.html (modified @ 1779795816.6915848360)
+7) /home/salmarina/deriv/backend/server.js (modified @ 1779795816.6915848360)
+8) /home/salmarina/deriv/temp/run_backtest_1440.mjs (modified @ 1779794670.0026689760)
+9) /home/salmarina/deriv/js/config.js (modified @ 1779794669.9246682270)
+10) /home/salmarina/deriv/backend/strategies/Engine.js (modified @ 1779794669.8836678330)

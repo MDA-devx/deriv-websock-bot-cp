@@ -1,9 +1,11 @@
 import MultiMomentumStrategy from './MultiMomentumStrategy.js';
+import FastEMASMACrossoverStrategy from './FastEMASMACrossoverStrategy.js';
 import AdaptiveConfluenceStrategy from './AdaptiveConfluenceStrategy.js';
 
 const strategies = {
   'multi-momentum': MultiMomentumStrategy,
-  'adaptive-confluence': AdaptiveConfluenceStrategy
+  'adaptive-confluence': AdaptiveConfluenceStrategy,
+  'fast-ema-sma-cross': FastEMASMACrossoverStrategy
 };
 
 const metadata = {
@@ -50,6 +52,14 @@ const metadata = {
       bbStdDev: 2,
       minScore: 3,
       coolDownCandles: 8
+    }
+  },
+  'fast-ema-sma-cross': {
+    name: 'Fast EMA/SMA Cross',
+    description: 'Fast EMA/SMA cross – short periods for quick signals',
+    defaultParams: {
+      smaPeriod: 15,
+      emaPeriod: 8
     }
   }
 };

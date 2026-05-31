@@ -40,6 +40,7 @@ let currentSymbol = 'R_25';
 // Analysis tab globals
 let currentTab = 'trading';
 let estrMarks = [];
+let tradingMarkers = [];
 let estrMarkType = 'open';
 let estrAutoSignals = [];
 
@@ -300,8 +301,7 @@ function processMultiSignals(result) {
         const signalId = Date.now();
         
         showPositionTimer(signalType, entryPrice);
-        
-        candleSeries.setMarkers([{
+        tradingMarkers.push({
             time: signalTime,
             position: 'aboveBar',
             color: color,
@@ -309,7 +309,8 @@ function processMultiSignals(result) {
             text: signalType,
             labelTextColor: signalType === 'call' ? '#089981' : '#f23645',
             labelBackgroundColor: signalType === 'call' ? '#089981' : '#f23645',
-        }]);
+        });
+        candleSeries.setMarkers(tradingMarkers);
         addLog(`¡SEÑAL ${signalType.toUpperCase()}! ${result.reason}`, signalType);
         
         signalHistory.unshift({ type: signalType, time: signalTime, price: entryPrice, reason: result.reason, verified: false });
@@ -667,7 +668,49 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-window.addEventListener('load', () => { initCharts(); window.dispatchEvent(new Event('resize')); });
+function resetUIForStrategy() {
+    // Clear market data history
+    dataHistory = [];
+    // Clear chart series data
+    candleSeries.setData([]);
+    smaSeries.setData([]);
+    emaSeries.setData([]);
+    bbUpperSeries.setData([]);
+    bbMiddleSeries.setData([]);
+    bbLowerSeries.setData([]);
+    rsiSeries.setData([]);
+    stochSeries.setData([]);
+    macdSeries.setData([]);
+    macdSignalSeries.setData([]);
+    // Reset indicator toggles to defaults
+    document.getElementById('sma-enabled').checked = true;
+    document.getElementById('ema-enabled').checked = true;
+    document.getElementById('rsi-enabled').checked = true;
+    document.getElementById('bb-enabled').checked = true;
+    // Reset indicator parameters to defaults
+    document.getElementById('sma-period').value = 9;
+    document.getElementById('ema-period').value = 10;
+    document.getElementById('rsi-period').value = 7;
+    document.getElementById('rsi-high').value = 70;
+    document.getElementById('rsi-low').value = 30;
+    document.getElementById('bb-period').value = 20;
+    // Refresh indicators and chart
+    updateIndicators();
+    priceChart.applyOptions({}); // force redraw
+    rsiChart.applyOptions({});
+}
+
+window.addEventListener('load', () => {
+    initCharts();
+    window.dispatchEvent(new Event('resize'));
+    const strategySelect = document.getElementById('strategy');
+    if (strategySelect) {
+        strategySelect.addEventListener('change', () => {
+            console.log('[UI] Strategy changed, resetting UI components');
+            resetUIForStrategy();
+        });
+    }
+});
 
 // Toggle results panel
 document.getElementById('toggle-results')?.addEventListener('click', () => {
