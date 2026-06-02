@@ -263,10 +263,56 @@ function updateIndicators() {
             }
         };
 
+        // If the selected strategy is fast EMA/SMA cross, compute signal directly
+        const strategyId = document.getElementById('strategy')?.value || '';
+        if (strategyId === 'fast-ema-sma-cross') {
+            // Compute EMA and SMA values (same as in FastEMASMACrossoverStrategy)
+            const sma = calculateSMA(dataHistory, smaP);
+            const ema = calculateEMA(dataHistory, emaP);
+            if (sma && ema && sma.length > 0 && ema.length > 0) {
+                const lastSma = sma[sma.length - 1].value;
+                const lastEma = ema[ema.length - 1];
+                const prevSma = sma.length > 1 ? sma[sma.length - 2].value : null;
+                const prevEma = ema.length > 1 ? ema[ema.length - 2] : null;
+                let signal = null;
+                let reason = '';
+                if (prevSma !== null && prevEma !== null) {
+                    const crossUp = prevEma < prevSma && lastEma > lastSma;
+                    const crossDown = prevEma > prevSma && lastEma < lastSma;
+                    if (crossUp || lastEma > lastSma) {
+                        signal = 'call';
+                        reason = `EMA crossed above SMA (${lastEma.toFixed(2)} > ${lastSma.toFixed(2)})`;
+                    } else if (crossDown || lastEma < lastSma) {
+                        signal = 'put';
+                        reason = `EMA crossed below SMA (${lastEma.toFixed(2)} < ${lastSma.toFixed(2)})`;
+                    }
+                }
+                if (signal) {
+                    const lastCandle = dataHistory[dataHistory.length - 1];
+                    processMultiSignals({
+                        signal,
+                        reason,
+                        indicators: {
+                            sma: lastSma,
+                            ema: lastEma,
+                            bullishCount: signal === 'call' ? 1 : 0,
+                            bearishCount: signal === 'put' ? 1 : 0,
+                            activeIndicators: 2
+                        }
+                    });
+                    return; // Skip the rest of updateIndicators for this strategy
+                }
+            }
+            // If no signal, log a waiting message and exit
+            addLog('EMA: esperando cruce');
+            return; // Skip the rest of updateIndicators for this strategy
+        }
+
+        // Existing Multi‑Momentum / Doji logic
         const momentumResult = analyzeMultiIndicators(dataHistory, config);
         const dojiConfig = { dojiThreshold: 0.3, rsiPeriod: rsiP, rsiLow: rsiLow, rsiHigh: rsiHigh, useBB: true, bbPeriod: bbP };
         const dojiResult = detectDojiSignal(dataHistory[dataHistory.length - 1], dataHistory, dojiConfig);
-        
+
         if (momentumResult.signal) {
             processMultiSignals(momentumResult);
         } else if (dojiResult && dojiResult.signal) {
