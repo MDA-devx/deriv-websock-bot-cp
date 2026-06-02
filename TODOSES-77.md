@@ -79,7 +79,7 @@ Add clear visual markers that indicate a **CALL** (▲) or **PUT** (▼) signal 
 
 ### Next Tasks (for reference)
 
-- **T3.** Create result summary table below the chart (granularity, candles processed, success flag, signal counts, first/last epoch, etc.).
+- T3: Create result summary table **above** the log (granularity, candles processed, success flag, signal counts, first/last epoch, etc.).
 - **T4.** Add Export Marks and Import Marks buttons, hidden file input, and functions `exportMarksJson()` / `importMarksJson()` in `js/app.js`.
 - **T5.** Build Parameter‑scan optimizer UI – RSI & SMA range inputs, “Escanear parámetros” button, and result panels (`estr‑optimizer‑summary`, `estr‑optimizer‑results`).
 - **T6.** Implement optimizer logic in `js/app.js`: `buildOptimizerParamSets()`, `scoreSignalsAgainstMarks()`, `runOptimizerScan()` and bind button listener.

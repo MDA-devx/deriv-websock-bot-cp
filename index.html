@@ -286,6 +286,19 @@
                 <div class="result-stat"><span class="label">Lose</span><span class="value lose" id="lose-count">0</span></div>
                 <div class="result-stat"><span class="label">Ultima</span><span class="value" id="last-signal">--</span></div>
             </div>
+            <!-- Result Summary Table (above log) -->
+            <div id="result-summary" style="margin-top:8px;background:#0a0a0a;border:1px solid var(--border-color);border-radius:3px;padding:4px;">
+                <table style="width:100%;color:#d1d5db;font-size:10px;">
+                    <tr><th>Gran粒idad</th><th>Velas Procesadas</th><th>Éxitos</th><th>Fallos</th><th>Señales</th><th>Primer Epoch</th><th>Último Epoch</th></tr>
+                    <tr><td id="summary-granularity">-</td><td id="summary-candles">-</td><td id="summary-success">-</td><td id="summary-fail">-</td><td id="summary-signals">-</td><td id="summary-first">-</td><td id="summary-last">-</td></tr>
+                </table>
+            </div>
+            <!-- Export/Import Marks Buttons -->
+            <div style="margin-top:8px;display:flex;gap:4px;">
+                <button id="export-marks-btn" style="flex:1;background:#374151;">Exportar marcas</button>
+                <button id="import-marks-btn" style="flex:1;background:#374151;">Importar marcas</button>
+                <input type="file" id="import-marks-file" accept="application/json,.json" style="display:none;">
+            </div>
         </div>
 
         <!-- ========== ESTRATEGIA VIEW ========== -->

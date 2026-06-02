@@ -1414,3 +1414,51 @@ document.getElementById('estr-import-file')?.addEventListener('change', (e) => {
 document.getElementById('estr-run-optimizer')?.addEventListener('click', () => {
     runOptimizerScan();
 });
+
+// --- T3, T4, T5 additions ---
+function updateResultSummary(data) {
+    document.getElementById('summary-granularity').textContent = data.granularity ?? '-';
+    document.getElementById('summary-candles').textContent = data.candles ?? '-';
+    document.getElementById('summary-success').textContent = data.success ?? '-';
+    document.getElementById('summary-fail').textContent = data.fail ?? '-';
+    document.getElementById('summary-signals').textContent = data.signals ?? '-';
+    document.getElementById('summary-first').textContent = data.firstEpoch ?? '-';
+    document.getElementById('summary-last').textContent = data.lastEpoch ?? '-';
+}
+
+// Export marks for trading view (reuse global currentMarks if present)
+document.getElementById('export-marks-btn')?.addEventListener('click', () => {
+    const marks = window.currentMarks || [];
+    const blob = new Blob([JSON.stringify(marks, null, 2)], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'trading_marks.json';
+    a.click();
+    URL.revokeObjectURL(url);
+});
+
+// Import marks for trading view
+document.getElementById('import-marks-btn')?.addEventListener('click', () => {
+    document.getElementById('import-marks-file')?.click();
+});
+
+document.getElementById('import-marks-file')?.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+        try {
+            const data = JSON.parse(evt.target.result);
+            window.currentMarks = data;
+            if (window.candleSeries) {
+                window.candleSeries.setMarkers(data);
+            }
+            console.log('Imported trading marks', data.length);
+        } catch (err) {
+            console.error('Failed to import trading marks', err);
+        }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+});
