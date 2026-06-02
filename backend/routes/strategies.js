@@ -45,6 +45,15 @@ router.post('/:name/activate', (req, res) => {
   res.json({ success: true, ...result });
 });
 
+router.post('/:name/params', (req, res) => {
+  const params = req.body.params || {};
+  const result = engine.updateParams(params);
+  if (!result.success) {
+    return res.status(400).json(result);
+  }
+  res.json({ success: true, params });
+});
+
 router.post('/:name/deactivate', (req, res) => {
   const result = engine.deactivateStrategy();
   res.json(result);

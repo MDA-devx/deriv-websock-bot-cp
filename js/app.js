@@ -277,12 +277,12 @@ function updateIndicators() {
                 let signal = null;
                 let reason = '';
                 if (prevSma !== null && prevEma !== null) {
-                    const crossUp = prevEma < prevSma && lastEma > lastSma;
-                    const crossDown = prevEma > prevSma && lastEma < lastSma;
-                    if (crossUp || lastEma > lastSma) {
+                    const crossUp = prevEma <= prevSma && lastEma > lastSma;
+                    const crossDown = prevEma >= prevSma && lastEma < lastSma;
+                    if (crossUp) {
                         signal = 'call';
                         reason = `EMA crossed above SMA (${lastEma.toFixed(2)} > ${lastSma.toFixed(2)})`;
-                    } else if (crossDown || lastEma < lastSma) {
+                    } else if (crossDown) {
                         signal = 'put';
                         reason = `EMA crossed below SMA (${lastEma.toFixed(2)} < ${lastSma.toFixed(2)})`;
                     }
@@ -690,12 +690,42 @@ document.getElementById('view-1d').addEventListener('click', () => {
 });
 
 ['sma-enabled', 'ema-enabled', 'bb-enabled', 'rsi-enabled'].forEach(id => {
-    document.getElementById(id).addEventListener('change', updateIndicators);
+    document.getElementById(id).addEventListener('change', async () => {
+        updateIndicators();
+        await syncRunningStrategyParams();
+    });
 });
 
 ['sma-period', 'ema-period', 'bb-period', 'rsi-period', 'rsi-high', 'rsi-low'].forEach(id => {
-    document.getElementById(id).addEventListener('input', updateIndicators);
+    document.getElementById(id).addEventListener('input', async () => {
+        updateIndicators();
+        await syncRunningStrategyParams();
+    });
 });
+
+async function syncRunningStrategyParams() {
+    const strategyId = document.getElementById('strategy')?.value;
+    if (!strategyId) return;
+
+    const params = {
+        smaPeriod: parseInt(document.getElementById('sma-period')?.value, 10) || 9,
+        emaPeriod: parseInt(document.getElementById('ema-period')?.value, 10) || 10,
+        bbPeriod: parseInt(document.getElementById('bb-period')?.value, 10) || 20,
+        rsiPeriod: parseInt(document.getElementById('rsi-period')?.value, 10) || 7,
+        rsiHigh: parseFloat(document.getElementById('rsi-high')?.value) || 70,
+        rsiLow: parseFloat(document.getElementById('rsi-low')?.value) || 30
+    };
+
+    try {
+        await fetch(`/api/strategies/${strategyId}/params`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ params })
+        });
+    } catch (error) {
+        console.warn('[UI] Failed to sync strategy params:', error);
+    }
+}
 
 // Keyboard sync: Home/End sync both charts
 document.addEventListener('keydown', (e) => {

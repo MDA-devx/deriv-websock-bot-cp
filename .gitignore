@@ -9,3 +9,4 @@ groqapi
 deriv-api-token.txt
 *.log
 *~
+progress.log
