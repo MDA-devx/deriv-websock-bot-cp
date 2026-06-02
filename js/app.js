@@ -572,6 +572,12 @@ function connect() {
                     }
                 }
             }
+            if (res.msg_type === 'tick') {
+                const tickPrice = parseFloat(res.tick?.quote);
+                if (Number.isFinite(tickPrice)) {
+                    evaluateTickAgainstLastCandle(tickPrice);
+                }
+            }
         } catch (e) { console.error('[WS] Parse error:', e); }
     };
 
@@ -614,10 +620,75 @@ function requestHistory() {
     ws.send(JSON.stringify({ ticks_history: currentSymbol, end: 'latest', start: Math.floor(Date.now() / 1000) - 7200, style: 'candles', granularity: gran }));
 }
 
+let lastTickPrice = null;
+let lastTickSignalSide = null;
+
 function subscribeOHLC() {
     const gran = parseInt(document.getElementById('timeframe').value) || 60;
     ws.send(JSON.stringify({ forget_all: 'ohlc' }));
     ws.send(JSON.stringify({ ticks_history: currentSymbol, subscribe: 1, end: 'latest', granularity: gran, style: 'candles' }));
+    ws.send(JSON.stringify({ ticks: currentSymbol, subscribe: 1 }));
+}
+
+function evaluateTickAgainstLastCandle(tickPrice) {
+    const strategyId = document.getElementById('strategy')?.value || '';
+    if (strategyId !== 'fast-ema-sma-cross') return;
+
+    const smaP = parseInt(document.getElementById('sma-period')?.value) || 15;
+    const emaP = parseInt(document.getElementById('ema-period')?.value) || 8;
+    const closedCandles = dataHistory.length > 1 ? dataHistory.slice(0, -1) : [];
+    const minCandles = Math.max(smaP, emaP);
+    if (closedCandles.length < minCandles) {
+        addLog('EMA tick: esperando más velas cerradas');
+        return;
+    }
+
+    const sma = calculateSMA(closedCandles, smaP);
+    const ema = calculateEMA(closedCandles, emaP);
+    if (!sma || !ema || sma.length === 0 || ema.length === 0) return;
+
+    const lastSma = sma[sma.length - 1].value;
+    const lastEma = ema[ema.length - 1];
+    const prevTick = lastTickPrice;
+    lastTickPrice = tickPrice;
+
+    let signal = null;
+    let reason = '';
+
+    if (prevTick !== null) {
+        const wasAbove = prevTick > lastEma && prevTick > lastSma;
+        const wasBelow = prevTick < lastEma && prevTick < lastSma;
+        const isAbove = tickPrice > lastEma && tickPrice > lastSma;
+        const isBelow = tickPrice < lastEma && tickPrice < lastSma;
+
+        if (wasBelow && isAbove && lastTickSignalSide !== 'call') {
+            signal = 'call';
+            reason = `Tick cruzó arriba de EMA/SMA (${tickPrice.toFixed(2)} > ${lastEma.toFixed(2)} / ${lastSma.toFixed(2)})`;
+            lastTickSignalSide = 'call';
+        } else if (wasAbove && isBelow && lastTickSignalSide !== 'put') {
+            signal = 'put';
+            reason = `Tick cruzó abajo de EMA/SMA (${tickPrice.toFixed(2)} < ${lastEma.toFixed(2)} / ${lastSma.toFixed(2)})`;
+            lastTickSignalSide = 'put';
+        } else if (isAbove) {
+            lastTickSignalSide = 'call';
+        } else if (isBelow) {
+            lastTickSignalSide = 'put';
+        }
+    }
+
+    if (signal) {
+        processMultiSignals({
+            signal,
+            reason,
+            indicators: {
+                sma: lastSma,
+                ema: lastEma,
+                bullishCount: signal === 'call' ? 1 : 0,
+                bearishCount: signal === 'put' ? 1 : 0,
+                activeIndicators: 2
+            }
+        });
+    }
 }
 
 const ZOOM_LIMIT = { min: 10, max: 200 };

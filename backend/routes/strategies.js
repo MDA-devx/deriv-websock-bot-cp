@@ -46,8 +46,9 @@ router.post('/:name/activate', (req, res) => {
 });
 
 router.post('/:name/params', (req, res) => {
+  const { name } = req.params;
   const params = req.body.params || {};
-  const result = engine.updateParams(params);
+  const result = engine.updateParams(name, params);
   if (!result.success) {
     return res.status(400).json(result);
   }

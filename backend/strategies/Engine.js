@@ -3,6 +3,7 @@ import strategyRegistry from './index.js';
 class StrategyEngine {
   constructor() {
     this.activeStrategy = null;
+    this.activeStrategyName = null;
     this.candleData = [];
     this.listeners = new Map();
     this.isRunning = false;
@@ -36,6 +37,7 @@ class StrategyEngine {
       }
       
       this.activeStrategy = strategy;
+      this.activeStrategyName = strategyName.toLowerCase();
       console.log(`[StrategyEngine] Strategy set to: ${strategyName}`);
       
       this.emit('strategy_changed', {
@@ -77,9 +79,13 @@ class StrategyEngine {
     return { success: true };
   }
 
-  updateParams(params) {
+  updateParams(strategyName, params) {
     if (!this.activeStrategy) {
       return { success: false, error: 'No strategy set' };
+    }
+
+    if (!strategyName || strategyName.toLowerCase() !== this.activeStrategyName) {
+      return { success: false, error: 'Strategy is not active' };
     }
     
     this.activeStrategy.setParams(params);
