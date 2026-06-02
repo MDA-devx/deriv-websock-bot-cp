@@ -705,9 +705,41 @@ window.addEventListener('load', () => {
     window.dispatchEvent(new Event('resize'));
     const strategySelect = document.getElementById('strategy');
     if (strategySelect) {
-        strategySelect.addEventListener('change', () => {
+        strategySelect.addEventListener('change', async () => {
             console.log('[UI] Strategy changed, resetting UI components');
             resetUIForStrategy();
+            // Load default parameters for the selected strategy and apply to UI inputs
+            try {
+                const strategyId = document.getElementById('strategy')?.value;
+                const res = await fetch(`/api/strategies/${strategyId}`);
+                if (res.ok) {
+                    const meta = await res.json();
+                    const defaults = meta.defaultParams || {};
+                    // Map known parameter keys to UI element IDs
+                    const mapping = {
+                        smaFast: 'sma-period',
+                        smaSlow: 'sma-period', // placeholder if using same input for fast/slow not present
+                        emaFast: 'ema-period',
+                        emaSlow: 'ema-period',
+                        rsiPeriod: 'rsi-period',
+                        rsiLow: 'rsi-low',
+                        rsiHigh: 'rsi-high',
+                        bbPeriod: 'bb-period',
+                        minConfirmations: 'min-confirmations', // if UI exists
+                        minScore: 'min-score', // if UI exists
+                        coolDownCandles: 'cooldown-candles'
+                    };
+                    Object.entries(defaults).forEach(([key, val]) => {
+                        const elementId = mapping[key];
+                        if (elementId) {
+                            const el = document.getElementById(elementId);
+                            if (el) el.value = val;
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error('Failed to load strategy defaults', e);
+            }
         });
     }
 });
