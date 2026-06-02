@@ -45,6 +45,7 @@ let estrMarks = [];
 let tradingMarkers = [];
 let estrMarkType = 'open';
 let estrAutoSignals = [];
+let isLoadingStrategy = false;
 
 const chartOptions = {
     layout: { backgroundColor: '#0d1117', textColor: '#e6edf3' },
@@ -783,6 +784,7 @@ document.getElementById('view-1d').addEventListener('click', () => {
 });
 
 async function syncRunningStrategyParams() {
+    if (isLoadingStrategy) return;
     const strategyId = document.getElementById('strategy')?.value;
     if (!strategyId) return;
 
@@ -879,6 +881,7 @@ window.addEventListener('load', () => {
             console.log('[UI] Strategy changed, resetting UI components');
             resetUIForStrategy();
             resetTickCrossState();
+            isLoadingStrategy = true;
             // Load default parameters for the selected strategy and apply to UI inputs
             try {
                 const strategyId = document.getElementById('strategy')?.value;
@@ -890,8 +893,10 @@ window.addEventListener('load', () => {
                     // Map known parameter keys to UI element IDs
                     const mapping = {
                         smaFast: 'sma-period',
+                        smaPeriod: 'sma-period',
                         smaSlow: 'sma-period', // placeholder if using same input for fast/slow not present
                         emaFast: 'ema-period',
+                        emaPeriod: 'ema-period',
                         emaSlow: 'ema-period',
                         rsiPeriod: 'rsi-period',
                         rsiLow: 'rsi-low',
@@ -937,9 +942,11 @@ window.addEventListener('load', () => {
                     });
                     resetTickCrossState();
                     requestHistory();
+                    isLoadingStrategy = false;
                 }
             } catch (e) {
                 console.error('Failed to load strategy defaults', e);
+                isLoadingStrategy = false;
             }
         });
     }
