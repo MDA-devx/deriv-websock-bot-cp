@@ -526,6 +526,7 @@ function connect() {
                 console.log('[DATA] Valid candles:', validCandles.length);
                 if (validCandles.length > 0) {
                     dataHistory = validCandles;
+                    resetTickCrossState();
                     // Memory management: limit dataHistory to prevent unbounded growth
                     const maxCandles = CONFIG.DATA.MAX_CANDLES || 500;
                     if (dataHistory.length > maxCandles) {
@@ -622,6 +623,11 @@ function requestHistory() {
 
 let lastTickPrice = null;
 let lastTickSignalSide = null;
+
+function resetTickCrossState() {
+    lastTickPrice = null;
+    lastTickSignalSide = null;
+}
 
 function subscribeOHLC() {
     const gran = parseInt(document.getElementById('timeframe').value) || 60;
@@ -870,6 +876,7 @@ window.addEventListener('load', () => {
         strategySelect.addEventListener('change', async () => {
             console.log('[UI] Strategy changed, resetting UI components');
             resetUIForStrategy();
+            resetTickCrossState();
             // Load default parameters for the selected strategy and apply to UI inputs
             try {
                 const strategyId = document.getElementById('strategy')?.value;
@@ -926,6 +933,8 @@ window.addEventListener('load', () => {
                             if (related) related.style.display = uses[key] ? '' : 'none';
                         }
                     });
+                    resetTickCrossState();
+                    requestHistory();
                 }
             } catch (e) {
                 console.error('Failed to load strategy defaults', e);
