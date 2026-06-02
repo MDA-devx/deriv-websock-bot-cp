@@ -2,6 +2,8 @@ import { calculateSMA, calculateEMA, calculateRSI, calculateBB, calculateStochas
 import { analyzeMultiIndicators, detectDojiSignal } from '../frontend/js/modules/multi-indicators.js';
 import { CONFIG } from './config.js';
 
+console.log('[APP] Script loaded');
+
 // ============================================
 // State Management - Centralized State Object
 // ============================================
@@ -669,9 +671,8 @@ document.addEventListener('keydown', (e) => {
 });
 
 function resetUIForStrategy() {
-    // Clear market data history
+    // Clear market data history and chart series
     dataHistory = [];
-    // Clear chart series data
     candleSeries.setData([]);
     smaSeries.setData([]);
     emaSeries.setData([]);
@@ -683,11 +684,19 @@ function resetUIForStrategy() {
     macdSeries.setData([]);
     macdSignalSeries.setData([]);
     // Reset indicator toggles to defaults
-    document.getElementById('sma-enabled').checked = true;
-    document.getElementById('ema-enabled').checked = true;
-    document.getElementById('rsi-enabled').checked = true;
-    document.getElementById('bb-enabled').checked = true;
-    // Reset indicator parameters to defaults
+    const toggleMap = {
+        'sma-enabled': true,
+        'ema-enabled': true,
+        'rsi-enabled': true,
+        'bb-enabled': true,
+        'stoch-enabled': false,
+        'macd-enabled': false
+    };
+    Object.entries(toggleMap).forEach(([id, def]) => {
+        const el = document.getElementById(id);
+        if (el) el.checked = def;
+    });
+    // Reset indicator parameters to defaults (these will be overwritten later when a strategy is selected)
     document.getElementById('sma-period').value = 9;
     document.getElementById('ema-period').value = 10;
     document.getElementById('rsi-period').value = 7;
@@ -696,9 +705,15 @@ function resetUIForStrategy() {
     document.getElementById('bb-period').value = 20;
     // Refresh indicators and chart
     updateIndicators();
-    priceChart.applyOptions({}); // force redraw
+    priceChart.applyOptions({});
     rsiChart.applyOptions({});
+    // Disable UI elements for indicators that the current strategy does not use (will be refined after fetching metadata)
+    // This placeholder will be overwritten when the strategy is changed below.
 }
+
+
+
+
 
 window.addEventListener('load', () => {
     initCharts();
@@ -715,6 +730,7 @@ window.addEventListener('load', () => {
                 if (res.ok) {
                     const meta = await res.json();
                     const defaults = meta.defaultParams || {};
+                    const enabled = meta.enabled || {};
                     // Map known parameter keys to UI element IDs
                     const mapping = {
                         smaFast: 'sma-period',
@@ -734,6 +750,24 @@ window.addEventListener('load', () => {
                         if (elementId) {
                             const el = document.getElementById(elementId);
                             if (el) el.value = val;
+                        }
+                    });
+                    // Enable/disable indicator toggles based on strategy support
+                    const toggleIds = {
+                        sma: 'sma-enabled',
+                        ema: 'ema-enabled',
+                        rsi: 'rsi-enabled',
+                        bb: 'bb-enabled',
+                        stoch: 'stoch-enabled',
+                        macd: 'macd-enabled'
+                    };
+                    Object.entries(toggleIds).forEach(([key, id]) => {
+                        const el = document.getElementById(id);
+                        if (el) {
+                            el.checked = !!enabled[key];
+                            el.disabled = enabled[key] === undefined ? true : false;
+                            const related = document.getElementById(`${id.replace('-enabled', '')}-period`);
+                            if (related) related.style.display = enabled[key] ? '' : 'none';
                         }
                     });
                 }
