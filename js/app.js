@@ -761,13 +761,22 @@ window.addEventListener('load', () => {
                         stoch: 'stoch-enabled',
                         macd: 'macd-enabled'
                     };
+                    // Determine which indicators the strategy uses based on presence of relevant params
+                    const uses = {
+                        sma: !!defaults.smaFast || !!defaults.smaPeriod || !!defaults.smaSlow,
+                        ema: !!defaults.emaFast || !!defaults.emaPeriod,
+                        rsi: !!defaults.rsiPeriod,
+                        bb: !!defaults.bbPeriod,
+                        stoch: !!defaults.stochPeriod,
+                        macd: !!(defaults.macdFast && defaults.macdSlow && defaults.macdSignal)
+                    };
                     Object.entries(toggleIds).forEach(([key, id]) => {
                         const el = document.getElementById(id);
                         if (el) {
-                            el.checked = !!enabled[key];
-                            el.disabled = enabled[key] === undefined ? true : false;
+                            el.checked = !!uses[key];
+                            el.disabled = !uses[key]; // disable if strategy does not use this indicator
                             const related = document.getElementById(`${id.replace('-enabled', '')}-period`);
-                            if (related) related.style.display = enabled[key] ? '' : 'none';
+                            if (related) related.style.display = uses[key] ? '' : 'none';
                         }
                     });
                 }
