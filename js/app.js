@@ -625,8 +625,9 @@ let lastTickPrice = null;
 let lastTickSignalSide = null;
 
 function resetTickCrossState() {
-    lastTickPrice = null;
+    lastTickPrice = dataHistory.length > 0 ? dataHistory[dataHistory.length - 1].close : null;
     lastTickSignalSide = null;
+    positionOpen = false;
 }
 
 function subscribeOHLC() {
@@ -657,6 +658,7 @@ function evaluateTickAgainstLastCandle(tickPrice) {
     const lastEma = ema[ema.length - 1];
     const prevTick = lastTickPrice;
     lastTickPrice = tickPrice;
+    addLog(`EMA tick: ${tickPrice.toFixed(2)} | EMA ${lastEma.toFixed(2)} | SMA ${lastSma.toFixed(2)}`);
 
     let signal = null;
     let reason = '';
