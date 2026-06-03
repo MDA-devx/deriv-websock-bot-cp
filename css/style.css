@@ -451,66 +451,109 @@ button:active { transform: scale(0.98); }
     transform: none;
 }
 
-/* ===== VIEWS ===== */
-#trading-view, #estrategia-view {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-/* ===== ANALYSIS SIDEBAR ===== */
-#sidebar-estrategia {
-    display: flex;
+/* ===== SIDEBAR CONTENT & VIEWS ===== */
+.sidebar-content {
+    display: none; /* Hidden by default, shown by JS based on active tab */
     flex-direction: column;
     height: 100%;
     overflow-y: auto;
     padding: 15px;
     box-sizing: border-box;
 }
-#sidebar-estrategia h2 {
+.sidebar-content h2 {
     font-size: 1.1rem;
     margin: 0 0 8px 0;
     color: #fff;
 }
 
-/* ===== ANALYSIS MARKS LIST ===== */
-#estr-marks-list {
-    scrollbar-width: thin;
-    scrollbar-color: #333 transparent;
-}
-#estr-marks-list::-webkit-scrollbar {
-    width: 4px;
-}
-#estr-marks-list::-webkit-scrollbar-thumb {
-    background: #333;
-    border-radius: 2px;
+.tab-view {
+    flex: 1;
+    display: none; /* Hidden by default, shown by JS based on active tab */
+    flex-direction: column;
+    overflow: hidden;
 }
 
-/* ===== ANALYSIS LOGS ===== */
-#estr-logs {
-    scrollbar-width: thin;
-    scrollbar-color: #333 transparent;
+/* Specific styling for the initial active tab */
+#sidebar-trade {
+    display: flex;
 }
-#estr-logs::-webkit-scrollbar {
-    width: 4px;
-}
-#estr-logs::-webkit-scrollbar-thumb {
-    background: #333;
-    border-radius: 2px;
+#trade-view {
+    display: flex;
 }
 
-/* ===== ESTRATEGIA CHARTS ===== */
-#estr-price-chart {
+/* Indicators Read-only Display */
+.indicators-readonly {
+    background-color: #0a0a0a;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    font-size: 12px;
+    color: #d1d4dc;
+}
+
+.indicator-val {
+    padding: 4px 0;
+}
+
+/* RSI levels for Strategy tab */
+.rsi-levels {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+.rsi-levels input {
+    width: 45px;
+    text-align: center;
+}
+
+/* ===== ANALYSIS CHARTS ===== */
+#analysis-price-chart {
     flex: 2;
     position: relative;
     min-height: 300px;
 }
-#estr-rsi-chart {
+#analysis-rsi-chart {
     flex: 1;
     border-top: 2px solid var(--border-color);
     position: relative;
     min-height: 120px;
+}
+
+/* Logs Container (now in LOG-CONFIG tab) */
+#logs-container {
+    flex-grow: 1;
+    background-color: #0a0a0a;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 8px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 11px;
+    line-height: 1.5;
+    overflow-y: auto;
+    color: #4ade80;
+    min-height: 120px;
+    max-height: calc(100vh - 150px); /* Adjust based on header/footer if any */
+    z-index: 100;
+    margin-top: 0; /* No margin-top here as it's in its own view */
+}
+
+#logs-container .log-entry { margin-bottom: 4px; padding-bottom: 2px; word-break: break-word; }
+#logs-container .log-time { color: #666; font-size: 10px; margin-right: 5px; }
+
+/* Scrollbar styling for log container */
+#logs-container::-webkit-scrollbar {
+    width: 4px;
+}
+#logs-container::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 2px;
+}
+#logs-container {
+    scrollbar-width: thin;
+    scrollbar-color: #333 transparent;
 }
 
 /* ===== MOBILE ===== */

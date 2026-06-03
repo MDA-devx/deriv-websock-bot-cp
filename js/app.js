@@ -39,11 +39,11 @@ let ws = null, isConnected = false, dataHistory = [];
 let currentSymbol = 'R_25';
 
 // Analysis tab globals
-let currentTab = 'trading';
-let estrMarks = [];
+let currentTab = 'trade';
+let analysisMarks = [];
 let tradingMarkers = [];
-let estrMarkType = 'open';
-let estrAutoSignals = [];
+let analysisMarkType = 'up';
+let analysisAutoSignals = [];
 let isLoadingStrategy = false;
 
 const chartOptions = {
@@ -253,7 +253,7 @@ function updateIndicators() {
         };
 
         // If the selected strategy is fast EMA/SMA cross, compute signal directly
-        const strategyId = document.getElementById('strategy')?.value || '';
+        const strategyId = document.getElementById('strategy-trade')?.value || '';
         if (strategyId === 'fast-ema-sma-cross') {
             // Compute EMA and SMA values (same as in FastEMASMACrossoverStrategy)
             const sma = calculateSMA(dataHistory, smaP);
@@ -426,6 +426,28 @@ function verifySignal(signalId, signalType, entryPrice, signalTime) {
     updateResults();
 }
 
+document.getElementById('connect-btn')?.addEventListener('click', () => {
+    if (!isConnected) connect();
+});
+
+document.getElementById('load-token-btn')?.addEventListener('click', () => {
+    document.getElementById('token-file')?.click();
+});
+document.getElementById('token-file')?.addEventListener('change', (e) => {
+    const file = e.target?.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+        const token = reader.result?.toString().trim();
+        if (token) document.getElementById('api-token').value = token;
+    };
+    reader.readAsText(file);
+});
+
+document.getElementById('stop-btn')?.addEventListener('click', () => {
+    if (isConnected) disconnect();
+});
+
 document.getElementById('start-btn').addEventListener('click', () => {
     if (isConnected) {
         disconnect();
@@ -516,7 +538,7 @@ function connect() {
                     updateInterval = setInterval(() => {
                         if (isConnected && dataHistory.length > 0) {
                             updateIndicators();
-                            if (analysisChartsReady && currentTab === 'estrategia') updateAnalysisIndicators();
+                            if (analysisChartsReady && currentTab === 'analysis') updateAnalysisIndicators();
                         }
                     }, 1000);
                     addLog(`Cargado: ${dataHistory.length} velas`);
@@ -528,8 +550,8 @@ function connect() {
                 if (candle.time && candle.open > 0) {
                     const isNewCandle = dataHistory.length === 0 || dataHistory[dataHistory.length - 1].time !== candle.time;
                     if (candleSeries) candleSeries.update(candle);
-                    if (analysisChartsReady && currentTab === 'estrategia') {
-                        if (estrCandleSeries) estrCandleSeries.update(candle);
+                    if (analysisChartsReady && currentTab === 'analysis') {
+                        if (analysisCandleSeries) analysisCandleSeries.update(candle);
                         updateAnalysisIndicators();
                     }
                     if (dataHistory.length > 0 && dataHistory[dataHistory.length - 1].time === candle.time) {
@@ -607,7 +629,7 @@ function subscribeOHLC() {
 }
 
 function evaluateTickAgainstLastCandle(tickPrice) {
-    const strategyId = document.getElementById('strategy')?.value || '';
+    const strategyId = document.getElementById('strategy-trade')?.value || '';
     if (strategyId !== 'fast-ema-sma-cross') return;
 
     const smaP = parseInt(document.getElementById('sma-period')?.value) || 15;
@@ -751,7 +773,7 @@ document.getElementById('view-1d').addEventListener('click', () => {
 
 async function syncRunningStrategyParams() {
     if (isLoadingStrategy) return;
-    const strategyId = document.getElementById('strategy')?.value;
+    const strategyId = document.getElementById('strategy-trade')?.value;
     if (!strategyId) return;
 
     const params = {
@@ -818,7 +840,7 @@ function redrawIndicatorsOnly() {
 window.addEventListener('load', () => {
     initCharts();
     window.dispatchEvent(new Event('resize'));
-    const strategySelect = document.getElementById('strategy');
+    const strategySelect = document.getElementById('strategy-trade');
     if (strategySelect) {
         strategySelect.addEventListener('change', async () => {
             redrawIndicatorsOnly();
@@ -826,7 +848,7 @@ window.addEventListener('load', () => {
             isLoadingStrategy = true;
             // Load default parameters for the selected strategy and apply to UI inputs
             try {
-                const strategyId = document.getElementById('strategy')?.value;
+    const strategyId = document.getElementById('strategy-trade')?.value;
                 const res = await fetch(`/api/strategies/${strategyId}`);
                 if (res.ok) {
                     const meta = await res.json();
@@ -1006,12 +1028,16 @@ function addLog(message, type = '') {
 function switchTab(tab) {
     currentTab = tab;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
-    document.getElementById('sidebar-trading').style.display = tab === 'trading' ? '' : 'none';
-    document.getElementById('sidebar-estrategia').style.display = tab === 'estrategia' ? '' : 'none';
-    document.getElementById('trading-view').style.display = tab === 'trading' ? '' : 'none';
-    document.getElementById('estrategia-view').style.display = tab === 'estrategia' ? '' : 'none';
+    document.getElementById('sidebar-trade').style.display = tab === 'trade' ? '' : 'none';
+    document.getElementById('sidebar-strategy').style.display = tab === 'strategy' ? '' : 'none';
+    document.getElementById('sidebar-analysis').style.display = tab === 'analysis' ? '' : 'none';
+    document.getElementById('sidebar-log-config').style.display = tab === 'log-config' ? '' : 'none';
+    document.getElementById('trade-view').style.display = tab === 'trade' ? '' : 'none';
+    document.getElementById('strategy-view').style.display = tab === 'strategy' ? '' : 'none';
+    document.getElementById('analysis-view').style.display = tab === 'analysis' ? '' : 'none';
+    document.getElementById('log-config-view').style.display = tab === 'log-config' ? '' : 'none';
 
-    if (tab === 'estrategia') {
+    if (tab === 'analysis') {
         if (!analysisChartsReady) initAnalysisCharts();
         if (dataHistory.length > 0) updateAnalysisCharts();
     }
@@ -1026,81 +1052,84 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 // ANALYSIS CHARTS
 // ============================================
 let analysisChartsReady = false;
-let estrPriceChart, estrRsiChart;
-let estrCandleSeries, estrSmaSeries, estrEmaSeries;
-let estrBbUpperSeries, estrBbMiddleSeries, estrBbLowerSeries;
-let estrRsiSeries, estrStochSeries, estrMacdSeries, estrMacdSignalSeries;
+let analysisPriceChart, analysisRsiChart;
+let analysisCandleSeries, analysisSmaSeries, analysisEmaSeries;
+let analysisBbUpperSeries, analysisBbMiddleSeries, analysisBbLowerSeries;
+let analysisRsiSeries, analysisStochSeries, analysisMacdSeries, analysisMacdSignalSeries;
 
 function initAnalysisCharts() {
     if (analysisChartsReady) return;
-    const pContainer = document.getElementById('estr-price-chart');
-    const rContainer = document.getElementById('estr-rsi-chart');
+    const pContainer = document.getElementById('analysis-price-chart');
+    const rContainer = document.getElementById('analysis-rsi-chart');
     if (!pContainer || !rContainer) return;
+
+    pContainer.innerHTML = '<div class="chart-label">ANALISIS - ESTRATEGIA</div><div class="chart-controls"><button id="analysis-zoom-out">-</button><button id="analysis-zoom-in">+</button><button id="analysis-fit-content">&#x22A1;</button></div>';
+    rContainer.innerHTML = '<div class="chart-label">RSI / STOCH / MACD</div>';
 
     pContainer.style.minHeight = '300px';
     rContainer.style.minHeight = '100px';
 
-    document.getElementById('estr-zoom-in').onclick = () => {
-        const bs = Math.min(50, (estrPriceChart.timeScale().options().barSpacing || 8) + 2);
-        estrPriceChart.timeScale().applyOptions({ barSpacing: bs });
-        estrRsiChart.timeScale().applyOptions({ barSpacing: bs });
+    document.getElementById('analysis-zoom-in').onclick = () => {
+        const bs = Math.min(50, (analysisPriceChart.timeScale().options().barSpacing || 8) + 2);
+        analysisPriceChart.timeScale().applyOptions({ barSpacing: bs });
+        analysisRsiChart.timeScale().applyOptions({ barSpacing: bs });
     };
-    document.getElementById('estr-zoom-out').onclick = () => {
-        const bs = Math.max(4, (estrPriceChart.timeScale().options().barSpacing || 8) - 2);
-        estrPriceChart.timeScale().applyOptions({ barSpacing: bs });
-        estrRsiChart.timeScale().applyOptions({ barSpacing: bs });
+    document.getElementById('analysis-zoom-out').onclick = () => {
+        const bs = Math.max(4, (analysisPriceChart.timeScale().options().barSpacing || 8) - 2);
+        analysisPriceChart.timeScale().applyOptions({ barSpacing: bs });
+        analysisRsiChart.timeScale().applyOptions({ barSpacing: bs });
     };
-    document.getElementById('estr-fit-content').onclick = () => {
-        estrPriceChart.timeScale().fitContent();
-        estrRsiChart.timeScale().fitContent();
+    document.getElementById('analysis-fit-content').onclick = () => {
+        analysisPriceChart.timeScale().fitContent();
+        analysisRsiChart.timeScale().fitContent();
     };
 
-    const estrOpts = JSON.parse(JSON.stringify(chartOptions));
-    estrOpts.timeScale.rightOffset = 4;
+    const analysisOpts = JSON.parse(JSON.stringify(chartOptions));
+    analysisOpts.timeScale.rightOffset = 4;
 
-    estrPriceChart = LightweightCharts.createChart(pContainer, { ...estrOpts, height: pContainer.clientHeight || 300 });
-    estrRsiChart = LightweightCharts.createChart(rContainer, { ...estrOpts, height: rContainer.clientHeight || 100 });
+    analysisPriceChart = LightweightCharts.createChart(pContainer, { ...analysisOpts, height: pContainer.clientHeight || 300 });
+    analysisRsiChart = LightweightCharts.createChart(rContainer, { ...analysisOpts, height: rContainer.clientHeight || 100 });
 
-    estrSmaSeries = estrPriceChart.addLineSeries({ color: '#2962ff', lineWidth: 1, title: 'SMA' });
-    estrEmaSeries = estrPriceChart.addLineSeries({ color: '#f23645', lineWidth: 1, title: 'EMA' });
-    estrBbUpperSeries = estrPriceChart.addLineSeries({ color: '#00bcd4', lineWidth: 1, lineStyle: 0, title: 'BB Upper' });
-    estrBbMiddleSeries = estrPriceChart.addLineSeries({ color: 'rgba(0,188,212,0.3)', lineWidth: 1, lineStyle: 2, title: 'BB Middle' });
-    estrBbLowerSeries = estrPriceChart.addLineSeries({ color: '#00bcd4', lineWidth: 1, lineStyle: 0, title: 'BB Lower' });
+    analysisSmaSeries = analysisPriceChart.addLineSeries({ color: '#2962ff', lineWidth: 1, title: 'SMA' });
+    analysisEmaSeries = analysisPriceChart.addLineSeries({ color: '#f23645', lineWidth: 1, title: 'EMA' });
+    analysisBbUpperSeries = analysisPriceChart.addLineSeries({ color: '#00bcd4', lineWidth: 1, lineStyle: 0, title: 'BB Upper' });
+    analysisBbMiddleSeries = analysisPriceChart.addLineSeries({ color: 'rgba(0,188,212,0.3)', lineWidth: 1, lineStyle: 2, title: 'BB Middle' });
+    analysisBbLowerSeries = analysisPriceChart.addLineSeries({ color: '#00bcd4', lineWidth: 1, lineStyle: 0, title: 'BB Lower' });
 
-    estrCandleSeries = estrPriceChart.addCandlestickSeries({
+    analysisCandleSeries = analysisPriceChart.addCandlestickSeries({
         upColor: '#089981', downColor: '#f23645',
         borderVisible: false, wickUpColor: '#089981', wickDownColor: '#f23645',
     });
 
-    estrRsiSeries = estrRsiChart.addLineSeries({ color: '#ff9800', lineWidth: 1, title: 'RSI' });
-    estrStochSeries = estrRsiChart.addLineSeries({ color: '#9c27b0', lineWidth: 1, title: 'Stoch' });
-    estrMacdSeries = estrRsiChart.addLineSeries({ color: '#2196f3', lineWidth: 1, title: 'MACD' });
-    estrMacdSignalSeries = estrRsiChart.addLineSeries({ color: '#ff5722', lineWidth: 1, title: 'Signal' });
+    analysisRsiSeries = analysisRsiChart.addLineSeries({ color: '#ff9800', lineWidth: 1, title: 'RSI' });
+    analysisStochSeries = analysisRsiChart.addLineSeries({ color: '#9c27b0', lineWidth: 1, title: 'Stoch' });
+    analysisMacdSeries = analysisRsiChart.addLineSeries({ color: '#2196f3', lineWidth: 1, title: 'MACD' });
+    analysisMacdSignalSeries = analysisRsiChart.addLineSeries({ color: '#ff5722', lineWidth: 1, title: 'Signal' });
 
-    const high = parseFloat(document.getElementById('rsi-high').value) || 65;
-    const low = parseFloat(document.getElementById('rsi-low').value) || 35;
-    estrRsiSeries.createPriceLine({ price: high, color: '#f23645', lineWidth: 1, lineStyle: 2, title: 'HIGH' });
-    estrRsiSeries.createPriceLine({ price: low, color: '#089981', lineWidth: 1, lineStyle: 2, title: 'LOW' });
+    const high = parseFloat(document.getElementById('analysis-rsi-high').value) || 65;
+    const low = parseFloat(document.getElementById('analysis-rsi-low').value) || 35;
+    analysisRsiSeries.createPriceLine({ price: high, color: '#f23645', lineWidth: 1, lineStyle: 2, title: 'HIGH' });
+    analysisRsiSeries.createPriceLine({ price: low, color: '#089981', lineWidth: 1, lineStyle: 2, title: 'LOW' });
 
     // Click to place manual marks on analysis chart
-    estrPriceChart.subscribeClick(param => {
-        const markMode = document.getElementById('estr-mark-mode');
+    analysisPriceChart.subscribeClick(param => {
+        const markMode = document.getElementById('mark-mode');
         if (!markMode || !markMode.checked) return;
         if (!param.time || !dataHistory.length) return;
         const time = Number(param.time);
-        if (estrMarks.some(m => m.time === time)) {
-            estrAddLog('Ya existe una marca en este momento');
+        if (analysisMarks.some(m => m.time === time)) {
+            analysisAddLog('Ya existe una marca en este momento');
             return;
         }
         const candle = dataHistory.find(c => c.time === time);
         if (!candle) return;
 
         const ind = getIndicatorValuesAt(time);
-        estrMarks.push({ time, type: estrMarkType, price: candle.close, indicators: ind });
+        analysisMarks.push({ time, type: analysisMarkType, price: candle.close, indicators: ind });
         renderAnalysisMarksList();
         updateAnalysisMarkers();
         renderComparison();
-        estrAddLog(`Marca ${estrMarkType === 'open' ? 'ABRIR' : 'CERRAR'} @ ${candle.close.toFixed(2)}`);
+        analysisAddLog(`Marca ${analysisMarkType === 'up' ? 'UP' : 'DOWN'} @ ${candle.close.toFixed(2)}`);
     });
 
     analysisChartsReady = true;
@@ -1108,10 +1137,10 @@ function initAnalysisCharts() {
 }
 
 function getIndicatorValuesAt(time) {
-    const rsiP = parseInt(document.getElementById('estr-rsi-period').value) || 7;
-    const smaP = parseInt(document.getElementById('estr-sma-period').value) || 23;
-    const bbP = parseInt(document.getElementById('estr-bb-period').value) || 20;
-    const stochP = parseInt(document.getElementById('estr-stoch-period').value) || 14;
+    const rsiP = parseInt(document.getElementById('analysis-rsi-period').value) || 7;
+    const smaP = parseInt(document.getElementById('analysis-sma-period').value) || 23;
+    const bbP = parseInt(document.getElementById('analysis-bb-period').value) || 20;
+    const stochP = parseInt(document.getElementById('analysis-stoch-period').value) || 14;
 
     const findVal = (arr) => {
         if (!arr || !arr.length) return null;
@@ -1131,45 +1160,45 @@ function getIndicatorValuesAt(time) {
 
 function updateAnalysisCharts() {
     if (!analysisChartsReady || !dataHistory.length) return;
-    document.getElementById('estr-symbol-display').textContent = currentSymbol;
-    document.getElementById('estr-data-status').textContent = 'Conectado';
-    document.getElementById('estr-candle-count').style.display = '';
-    document.getElementById('estr-count-num').textContent = dataHistory.length;
-    estrCandleSeries.setData(dataHistory);
+    document.getElementById('analysis-symbol-display').textContent = currentSymbol;
+    document.getElementById('analysis-data-status').textContent = 'Conectado';
+    document.getElementById('analysis-candle-count').style.display = '';
+    document.getElementById('analysis-count-num').textContent = dataHistory.length;
+    analysisCandleSeries.setData(dataHistory);
     updateAnalysisIndicators();
 }
 
 function updateAnalysisIndicators() {
     if (!analysisChartsReady || dataHistory.length < 2) return;
 
-    const smaP = parseInt(document.getElementById('estr-sma-period').value) || 23;
-    const emaP = parseInt(document.getElementById('estr-ema-period').value) || 10;
-    const rsiP = parseInt(document.getElementById('estr-rsi-period').value) || 7;
-    const bbP = parseInt(document.getElementById('estr-bb-period').value) || 20;
+    const smaP = parseInt(document.getElementById('analysis-sma-period').value) || 23;
+    const emaP = parseInt(document.getElementById('analysis-ema-period').value) || 10;
+    const rsiP = parseInt(document.getElementById('analysis-rsi-period').value) || 7;
+    const bbP = parseInt(document.getElementById('analysis-bb-period').value) || 20;
 
-    const smaData = document.getElementById('estr-sma-enable').checked ? calculateSMA(dataHistory, smaP).filter(d => d.value !== null) : [];
-    const emaData = document.getElementById('estr-ema-enable').checked ? calculateEMA(dataHistory, emaP) : [];
-    const rsiData = document.getElementById('estr-rsi-enable').checked ? calculateRSI(dataHistory, rsiP).filter(d => d.value !== null) : [];
-    const bb = document.getElementById('estr-bb-enable').checked ? calculateBB(dataHistory, bbP) : { upper: [], middle: [], lower: [] };
-    const stochData = calculateStochastic(dataHistory, parseInt(document.getElementById('estr-stoch-period').value) || 14);
+    const smaData = document.getElementById('analysis-sma-enable').checked ? calculateSMA(dataHistory, smaP).filter(d => d.value !== null) : [];
+    const emaData = document.getElementById('analysis-ema-enable').checked ? calculateEMA(dataHistory, emaP) : [];
+    const rsiData = document.getElementById('analysis-rsi-enable').checked ? calculateRSI(dataHistory, rsiP).filter(d => d.value !== null) : [];
+    const bb = document.getElementById('analysis-bb-enable').checked ? calculateBB(dataHistory, bbP) : { upper: [], middle: [], lower: [] };
+    const stochData = calculateStochastic(dataHistory, parseInt(document.getElementById('analysis-stoch-period').value) || 14);
     const macdData = calculateMACD(dataHistory, 12, 26, 9);
 
-    if (estrSmaSeries) estrSmaSeries.setData(smaData);
-    if (estrEmaSeries) estrEmaSeries.setData(emaData);
-    if (estrBbUpperSeries) estrBbUpperSeries.setData(bb.upper.filter(d => d.value !== null));
-    if (estrBbMiddleSeries) estrBbMiddleSeries.setData(bb.middle?.filter(d => d.value !== null) || []);
-    if (estrBbLowerSeries) estrBbLowerSeries.setData(bb.lower.filter(d => d.value !== null));
+    if (analysisSmaSeries) analysisSmaSeries.setData(smaData);
+    if (analysisEmaSeries) analysisEmaSeries.setData(emaData);
+    if (analysisBbUpperSeries) analysisBbUpperSeries.setData(bb.upper.filter(d => d.value !== null));
+    if (analysisBbMiddleSeries) analysisBbMiddleSeries.setData(bb.middle?.filter(d => d.value !== null) || []);
+    if (analysisBbLowerSeries) analysisBbLowerSeries.setData(bb.lower.filter(d => d.value !== null));
 
-    if (estrRsiSeries) { estrRsiSeries.setData(rsiData); estrRsiSeries.applyOptions({ visible: rsiData.length > 0 }); }
-    if (estrStochSeries) { const plot = stochData.map(d => ({ time: d.time, value: d.k })).filter(d => d.value !== null); estrStochSeries.setData(plot); }
-    if (estrMacdSeries && estrMacdSignalSeries) {
+    if (analysisRsiSeries) { analysisRsiSeries.setData(rsiData); analysisRsiSeries.applyOptions({ visible: rsiData.length > 0 }); }
+    if (analysisStochSeries) { const plot = stochData.map(d => ({ time: d.time, value: d.k })).filter(d => d.value !== null); analysisStochSeries.setData(plot); }
+    if (analysisMacdSeries && analysisMacdSignalSeries) {
         const valid = macdData.filter(d => d.macd !== null);
         if (valid.length > 0) {
             const all = [...valid.map(d => d.macd), ...valid.map(d => d.signal)];
             const min = Math.min(...all), max = Math.max(...all), range = max - min || 1;
             const norm = v => ((v - min) / range) * 100;
-            estrMacdSeries.setData(macdData.map(d => ({ time: d.time, value: d.macd !== null ? norm(d.macd) : null })).filter(d => d.value !== null));
-            estrMacdSignalSeries.setData(macdData.map(d => ({ time: d.time, value: d.signal !== null ? norm(d.signal) : null })).filter(d => d.value !== null));
+            analysisMacdSeries.setData(macdData.map(d => ({ time: d.time, value: d.macd !== null ? norm(d.macd) : null })).filter(d => d.value !== null));
+            analysisMacdSignalSeries.setData(macdData.map(d => ({ time: d.time, value: d.signal !== null ? norm(d.signal) : null })).filter(d => d.value !== null));
         }
     }
 
@@ -1177,16 +1206,16 @@ function updateAnalysisIndicators() {
 }
 
 function updateAnalysisMarkers() {
-    if (!analysisChartsReady || !estrCandleSeries) return;
-    const manualMarkers = estrMarks.map(m => ({
+    if (!analysisChartsReady || !analysisCandleSeries) return;
+    const manualMarkers = analysisMarks.map(m => ({
         time: m.time,
-        position: m.type === 'open' ? 'aboveBar' : 'belowBar',
-        color: m.type === 'open' ? '#089981' : '#f23645',
-        shape: m.type === 'open' ? 'arrowUp' : 'arrowDown',
-        text: m.type === 'open' ? 'ABRIR' : 'CERRAR'
+        position: m.type === 'up' ? 'aboveBar' : 'belowBar',
+        color: m.type === 'up' ? '#089981' : '#f23645',
+        shape: m.type === 'up' ? 'arrowUp' : 'arrowDown',
+        text: m.type === 'up' ? 'UP' : 'DOWN'
     }));
 
-    const autoMarkers = estrAutoSignals.map(s => ({
+    const autoMarkers = analysisAutoSignals.map(s => ({
         time: s.time,
         position: s.type === 'CALL' ? 'aboveBar' : 'belowBar',
         color: s.type === 'CALL' ? 'rgba(8,153,129,0.55)' : 'rgba(242,54,69,0.55)',
@@ -1195,23 +1224,23 @@ function updateAnalysisMarkers() {
     }));
 
     const markers = [...manualMarkers, ...autoMarkers].sort((a, b) => a.time - b.time);
-    estrCandleSeries.setMarkers(markers);
+    analysisCandleSeries.setMarkers(markers);
 }
 
 function normalizeManualType(type) {
-    return type === 'open' ? 'CALL' : 'PUT';
+    return type === 'up' ? 'CALL' : 'PUT';
 }
 
 function findAutoSignalAt(time) {
-    return estrAutoSignals.find(s => s.time === time) || null;
+    return analysisAutoSignals.find(s => s.time === time) || null;
 }
 
 function renderComparison() {
-    const statsEl = document.getElementById('estr-compare-stats');
-    const tableEl = document.getElementById('estr-compare-table');
+    const statsEl = document.getElementById('analysis-compare-stats');
+    const tableEl = document.getElementById('analysis-compare-table');
     if (!statsEl || !tableEl) return;
 
-    if (!estrAutoSignals.length) {
+    if (!analysisAutoSignals.length) {
         statsEl.textContent = 'Aún no hay resultados';
         tableEl.textContent = 'Ejecute backtest para ver coincidencias';
         return;
@@ -1221,7 +1250,7 @@ function renderComparison() {
     let directionMatches = 0;
     const rows = [];
 
-    estrMarks.forEach((m) => {
+    analysisMarks.forEach((m) => {
         const auto = findAutoSignalAt(m.time);
         const manualType = normalizeManualType(m.type);
         const sameCandle = !!auto;
@@ -1238,8 +1267,8 @@ function renderComparison() {
         });
     });
 
-    const omissions = Math.max(estrMarks.length - hits, 0);
-    const falsePositives = Math.max(estrAutoSignals.length - hits, 0);
+    const omissions = Math.max(analysisMarks.length - hits, 0);
+    const falsePositives = Math.max(analysisAutoSignals.length - hits, 0);
     statsEl.textContent = `Aciertos: ${directionMatches} · Fallos dir.: ${hits - directionMatches} · Omisiones: ${omissions} · Falsos+: ${falsePositives}`;
 
     if (!rows.length) {
@@ -1259,30 +1288,34 @@ function renderComparison() {
 
 async function runStrategyBacktest() {
     if (!dataHistory.length) {
-        estrAddLog('Sin datos para backtest');
+        analysisAddLog('Sin datos para backtest');
         return;
     }
 
-    const strategyId = document.getElementById('strategy')?.value || 'multi-momentum';
+    const strategyId = document.getElementById('strategy-analysis')?.value || 'multi-momentum';
     const params = {
         minConfirmations: 3,
-        rsiPeriod: parseInt(document.getElementById('estr-rsi-period').value) || 7,
-        rsiHigh: parseFloat(document.getElementById('rsi-high').value) || 65,
-        rsiLow: parseFloat(document.getElementById('rsi-low').value) || 35,
-        stochPeriod: parseInt(document.getElementById('estr-stoch-period').value) || 14,
-        smaFast: parseInt(document.getElementById('estr-sma-period').value) || 23,
+        rsiPeriod: parseInt(document.getElementById('analysis-rsi-period').value) || 7,
+        rsiHigh: parseFloat(document.getElementById('analysis-rsi-high').value) || 65,
+        rsiLow: parseFloat(document.getElementById('analysis-rsi-low').value) || 35,
+        stochPeriod: parseInt(document.getElementById('analysis-stoch-period').value) || 14,
+        smaFast: parseInt(document.getElementById('analysis-sma-period').value) || 23,
         smaSlow: 21,
-        bbPeriod: parseInt(document.getElementById('estr-bb-period').value) || 20,
+        bbPeriod: parseInt(document.getElementById('analysis-bb-period').value) || 20,
         bbStdDev: 2
     };
 
-    estrAddLog(`Backtest ${strategyId} iniciado (${dataHistory.length} velas)`);
+    const durationMin = parseInt(document.getElementById('backtest-duration').value) || 1440;
+    const granularity = parseInt(document.getElementById('timeframe').value) || 60;
+    const numCandles = Math.max(Math.floor((durationMin * 60) / granularity), 30);
+    const slicedData = dataHistory.slice(-numCandles);
+    analysisAddLog(`Backtest ${strategyId} iniciado (${slicedData.length}/${dataHistory.length} velas, ${durationMin}min)`);
 
     try {
         const res = await fetch(`/api/strategies/${strategyId}/backtest`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ candles: dataHistory, params })
+            body: JSON.stringify({ candles: slicedData, params })
         });
 
         const result = await res.json();
@@ -1290,17 +1323,17 @@ async function runStrategyBacktest() {
             throw new Error(result.error || `HTTP ${res.status}`);
         }
 
-        estrAutoSignals = Array.isArray(result.signals) ? result.signals : [];
+        analysisAutoSignals = Array.isArray(result.signals) ? result.signals : [];
         updateAnalysisMarkers();
         renderComparison();
 
-        const summary = document.getElementById('estr-backtest-summary');
+        const summary = document.getElementById('analysis-backtest-summary');
         if (summary) {
             summary.textContent = `Señales: ${result.stats?.signalsCount || 0} (CALL ${result.stats?.callCount || 0} / PUT ${result.stats?.putCount || 0})`;
         }
-        estrAddLog(`Backtest completado: ${result.stats?.signalsCount || 0} señales`);
+        analysisAddLog(`Backtest completado: ${result.stats?.signalsCount || 0} señales`);
     } catch (error) {
-        estrAddLog(`Backtest error: ${error.message}`);
+        analysisAddLog(`Backtest error: ${error.message}`);
     }
 }
 
@@ -1308,7 +1341,7 @@ function exportMarksJson() {
     const payload = {
         exportedAt: new Date().toISOString(),
         symbol: currentSymbol,
-        marks: estrMarks
+        marks: analysisMarks
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -1319,7 +1352,7 @@ function exportMarksJson() {
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-    estrAddLog(`Marcas exportadas: ${estrMarks.length}`);
+    analysisAddLog(`Marcas exportadas: ${analysisMarks.length}`);
 }
 
 function importMarksJson(file) {
@@ -1332,26 +1365,26 @@ function importMarksJson(file) {
             const normalized = srcMarks
                 .map(m => ({
                     time: Number(m.time),
-                    type: m.type === 'close' ? 'close' : 'open',
+                    type: m.type === 'close' ? 'down' : (m.type === 'open' ? 'up' : m.type),
                     price: Number(m.price),
                     indicators: m.indicators || {}
                 }))
                 .filter(m => Number.isFinite(m.time) && Number.isFinite(m.price));
 
             if (!normalized.length) {
-                estrAddLog('Importación sin marcas válidas');
+                analysisAddLog('Importación sin marcas válidas');
                 return;
             }
 
             const byTime = new Map();
-            [...estrMarks, ...normalized].forEach(m => byTime.set(m.time, m));
-            estrMarks = Array.from(byTime.values()).sort((a, b) => a.time - b.time);
+            [...analysisMarks, ...normalized].forEach(m => byTime.set(m.time, m));
+            analysisMarks = Array.from(byTime.values()).sort((a, b) => a.time - b.time);
             renderAnalysisMarksList();
             updateAnalysisMarkers();
             renderComparison();
-            estrAddLog(`Marcas importadas: +${normalized.length}`);
+            analysisAddLog(`Marcas importadas: +${normalized.length}`);
         } catch (e) {
-            estrAddLog(`Error importando JSON: ${e.message}`);
+            analysisAddLog(`Error importando JSON: ${e.message}`);
         }
     };
     reader.readAsText(file);
@@ -1394,18 +1427,18 @@ function scoreSignalsAgainstMarks(signals, marks) {
 
 async function runOptimizerScan() {
     if (!dataHistory.length) {
-        estrAddLog('Sin datos para optimizar');
+        analysisAddLog('Sin datos para optimizar');
         return;
     }
-    if (!estrMarks.length) {
-        estrAddLog('Agregue/importe marcas manuales antes de optimizar');
+    if (!analysisMarks.length) {
+        analysisAddLog('Agregue/importe marcas manuales antes de optimizar');
         return;
     }
 
-    const strategyId = document.getElementById('strategy')?.value || 'multi-momentum';
+    const strategyId = document.getElementById('strategy-analysis')?.value || 'multi-momentum';
     const paramSets = buildOptimizerParamSets();
-    const resultsEl = document.getElementById('estr-optimizer-results');
-    const summaryEl = document.getElementById('estr-optimizer-summary');
+    const resultsEl = document.getElementById('analysis-optimizer-results');
+    const summaryEl = document.getElementById('analysis-optimizer-summary');
     if (resultsEl) resultsEl.textContent = 'Escaneando parámetros...';
 
     const ranking = [];
@@ -1414,12 +1447,12 @@ async function runOptimizerScan() {
         const params = {
             minConfirmations: 3,
             rsiPeriod: p.rsiPeriod,
-            rsiHigh: parseFloat(document.getElementById('rsi-high').value) || 65,
-            rsiLow: parseFloat(document.getElementById('rsi-low').value) || 35,
-            stochPeriod: parseInt(document.getElementById('estr-stoch-period').value) || 14,
+            rsiHigh: parseFloat(document.getElementById('analysis-rsi-high').value) || 65,
+            rsiLow: parseFloat(document.getElementById('analysis-rsi-low').value) || 35,
+            stochPeriod: parseInt(document.getElementById('analysis-stoch-period').value) || 14,
             smaFast: p.smaFast,
             smaSlow: p.smaSlow,
-            bbPeriod: parseInt(document.getElementById('estr-bb-period').value) || 20,
+            bbPeriod: parseInt(document.getElementById('analysis-bb-period').value) || 20,
             bbStdDev: 2
         };
 
@@ -1432,14 +1465,14 @@ async function runOptimizerScan() {
             const result = await res.json();
             if (!res.ok || !result.success) continue;
 
-            const scored = scoreSignalsAgainstMarks(result.signals || [], estrMarks);
+            const scored = scoreSignalsAgainstMarks(result.signals || [], analysisMarks);
             ranking.push({ params, stats: scored, signals: result.signals || [] });
         } catch (_) {
             // skip failed combo
         }
 
         if (i % 10 === 0) {
-            estrAddLog(`Optimizando... ${i + 1}/${paramSets.length}`);
+            analysisAddLog(`Optimizando... ${i + 1}/${paramSets.length}`);
         }
     }
 
@@ -1453,7 +1486,7 @@ async function runOptimizerScan() {
     }
 
     const best = top[0];
-    estrAutoSignals = best.signals;
+    analysisAutoSignals = best.signals;
     updateAnalysisMarkers();
     renderComparison();
 
@@ -1470,21 +1503,21 @@ async function runOptimizerScan() {
         )).join('');
     }
 
-    estrAddLog(`Optimización completa (${ranking.length} combinaciones evaluadas)`);
+    analysisAddLog(`Optimización completa (${ranking.length} combinaciones evaluadas)`);
 }
 
 function renderAnalysisMarksList() {
-    const container = document.getElementById('estr-marks-list');
+    const container = document.getElementById('analysis-marks-list');
     if (!container) return;
-    const countEl = document.getElementById('estr-mark-count');
-    if (countEl) countEl.textContent = `(${estrMarks.length})`;
+    const countEl = document.getElementById('analysis-mark-count');
+    if (countEl) countEl.textContent = `(${analysisMarks.length})`;
 
-    if (estrMarks.length === 0) {
+    if (analysisMarks.length === 0) {
         container.innerHTML = '<div style="color:#555;padding:8px;text-align:center;">Sin marcas</div>';
         return;
     }
 
-    container.innerHTML = estrMarks.map((m, i) => {
+    container.innerHTML = analysisMarks.map((m, i) => {
         const d = new Date(m.time * 1000);
         const ind = m.indicators || {};
         const parts = [];
@@ -1499,7 +1532,7 @@ function renderAnalysisMarksList() {
         }
         return `<div style="display:flex;flex-direction:column;padding:3px 4px;border-bottom:1px solid #1a1a1a;cursor:pointer;" data-idx="${i}">
             <div style="display:flex;justify-content:space-between;align-items:center;">
-                <span style="color:${m.type === 'open' ? '#089981' : '#f23645'};font-weight:bold;">${m.type === 'open' ? '▲' : '▼'} ${m.type.toUpperCase()}</span>
+                <span style="color:${m.type === 'up' ? '#089981' : '#f23645'};font-weight:bold;">${m.type === 'up' ? '▲' : '▼'} ${m.type.toUpperCase()}</span>
                 <span style="color:#888;font-size:9px;">${d.toLocaleTimeString()}</span>
                 <span style="color:#aaa;">${m.price.toFixed(2)}</span>
                 <span style="color:#444;font-size:9px;">✕</span>
@@ -1511,17 +1544,17 @@ function renderAnalysisMarksList() {
     container.querySelectorAll('[data-idx]').forEach(el => {
         el.addEventListener('click', () => {
             const idx = parseInt(el.dataset.idx);
-            estrMarks.splice(idx, 1);
+            analysisMarks.splice(idx, 1);
             renderAnalysisMarksList();
             updateAnalysisMarkers();
             renderComparison();
-            estrAddLog('Marca eliminada');
+            analysisAddLog('Marca eliminada');
         });
     });
 }
 
-function estrAddLog(message) {
-    const container = document.getElementById('estr-logs');
+function analysisAddLog(message) {
+    const container = document.getElementById('analysis-logs');
     if (!container) return;
     const entry = document.createElement('div');
     entry.innerHTML = `<span style="color:#666;">[${new Date().toLocaleTimeString()}]</span> ${message}`;
@@ -1532,8 +1565,8 @@ function estrAddLog(message) {
 
 // Sync: analysis input → trading input
 ['sma-period', 'ema-period', 'bb-period', 'rsi-period', 'stoch-period'].forEach(id => {
-    document.getElementById(`estr-${id}`)?.addEventListener('input', () => {
-        const v = document.getElementById(`estr-${id}`).value;
+    document.getElementById(`analysis-${id}`)?.addEventListener('input', () => {
+        const v = document.getElementById(`analysis-${id}`).value;
         const tradingEl = document.getElementById(id);
         if (tradingEl) tradingEl.value = v;
         updateIndicators();
@@ -1543,52 +1576,97 @@ function estrAddLog(message) {
 
 // Analysis indicator toggle listeners
 ['sma', 'ema', 'bb', 'rsi', 'stoch', 'macd'].forEach(name => {
-    document.getElementById(`estr-${name}-enable`)?.addEventListener('change', updateAnalysisIndicators);
+    document.getElementById(`analysis-${name}-enable`)?.addEventListener('change', updateAnalysisIndicators);
 });
 
 // Analysis mark controls
-document.getElementById('estr-mark-open')?.addEventListener('click', () => {
-    estrMarkType = 'open';
-    document.getElementById('estr-mark-open').style.opacity = '1';
-    document.getElementById('estr-mark-close').style.opacity = '0.5';
+document.getElementById('mark-up')?.addEventListener('click', () => {
+    analysisMarkType = 'up';
+    document.getElementById('mark-up').style.opacity = '1';
+    document.getElementById('mark-down').style.opacity = '0.5';
 });
-document.getElementById('estr-mark-close')?.addEventListener('click', () => {
-    estrMarkType = 'close';
-    document.getElementById('estr-mark-close').style.opacity = '1';
-    document.getElementById('estr-mark-open').style.opacity = '0.5';
+document.getElementById('mark-down')?.addEventListener('click', () => {
+    analysisMarkType = 'down';
+    document.getElementById('mark-down').style.opacity = '1';
+    document.getElementById('mark-up').style.opacity = '0.5';
 });
-document.getElementById('estr-clear-marks')?.addEventListener('click', () => {
-    estrMarks = [];
+document.getElementById('analysis-clear-marks')?.addEventListener('click', () => {
+    analysisMarks = [];
     renderAnalysisMarksList();
     updateAnalysisMarkers();
     renderComparison();
-    estrAddLog('Todas las marcas eliminadas');
+    analysisAddLog('Todas las marcas eliminadas');
 });
-document.getElementById('estr-mark-mode')?.addEventListener('change', (e) => {
-    estrAddLog(e.target.checked ? 'Modo marcado activado — haga clic en el grafico' : 'Modo marcado desactivado');
+document.getElementById('mark-mode')?.addEventListener('change', (e) => {
+    analysisAddLog(e.target.checked ? 'Modo marcado activado — haga clic en el grafico' : 'Modo marcado desactivado');
 });
 
-document.getElementById('run-backtest-trading')?.addEventListener('click', () => {
+document.getElementById('run-backtest-analysis')?.addEventListener('click', () => {
     runStrategyBacktest();
 });
 
 
 
 
-document.getElementById('estr-export-marks')?.addEventListener('click', () => {
+document.getElementById('analysis-export-marks')?.addEventListener('click', () => {
     exportMarksJson();
 });
 
-document.getElementById('estr-import-marks')?.addEventListener('click', () => {
-    document.getElementById('estr-import-file')?.click();
+document.getElementById('analysis-import-marks')?.addEventListener('click', () => {
+    document.getElementById('analysis-import-file')?.click();
 });
 
-document.getElementById('estr-import-file')?.addEventListener('change', (e) => {
+document.getElementById('analysis-import-file')?.addEventListener('change', (e) => {
     const file = e.target?.files?.[0];
     importMarksJson(file);
     e.target.value = '';
 });
 
-document.getElementById('estr-run-optimizer')?.addEventListener('click', () => {
+document.getElementById('analysis-run-optimizer')?.addEventListener('click', () => {
     runOptimizerScan();
+});
+
+document.getElementById('save-backtest-btn')?.addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify({ marks: analysisMarks, signals: analysisAutoSignals }, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `backtest-${currentSymbol}-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    analysisAddLog('Backtest guardado');
+});
+
+document.getElementById('load-backtest-btn')?.addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+        const f = e.target.files?.[0];
+        if (!f) return;
+        const r = new FileReader();
+        r.onload = () => {
+            try {
+                const d = JSON.parse(r.result);
+                if (d.marks) analysisMarks = d.marks;
+                if (d.signals) analysisAutoSignals = d.signals;
+                renderAnalysisMarksList();
+                updateAnalysisMarkers();
+                renderComparison();
+                analysisAddLog('Backtest cargado');
+            } catch (err) { analysisAddLog('Error: ' + err.message); }
+        };
+        r.readAsText(f);
+    };
+    input.click();
+});
+
+document.getElementById('analyze-marks-btn')?.addEventListener('click', () => {
+    if (!analysisMarks.length) { analysisAddLog('Sin marcas para analizar'); return; }
+    const ups = analysisMarks.filter(m => m.type === 'up').length;
+    const downs = analysisMarks.filter(m => m.type === 'down').length;
+    analysisAddLog(`Análisis: ${analysisMarks.length} marcas total (UP: ${ups}, DOWN: ${downs}) — función completa próximamente`);
+});
+
+document.getElementById('improve-strategy-btn')?.addEventListener('click', () => {
+    analysisAddLog('Mejora de estrategia — próximamente');
 });
