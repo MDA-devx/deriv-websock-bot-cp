@@ -56,11 +56,14 @@
 
             <div class="input-group">
                 <label>Estrategia</label>
-                <select id="strategy">
-                    <option value="multi-momentum" selected>Multi-Momentum (Alto Volumen)</option>
-                    <option value="adaptive-confluence">Adaptive Confluence (Tendencia + Momentum)</option>
-                <option value="fast-ema-sma-cross">EMA/SMA Cross Fast</option>
-                </select>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <select id="strategy" style="flex:1;">
+                        <option value="multi-momentum" selected>Multi-Momentum (Alto Volumen)</option>
+                        <option value="adaptive-confluence">Adaptive Confluence (Tendencia + Momentum)</option>
+                        <option value="fast-ema-sma-cross">EMA/SMA Cross Fast</option>
+                    </select>
+                    <button id="strategy-apply" type="button" style="padding:8px 10px; border-radius:8px;">Apply</button>
+                </div>
             </div>
 
             <div class="section">
