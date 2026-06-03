@@ -900,7 +900,7 @@ function resetUIForStrategy() {
     rsiChart.applyOptions({});
 }
 
-function applyStrategyDefaults(meta = {}) {
+function applyStrategyDefaults(meta = {}, fetchHistory = true) {
     const defaults = meta.defaultParams || {};
     // Map known parameter keys to UI element IDs
     const mapping = {
@@ -959,11 +959,11 @@ function applyStrategyDefaults(meta = {}) {
     });
 
     resetTickCrossState();
-    requestHistory();
+    if (fetchHistory) requestHistory();
     updateIndicators();
 }
 
-async function loadStrategyDefaults(strategyId) {
+async function loadStrategyDefaults(strategyId, fetchHistory = true) {
     if (!strategyId) return;
     isLoadingStrategy = true;
     let meta = null;
@@ -975,7 +975,7 @@ async function loadStrategyDefaults(strategyId) {
         console.warn('[UI] Backend unavailable, using frontend defaults', e);
         meta = STRATEGY_DEFAULTS[strategyId] || null;
     } finally {
-        if (meta) applyStrategyDefaults(meta);
+        if (meta) applyStrategyDefaults(meta, fetchHistory);
         isLoadingStrategy = false;
     }
 }
@@ -990,7 +990,7 @@ window.addEventListener('load', () => {
             console.log('[UI] Strategy changed, resetting UI components');
             resetUIForStrategy();
             resetTickCrossState();
-            await loadStrategyDefaults(strategySelect.value);
+            await loadStrategyDefaults(strategySelect.value, true);
         });
         strategySelect.addEventListener('click', () => {
             strategySelect.dataset.previousValue = strategySelect.value;
@@ -1000,11 +1000,11 @@ window.addEventListener('load', () => {
         strategyApply.addEventListener('click', async () => {
             console.log('[UI] Reapplying current strategy defaults');
             resetUIForStrategy();
-            await loadStrategyDefaults(strategySelect.value);
+            await loadStrategyDefaults(strategySelect.value, true);
         });
     }
     if (strategySelect) {
-        loadStrategyDefaults(strategySelect.value);
+        loadStrategyDefaults(strategySelect.value, false);
     }
 });
 
