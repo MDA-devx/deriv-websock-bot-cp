@@ -1026,22 +1026,23 @@ function addLog(message, type = '') {
 // TAB SWITCHING
 // ============================================
 function switchTab(tab) {
+    try {
+    console.log('[switchTab] switching to:', tab);
     currentTab = tab;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
-    document.getElementById('sidebar-trade').style.display = tab === 'trade' ? 'flex' : 'none';
-    document.getElementById('sidebar-strategy').style.display = tab === 'strategy' ? 'flex' : 'none';
-    document.getElementById('sidebar-analysis').style.display = tab === 'analysis' ? 'flex' : 'none';
-    document.getElementById('sidebar-log-config').style.display = tab === 'log-config' ? 'flex' : 'none';
-    document.getElementById('trade-view').style.display = tab === 'trade' ? 'flex' : 'none';
-    document.getElementById('strategy-view').style.display = tab === 'strategy' ? 'flex' : 'none';
-    document.getElementById('analysis-view').style.display = tab === 'analysis' ? 'flex' : 'none';
-    document.getElementById('log-config-view').style.display = tab === 'log-config' ? 'flex' : 'none';
+    const sbMap = { trade:'sidebar-trade', strategy:'sidebar-strategy', analysis:'sidebar-analysis', 'log-config':'sidebar-log-config' };
+    const vwMap = { trade:'trade-view', strategy:'strategy-view', analysis:'analysis-view', 'log-config':'log-config-view' };
+    Object.values(sbMap).forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+    Object.values(vwMap).forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+    const sb = document.getElementById(sbMap[tab]); if (sb) sb.style.display = 'flex';
+    const vw = document.getElementById(vwMap[tab]); if (vw) vw.style.display = 'flex';
 
     if (tab === 'analysis') {
         if (!analysisChartsReady) initAnalysisCharts();
         if (dataHistory.length > 0) updateAnalysisCharts();
     }
     setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
+    } catch (e) { console.error('switchTab error:', e); }
 }
 
 document.querySelectorAll('.tab-btn').forEach(btn => {
