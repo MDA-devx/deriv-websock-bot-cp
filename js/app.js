@@ -827,10 +827,8 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-function resetUIForStrategy() {
-    // Clear market data history and chart series
-    dataHistory = [];
-    candleSeries.setData([]);
+function redrawIndicatorsOnly() {
+    // Clear series visual data without wiping the underlying dataHistory
     smaSeries.setData([]);
     emaSeries.setData([]);
     bbUpperSeries.setData([]);
@@ -840,32 +838,11 @@ function resetUIForStrategy() {
     stochSeries.setData([]);
     macdSeries.setData([]);
     macdSignalSeries.setData([]);
-    // Reset indicator toggles to defaults
-    const toggleMap = {
-        'sma-enabled': true,
-        'ema-enabled': true,
-        'rsi-enabled': true,
-        'bb-enabled': true,
-        'stoch-enabled': false,
-        'macd-enabled': false
-    };
-    Object.entries(toggleMap).forEach(([id, def]) => {
-        const el = document.getElementById(id);
-        if (el) el.checked = def;
-    });
-    // Reset indicator parameters to defaults (these will be overwritten later when a strategy is selected)
-    document.getElementById('sma-period').value = 9;
-    document.getElementById('ema-period').value = 10;
-    document.getElementById('rsi-period').value = 7;
-    document.getElementById('rsi-high').value = 70;
-    document.getElementById('rsi-low').value = 30;
-    document.getElementById('bb-period').value = 20;
-    // Refresh indicators and chart
+    
+    // Refresh indicators based on existing dataHistory
     updateIndicators();
     priceChart.applyOptions({});
     rsiChart.applyOptions({});
-    // Disable UI elements for indicators that the current strategy does not use (will be refined after fetching metadata)
-    // This placeholder will be overwritten when the strategy is changed below.
 }
 
 
@@ -878,8 +855,8 @@ window.addEventListener('load', () => {
     const strategySelect = document.getElementById('strategy');
     if (strategySelect) {
         strategySelect.addEventListener('change', async () => {
-            console.log('[UI] Strategy changed, resetting UI components');
-            resetUIForStrategy();
+            console.log('[UI] Strategy changed, redrawing indicators');
+            redrawIndicatorsOnly();
             resetTickCrossState();
             isLoadingStrategy = true;
             // Load default parameters for the selected strategy and apply to UI inputs
@@ -889,12 +866,11 @@ window.addEventListener('load', () => {
                 if (res.ok) {
                     const meta = await res.json();
                     const defaults = meta.defaultParams || {};
-                    const enabled = meta.enabled || {};
                     // Map known parameter keys to UI element IDs
                     const mapping = {
                         smaFast: 'sma-period',
                         smaPeriod: 'sma-period',
-                        smaSlow: 'sma-period', // placeholder if using same input for fast/slow not present
+                        smaSlow: 'sma-period',
                         emaFast: 'ema-period',
                         emaPeriod: 'ema-period',
                         emaSlow: 'ema-period',
@@ -902,8 +878,8 @@ window.addEventListener('load', () => {
                         rsiLow: 'rsi-low',
                         rsiHigh: 'rsi-high',
                         bbPeriod: 'bb-period',
-                        minConfirmations: 'min-confirmations', // if UI exists
-                        minScore: 'min-score', // if UI exists
+                        minConfirmations: 'min-confirmations',
+                        minScore: 'min-score',
                         coolDownCandles: 'cooldown-candles'
                     };
                     Object.entries(defaults).forEach(([key, val]) => {
@@ -922,7 +898,6 @@ window.addEventListener('load', () => {
                         stoch: 'stoch-enabled',
                         macd: 'macd-enabled'
                     };
-                    // Determine which indicators the strategy uses based on presence of relevant params
                     const uses = {
                         sma: !!defaults.smaFast || !!defaults.smaPeriod || !!defaults.smaSlow,
                         ema: !!defaults.emaFast || !!defaults.emaPeriod,
@@ -935,13 +910,14 @@ window.addEventListener('load', () => {
                         const el = document.getElementById(id);
                         if (el) {
                             el.checked = !!uses[key];
-                            el.disabled = !uses[key]; // disable if strategy does not use this indicator
+                            el.disabled = !uses[key];
                             const related = document.getElementById(`${id.replace('-enabled', '')}-period`);
                             if (related) related.style.display = uses[key] ? '' : 'none';
                         }
                     });
                     resetTickCrossState();
-                    requestHistory();
+                    // NO requestHistory() here, we want to redraw only
+                    updateIndicators();
                     isLoadingStrategy = false;
                 }
             } catch (e) {
