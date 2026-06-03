@@ -662,6 +662,7 @@ function disconnect() {
 }
 
 function requestHistory() {
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
     const gran = parseInt(document.getElementById('timeframe').value) || 60;
     ws.send(JSON.stringify({ ticks_history: currentSymbol, end: 'latest', start: Math.floor(Date.now() / 1000) - 7200, style: 'candles', granularity: gran }));
 }
