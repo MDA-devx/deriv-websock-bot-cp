@@ -68,6 +68,8 @@
                     <div class="indicator-val">EMA: <span id="val-ema">--</span></div>
                     <div class="indicator-val">RSI: <span id="val-rsi">--</span></div>
                     <div class="indicator-val">BB: <span id="val-bb">--</span></div>
+                    <div class="indicator-val">Stoch: <span id="val-stoch">--</span></div>
+                    <div class="indicator-val">MACD: <span id="val-macd">--</span></div>
                 </div>
             </div>
 
@@ -120,6 +122,27 @@
                             <input type="number" id="rsi-low" value="35" min="0" max="100" title="Low">
                         </div>
                     </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="stoch-enabled" checked>
+                        <label for="stoch-enabled">Stoch</label>
+                        <input type="number" id="stoch-period" value="14" min="1">
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="macd-enabled" checked>
+                        <label for="macd-enabled">MACD</label>
+                    </div>
+                </div>
+                <div class="input-group" style="margin-top:8px;">
+                    <label>Min Confirmaciones</label>
+                    <input type="number" id="min-confirmations" value="3" min="1">
+                </div>
+                <div class="input-group">
+                    <label>SMA Slow</label>
+                    <input type="number" id="sma-slow" value="21" min="1">
+                </div>
+                <div class="input-group">
+                    <label>BB StdDev</label>
+                    <input type="number" id="bb-stddev" value="2" min="0.1" step="0.1">
                 </div>
             </div>
 
@@ -162,6 +185,18 @@
                     <div class="checkbox-item"><input type="checkbox" id="analysis-rsi-enable" checked><label for="analysis-rsi-enable">RSI</label><input type="number" id="analysis-rsi-period" value="7" min="1" style="width:40px;"><input type="number" id="analysis-rsi-high" value="65" min="0" max="100" style="width:36px;"><input type="number" id="analysis-rsi-low" value="35" min="0" max="100" style="width:36px;"></div>
                     <div class="checkbox-item"><input type="checkbox" id="analysis-stoch-enable" checked><label for="analysis-stoch-enable">Stoch</label><input type="number" id="analysis-stoch-period" value="14" min="1" style="width:40px;"></div>
                     <div class="checkbox-item"><input type="checkbox" id="analysis-macd-enable" checked><label for="analysis-macd-enable">MACD</label></div>
+                </div>
+                <div class="input-group" style="margin-top:4px;">
+                    <label>Min Confirm</label>
+                    <input type="number" id="analysis-min-confirmations" value="3" min="1" style="width:40px;">
+                </div>
+                <div class="input-group" style="margin-top:4px;">
+                    <label>SMA Slow</label>
+                    <input type="number" id="analysis-sma-slow" value="21" min="1" style="width:40px;">
+                </div>
+                <div class="input-group" style="margin-top:4px;">
+                    <label>BB StdDev</label>
+                    <input type="number" id="analysis-bb-stddev" value="2" min="0.1" step="0.1" style="width:40px;">
                 </div>
             </div>
 

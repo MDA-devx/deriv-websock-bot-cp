@@ -190,7 +190,8 @@ function updateIndicators() {
         const rsiData = document.getElementById('rsi-enabled').checked ? calculateRSI(dataHistory, rsiP).filter(d => d.value !== null) : [];
         const bb = document.getElementById('bb-enabled').checked ? calculateBB(dataHistory, bbP) : { upper: [], middle: [], lower: [] };
 
-        const stochData = calculateStochastic(dataHistory, 14);
+        const stochP = parseInt(document.getElementById('stoch-period')?.value) || 14;
+        const stochData = calculateStochastic(dataHistory, stochP);
         const macdData = calculateMACD(dataHistory, 12, 26, 9);
 
         if (smaSeries) smaSeries.setData(smaData);
@@ -233,20 +234,36 @@ function updateIndicators() {
             }
         }
 
+        const lastSma = smaData.length > 0 ? smaData[smaData.length - 1].value : null;
+        const lastEma = emaData.length > 0 ? emaData[emaData.length - 1] : null;
+        const lastRsi = rsiData.length > 0 ? rsiData[rsiData.length - 1].value : null;
+        const lastBbUpper = bb.upper.length > 0 ? bb.upper[bb.upper.length - 1].value : null;
+        const lastBbLower = bb.lower.length > 0 ? bb.lower[bb.lower.length - 1].value : null;
+        const lastStochK = stochData.length > 0 ? stochData[stochData.length - 1].k : null;
+        const lastMacd = macdData.length > 0 ? macdData[macdData.length - 1].macd : null;
+
+        const els = (id) => document.getElementById(id);
+        if (els('val-sma')) els('val-sma').textContent = lastSma !== null ? lastSma.toFixed(2) : '--';
+        if (els('val-ema')) els('val-ema').textContent = lastEma !== null ? lastEma.toFixed(2) : '--';
+        if (els('val-rsi')) els('val-rsi').textContent = lastRsi !== null ? lastRsi.toFixed(2) : '--';
+        if (els('val-bb')) els('val-bb').textContent = lastBbUpper !== null && lastBbLower !== null ? `${lastBbLower.toFixed(1)}-${lastBbUpper.toFixed(1)}` : '--';
+        if (els('val-stoch')) els('val-stoch').textContent = lastStochK !== null ? lastStochK.toFixed(1) : '--';
+        if (els('val-macd')) els('val-macd').textContent = lastMacd !== null ? lastMacd.toFixed(2) : '--';
+
         const config = {
-            minConfirmations: 3,
+            minConfirmations: parseInt(document.getElementById('min-confirmations')?.value) || 3,
             rsiPeriod: rsiP,
             rsiHigh: rsiHigh,
             rsiLow: rsiLow,
-            stochPeriod: 14,
+            stochPeriod: stochP,
             smaFast: smaP,
-            smaSlow: 21,
+            smaSlow: parseInt(document.getElementById('sma-slow')?.value) || 21,
             bbPeriod: bbP,
-            bbStdDev: 2,
+            bbStdDev: parseFloat(document.getElementById('bb-stddev')?.value) || 2,
             enabled: {
                 rsi: document.getElementById('rsi-enabled').checked,
-                stoch: true,
-                macd: true,
+                stoch: document.getElementById('stoch-enabled')?.checked ?? true,
+                macd: document.getElementById('macd-enabled')?.checked ?? true,
                 sma: document.getElementById('sma-enabled').checked,
                 bb: document.getElementById('bb-enabled').checked
             }
@@ -757,15 +774,17 @@ document.getElementById('view-1d').addEventListener('click', () => {
     if (priceChart) set1DayView();
 });
 
-['sma-enabled', 'ema-enabled', 'bb-enabled', 'rsi-enabled'].forEach(id => {
-    document.getElementById(id).addEventListener('change', async () => {
+['sma-enabled', 'ema-enabled', 'bb-enabled', 'rsi-enabled', 'stoch-enabled', 'macd-enabled'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', async () => {
         updateIndicators();
         await syncRunningStrategyParams();
     });
 });
 
-['sma-period', 'ema-period', 'bb-period', 'rsi-period', 'rsi-high', 'rsi-low'].forEach(id => {
-    document.getElementById(id).addEventListener('input', async () => {
+['sma-period', 'ema-period', 'bb-period', 'rsi-period', 'rsi-high', 'rsi-low', 'stoch-period', 'min-confirmations', 'sma-slow', 'bb-stddev'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', async () => {
         updateIndicators();
         await syncRunningStrategyParams();
     });
@@ -1295,15 +1314,15 @@ async function runStrategyBacktest() {
 
     const strategyId = document.getElementById('strategy-analysis')?.value || 'multi-momentum';
     const params = {
-        minConfirmations: 3,
+        minConfirmations: parseInt(document.getElementById('analysis-min-confirmations')?.value) || 3,
         rsiPeriod: parseInt(document.getElementById('analysis-rsi-period').value) || 7,
         rsiHigh: parseFloat(document.getElementById('analysis-rsi-high').value) || 65,
         rsiLow: parseFloat(document.getElementById('analysis-rsi-low').value) || 35,
         stochPeriod: parseInt(document.getElementById('analysis-stoch-period').value) || 14,
         smaFast: parseInt(document.getElementById('analysis-sma-period').value) || 23,
-        smaSlow: 21,
+        smaSlow: parseInt(document.getElementById('analysis-sma-slow')?.value) || 21,
         bbPeriod: parseInt(document.getElementById('analysis-bb-period').value) || 20,
-        bbStdDev: 2
+        bbStdDev: parseFloat(document.getElementById('analysis-bb-stddev')?.value) || 2
     };
 
     const durationMin = parseInt(document.getElementById('backtest-duration').value) || 1440;
@@ -1446,7 +1465,7 @@ async function runOptimizerScan() {
     for (let i = 0; i < paramSets.length; i++) {
         const p = paramSets[i];
         const params = {
-            minConfirmations: 3,
+            minConfirmations: parseInt(document.getElementById('analysis-min-confirmations')?.value) || 3,
             rsiPeriod: p.rsiPeriod,
             rsiHigh: parseFloat(document.getElementById('analysis-rsi-high').value) || 65,
             rsiLow: parseFloat(document.getElementById('analysis-rsi-low').value) || 35,
@@ -1454,7 +1473,7 @@ async function runOptimizerScan() {
             smaFast: p.smaFast,
             smaSlow: p.smaSlow,
             bbPeriod: parseInt(document.getElementById('analysis-bb-period').value) || 20,
-            bbStdDev: 2
+            bbStdDev: parseFloat(document.getElementById('analysis-bb-stddev')?.value) || 2
         };
 
         try {
