@@ -118,16 +118,16 @@ function initCharts() {
     priceChart = LightweightCharts.createChart(pContainer, { ...chartOptions, height: pContainer.clientHeight || 300 });
     rsiChart = LightweightCharts.createChart(rContainer, { ...chartOptions, height: rContainer.clientHeight || 100 });
 
-    candleSeries = priceChart.addCandlestickSeries({
-        upColor: '#089981', downColor: '#f23645',
-        borderVisible: false, wickUpColor: '#089981', wickDownColor: '#f23645',
-    });
-    
     smaSeries = priceChart.addLineSeries({ color: '#2962ff', lineWidth: 1, title: 'SMA' });
     emaSeries = priceChart.addLineSeries({ color: '#f23645', lineWidth: 1, title: 'EMA' });
     bbUpperSeries = priceChart.addLineSeries({ color: '#00bcd4', lineWidth: 1, lineStyle: 0, title: 'BB Upper' });
     bbMiddleSeries = priceChart.addLineSeries({ color: 'rgba(0,188,212,0.3)', lineWidth: 1, lineStyle: 2, title: 'BB Middle' });
     bbLowerSeries = priceChart.addLineSeries({ color: '#00bcd4', lineWidth: 1, lineStyle: 0, title: 'BB Lower' });
+    
+    candleSeries = priceChart.addCandlestickSeries({
+        upColor: '#089981', downColor: '#f23645',
+        borderVisible: false, wickUpColor: '#089981', wickDownColor: '#f23645',
+    });
 
     rsiSeries = rsiChart.addLineSeries({ color: '#ff9800', lineWidth: 1, title: 'RSI' });
     stochSeries = rsiChart.addLineSeries({ color: '#9c27b0', lineWidth: 1, title: 'Stoch' });
@@ -1061,16 +1061,16 @@ function initAnalysisCharts() {
     estrPriceChart = LightweightCharts.createChart(pContainer, { ...estrOpts, height: pContainer.clientHeight || 300 });
     estrRsiChart = LightweightCharts.createChart(rContainer, { ...estrOpts, height: rContainer.clientHeight || 100 });
 
-    estrCandleSeries = estrPriceChart.addCandlestickSeries({
-        upColor: '#089981', downColor: '#f23645',
-        borderVisible: false, wickUpColor: '#089981', wickDownColor: '#f23645',
-    });
-
     estrSmaSeries = estrPriceChart.addLineSeries({ color: '#2962ff', lineWidth: 1, title: 'SMA' });
     estrEmaSeries = estrPriceChart.addLineSeries({ color: '#f23645', lineWidth: 1, title: 'EMA' });
     estrBbUpperSeries = estrPriceChart.addLineSeries({ color: '#00bcd4', lineWidth: 1, lineStyle: 0, title: 'BB Upper' });
     estrBbMiddleSeries = estrPriceChart.addLineSeries({ color: 'rgba(0,188,212,0.3)', lineWidth: 1, lineStyle: 2, title: 'BB Middle' });
     estrBbLowerSeries = estrPriceChart.addLineSeries({ color: '#00bcd4', lineWidth: 1, lineStyle: 0, title: 'BB Lower' });
+
+    estrCandleSeries = estrPriceChart.addCandlestickSeries({
+        upColor: '#089981', downColor: '#f23645',
+        borderVisible: false, wickUpColor: '#089981', wickDownColor: '#f23645',
+    });
 
     estrRsiSeries = estrRsiChart.addLineSeries({ color: '#ff9800', lineWidth: 1, title: 'RSI' });
     estrStochSeries = estrRsiChart.addLineSeries({ color: '#9c27b0', lineWidth: 1, title: 'Stoch' });
