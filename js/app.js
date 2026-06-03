@@ -1028,14 +1028,14 @@ function addLog(message, type = '') {
 function switchTab(tab) {
     currentTab = tab;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
-    document.getElementById('sidebar-trade').style.display = tab === 'trade' ? '' : 'none';
-    document.getElementById('sidebar-strategy').style.display = tab === 'strategy' ? '' : 'none';
-    document.getElementById('sidebar-analysis').style.display = tab === 'analysis' ? '' : 'none';
-    document.getElementById('sidebar-log-config').style.display = tab === 'log-config' ? '' : 'none';
-    document.getElementById('trade-view').style.display = tab === 'trade' ? '' : 'none';
-    document.getElementById('strategy-view').style.display = tab === 'strategy' ? '' : 'none';
-    document.getElementById('analysis-view').style.display = tab === 'analysis' ? '' : 'none';
-    document.getElementById('log-config-view').style.display = tab === 'log-config' ? '' : 'none';
+    document.getElementById('sidebar-trade').style.display = tab === 'trade' ? 'flex' : 'none';
+    document.getElementById('sidebar-strategy').style.display = tab === 'strategy' ? 'flex' : 'none';
+    document.getElementById('sidebar-analysis').style.display = tab === 'analysis' ? 'flex' : 'none';
+    document.getElementById('sidebar-log-config').style.display = tab === 'log-config' ? 'flex' : 'none';
+    document.getElementById('trade-view').style.display = tab === 'trade' ? 'flex' : 'none';
+    document.getElementById('strategy-view').style.display = tab === 'strategy' ? 'flex' : 'none';
+    document.getElementById('analysis-view').style.display = tab === 'analysis' ? 'flex' : 'none';
+    document.getElementById('log-config-view').style.display = tab === 'log-config' ? 'flex' : 'none';
 
     if (tab === 'analysis') {
         if (!analysisChartsReady) initAnalysisCharts();
