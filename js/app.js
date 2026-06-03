@@ -560,13 +560,15 @@ function connect() {
             if (res.msg_type === 'error') {
                 console.log('[ERROR] API error:', res.error);
                 addLog('API: ' + (res.error?.message || JSON.stringify(res)), 'put');
+                // Even if it's an error, maybe history is still needed if it's not an auth error?
+                // But for now, let's keep it as is.
             }
             if (res.msg_type === 'candles') {
                 console.log('[DATA] Received candles, count:', res.candles?.length);
                 const validCandles = res.candles.map(c => ({
                     time: parseInt(c.epoch), open: parseFloat(c.open), high: parseFloat(c.high),
                     low: parseFloat(c.low), close: parseFloat(c.close)
-                })).filter(c => c.time && c.open > 0 && c.high >= Math.max(c.open, c.close) && c.low <= Math.min(c.open, c.close));
+                })).filter(c => c.time && c.open > 0 && c.high >= Math.min(c.open, c.close) && c.low <= Math.max(c.open, c.close));
 
                 console.log('[DATA] Valid candles:', validCandles.length);
                 if (validCandles.length > 0) {
