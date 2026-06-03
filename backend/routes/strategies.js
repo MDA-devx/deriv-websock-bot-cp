@@ -6,79 +6,111 @@ const router = Router();
 const engine = new StrategyEngine();
 
 router.get('/', (req, res) => {
-  const strategies = strategyRegistry.listStrategies();
-  res.json(strategies);
+  try {
+    const strategies = strategyRegistry.listStrategies();
+    res.json(strategies);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 // Keep static routes before dynamic /:name
 router.get('/state', (req, res) => {
-  res.json(engine.getState());
+  try {
+    res.json(engine.getState());
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 router.get('/state/history', (req, res) => {
-  res.json(engine.getHistory());
+  try {
+    res.json(engine.getHistory());
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 router.post('/state/reset', (req, res) => {
-  engine.reset();
-  res.json({ success: true });
+  try {
+    engine.reset();
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 router.get('/:name', (req, res) => {
-  const metadata = strategyRegistry.getStrategyMetadata(req.params.name);
-  if (!metadata) {
-    return res.status(404).json({ error: 'Strategy not found' });
+  try {
+    const metadata = strategyRegistry.getStrategyMetadata(req.params.name);
+    if (!metadata) {
+      return res.status(404).json({ error: 'Strategy not found' });
+    }
+    res.json(metadata);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
   }
-  res.json(metadata);
 });
 
 router.post('/:name/activate', (req, res) => {
-  const { name } = req.params;
-  const params = req.body.params || {};
+  try {
+    const { name } = req.params;
+    const params = req.body.params || {};
 
-  const result = engine.setStrategy(name, params);
-  if (!result.success) {
-    return res.status(400).json(result);
+    const result = engine.setStrategy(name, params);
+    if (!result.success) {
+      return res.status(400).json(result);
+    }
+
+    engine.activateStrategy();
+    res.json({ success: true, ...result });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
   }
-
-  engine.activateStrategy();
-  res.json({ success: true, ...result });
 });
 
 router.post('/:name/params', (req, res) => {
-  const { name } = req.params;
-  const params = req.body.params || {};
-  const result = engine.updateParams(name, params);
-  if (!result.success) {
-    return res.status(400).json(result);
+  try {
+    const { name } = req.params;
+    const params = req.body.params || {};
+    const result = engine.updateParams(name, params);
+    if (!result.success) {
+      return res.status(400).json(result);
+    }
+    res.json({ success: true, params });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
   }
-  res.json({ success: true, params });
 });
 
 router.post('/:name/deactivate', (req, res) => {
-  const result = engine.deactivateStrategy();
-  res.json(result);
+  try {
+    const result = engine.deactivateStrategy();
+    res.json(result);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 router.post('/:name/backtest', (req, res) => {
-  const { name } = req.params;
-  const { candles = [], params = {} } = req.body || {};
+  try {
+    const { name } = req.params;
+    const { candles = [], params = {} } = req.body || {};
 
-  const exists = strategyRegistry.getStrategyMetadata(name);
-  if (!exists) {
-    return res.status(404).json({ success: false, error: 'Strategy not found' });
+    const exists = strategyRegistry.getStrategyMetadata(name);
+    if (!exists) {
+      return res.status(404).json({ success: false, error: 'Strategy not found' });
+    }
+
+    const result = engine.runBacktest(name, candles, params);
+    if (!result.success) {
+      return res.status(400).json(result);
+    }
+
+    return res.json(result);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
   }
-
-  const result = engine.runBacktest(name, candles, params);
-  if (!result.success) {
-    return res.status(400).json(result);
-  }
-
-  return res.json(result);
-});
-
-engine.on('signal', (signal) => {
-  console.log('[StrategyEngine] Signal:', signal);
 });
 
 export default router;

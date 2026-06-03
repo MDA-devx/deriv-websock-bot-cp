@@ -42,7 +42,6 @@ class ConfigManager {
 
     this.validate();
 
-    console.log('[Config] Configuration loaded');
     return this.config;
   }
 
@@ -81,7 +80,6 @@ class ConfigManager {
         } else {
           this.config[configKey] = isNaN(value) ? value : parseInt(value);
         }
-        console.log(`[Config] Override from env: ${configKey} = ${value}`);
       }
     }
   }
@@ -137,7 +135,6 @@ class ConfigManager {
         fs.mkdirSync(dir, { recursive: true });
       }
       fs.writeFileSync(this.localPath, JSON.stringify(this.config, null, 2), 'utf-8');
-      console.log('[Config] Configuration saved to local.json');
     } catch (e) {
       console.error('[Config] Error saving config:', e.message);
     }

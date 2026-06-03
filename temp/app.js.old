@@ -2,6 +2,7 @@ import { calculateSMA, calculateEMA, calculateRSI, calculateBB, calculateStochas
 import { analyzeMultiIndicators, detectDojiSignal } from '../frontend/js/modules/multi-indicators.js';
 import { CONFIG } from './config.js';
 
+console.log('[APP] Script loaded');
 
 // ============================================
 // State Management - Centralized State Object
@@ -74,10 +75,17 @@ const chartOptions = {
     handleScroll: { vertTouchDrag: false }
 };
 
+console.log('[APP] Script loaded, LightweightCharts:', typeof LightweightCharts);
+console.log('[APP] calculateSMA:', typeof calculateSMA);
+console.log('[APP] calculateEMA:', typeof calculateEMA);
+console.log('[APP] calculateRSI:', typeof calculateRSI);
+console.log('[APP] calculateBB:', typeof calculateBB);
 
 function initCharts() {
+    console.log('[CHART] initCharts() called');
     const pContainer = document.getElementById('price-chart');
     const rContainer = document.getElementById('rsi-chart');
+    console.log('[CHART] Containers found, price:', !!pContainer, 'rsi:', !!rContainer);
     
     pContainer.innerHTML = `
         <div class="chart-label">${document.getElementById('symbol').value} INDEX</div>
@@ -115,13 +123,17 @@ function initCharts() {
         }, 50);
     };
 
+    console.log('[CHART] Creating price chart...');
     priceChart = LightweightCharts.createChart(pContainer, { ...chartOptions, height: pContainer.clientHeight || 300 });
+    console.log('[CHART] Price chart created:', !!priceChart);
     rsiChart = LightweightCharts.createChart(rContainer, { ...chartOptions, height: rContainer.clientHeight || 100 });
+    console.log('[CHART] RSI chart created:', !!rsiChart);
 
     candleSeries = priceChart.addCandlestickSeries({
         upColor: '#089981', downColor: '#f23645',
         borderVisible: false, wickUpColor: '#089981', wickDownColor: '#f23645',
     });
+    console.log('[CHART] Candle series:', !!candleSeries);
     
     smaSeries = priceChart.addLineSeries({ color: '#2962ff', lineWidth: 1, title: 'SMA' });
     emaSeries = priceChart.addLineSeries({ color: '#f23645', lineWidth: 1, title: 'EMA' });
@@ -330,6 +342,7 @@ function processMultiSignals(result) {
         
         activeIndicator = result.indicators?.triggerIndicator || null;
         if (activeIndicator) {
+            console.log('[HIGHLIGHT] Calling for:', activeIndicator);
             highlightIndicator(activeIndicator, true);
             updateIndicatorLed(activeIndicator, signalType);
         }
@@ -427,9 +440,12 @@ function verifySignal(signalId, signalType, entryPrice, signalTime) {
 }
 
 document.getElementById('start-btn').addEventListener('click', () => {
+    console.log('[BTN] Click detected, isConnected:', isConnected);
     if (isConnected) {
+        console.log('[BTN] Calling disconnect()');
         disconnect();
     } else {
+        console.log('[BTN] Calling connect()');
         connect();
     }
 });
@@ -464,40 +480,51 @@ function connect() {
     const granularity = parseInt(timeframeInput) || 60;
     currentSymbol = symbolInput;
 
+    console.log('[APP] connect() started - appId:', appId, 'symbol:', currentSymbol, 'granularity:', granularity);
     addLog(`Conectando a ${currentSymbol} (${appId})...`);
     
     const wsUrl = `wss://ws.binaryws.com/websockets/v3?app_id=${appId}`;
+    console.log('[WS] Creating WebSocket:', wsUrl);
     
     ws = new WebSocket(wsUrl);
+    console.log('[WS] WebSocket object created, readyState:', ws.readyState);
 
     ws.onopen = () => {
+        console.log('[WS] onopen fired, readyState:', ws.readyState);
         addLog('WebSocket abierto. Solicitando historial...');
         initCharts();
         document.getElementById('api-token').parentElement.style.display = 'none';
         document.getElementById('app-id').parentElement.style.display = 'none';
         document.getElementById('start-btn').style.display = 'none';
         
+        console.log('[WS] Sending authorize or requesting history...');
         if (token) ws.send(JSON.stringify({ authorize: token }));
         else requestHistory();
     };
 
     ws.onmessage = (msg) => {
+        console.log('[WS] onmessage received, data:', msg.data.substring(0, 200));
         try {
             const res = JSON.parse(msg.data);
+            console.log('[WS] Parsed msg_type:', res.msg_type);
             
             if (res.msg_type === 'authorize') {
+                console.log('[AUTH] authorize response:', res);
                 if (res.error) addLog('Token error: ' + res.error.message, 'put');
                 else { addLog('Autorizado.'); requestHistory(); }
             }
             if (res.msg_type === 'error') {
+                console.log('[ERROR] API error:', res.error);
                 addLog('API: ' + (res.error?.message || JSON.stringify(res)), 'put');
             }
             if (res.msg_type === 'candles') {
+                console.log('[DATA] Received candles, count:', res.candles?.length);
                 const validCandles = res.candles.map(c => ({
                     time: parseInt(c.epoch), open: parseFloat(c.open), high: parseFloat(c.high),
                     low: parseFloat(c.low), close: parseFloat(c.close)
                 })).filter(c => c.time && c.open > 0 && c.high >= Math.max(c.open, c.close) && c.low <= Math.min(c.open, c.close));
 
+                console.log('[DATA] Valid candles:', validCandles.length);
                 if (validCandles.length > 0) {
                     dataHistory = validCandles;
                     resetTickCrossState();
@@ -505,6 +532,7 @@ function connect() {
                     const maxCandles = CONFIG.DATA.MAX_CANDLES || 500;
                     if (dataHistory.length > maxCandles) {
                         dataHistory = dataHistory.slice(-maxCandles);
+                        console.log('[DATA] Trimmed to', maxCandles, 'candles');
                     }
                     candleSeries.setData(dataHistory);
                     if (analysisChartsReady) updateAnalysisCharts();
@@ -520,9 +548,11 @@ function connect() {
                         }
                     }, 1000);
                     addLog(`Cargado: ${dataHistory.length} velas`);
+                    console.log('[DATA] Charts updated, connected:', isConnected);
                 }
             }
             if (res.msg_type === 'ohlc') {
+                console.log('[DATA] OHLC update:', res.ohlc);
                 const o = res.ohlc;
                 const candle = { time: parseInt(o.open_time), open: parseFloat(o.open), high: parseFloat(o.high), low: parseFloat(o.low), close: parseFloat(o.close) };
                 if (candle.time && candle.open > 0) {
@@ -558,6 +588,7 @@ function connect() {
         addLog('Error de conexión: ' + (e.message || 'No se pudo conectar'), 'put');
     };
     ws.onclose = (e) => {
+        console.log('[WS] onclose:', e.code, e.reason);
         addLog('Desconectado (' + e.code + ')', 'put');
         isConnected = false;
         state.isConnected = false;
@@ -567,6 +598,7 @@ function connect() {
         if (e.code !== 1000 && state.reconnectAttempts < CONFIG.WS.MAX_RECONNECT_ATTEMPTS) {
             state.reconnectAttempts++;
             const delay = CONFIG.WS.RECONNECT_DELAY * state.reconnectAttempts;
+            console.log(`[WS] Reconnecting in ${delay}ms (attempt ${state.reconnectAttempts}/${CONFIG.WS.MAX_RECONNECT_ATTEMPTS})`);
             addLog(`Reconectando en ${delay/1000}s... (intento ${state.reconnectAttempts})`);
             setTimeout(() => {
                 const token = document.getElementById('api-token').value;
@@ -678,6 +710,7 @@ function applyMinCandles() {
     if (dataHistory.length > 0 && priceChart) {
         const minCandles = parseInt(document.getElementById('min-candles').value) || 24;
         const offset = clampZoom(minCandles);
+        console.log('[ZOOM] applyMinCandles, rightOffset:', offset);
         priceChart.timeScale().applyOptions({ rightOffset: offset });
     }
 }
@@ -694,6 +727,7 @@ function set1DayView() {
     const gran = parseInt(document.getElementById('timeframe').value) || 60;
     const candlesPerDay = Math.floor(86400 / gran);
     const offset = clampZoom(candlesPerDay);
+    console.log('[1D] Setting rightOffset:', offset);
     if (priceChart) priceChart.timeScale().applyOptions({ rightOffset: offset });
 }
 
@@ -793,8 +827,10 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-function redrawIndicatorsOnly() {
-    // Clear series visual data without wiping the underlying dataHistory
+function resetUIForStrategy() {
+    // Clear market data history and chart series
+    dataHistory = [];
+    candleSeries.setData([]);
     smaSeries.setData([]);
     emaSeries.setData([]);
     bbUpperSeries.setData([]);
@@ -804,11 +840,32 @@ function redrawIndicatorsOnly() {
     stochSeries.setData([]);
     macdSeries.setData([]);
     macdSignalSeries.setData([]);
-    
-    // Refresh indicators based on existing dataHistory
+    // Reset indicator toggles to defaults
+    const toggleMap = {
+        'sma-enabled': true,
+        'ema-enabled': true,
+        'rsi-enabled': true,
+        'bb-enabled': true,
+        'stoch-enabled': false,
+        'macd-enabled': false
+    };
+    Object.entries(toggleMap).forEach(([id, def]) => {
+        const el = document.getElementById(id);
+        if (el) el.checked = def;
+    });
+    // Reset indicator parameters to defaults (these will be overwritten later when a strategy is selected)
+    document.getElementById('sma-period').value = 9;
+    document.getElementById('ema-period').value = 10;
+    document.getElementById('rsi-period').value = 7;
+    document.getElementById('rsi-high').value = 70;
+    document.getElementById('rsi-low').value = 30;
+    document.getElementById('bb-period').value = 20;
+    // Refresh indicators and chart
     updateIndicators();
     priceChart.applyOptions({});
     rsiChart.applyOptions({});
+    // Disable UI elements for indicators that the current strategy does not use (will be refined after fetching metadata)
+    // This placeholder will be overwritten when the strategy is changed below.
 }
 
 
@@ -821,7 +878,8 @@ window.addEventListener('load', () => {
     const strategySelect = document.getElementById('strategy');
     if (strategySelect) {
         strategySelect.addEventListener('change', async () => {
-            redrawIndicatorsOnly();
+            console.log('[UI] Strategy changed, resetting UI components');
+            resetUIForStrategy();
             resetTickCrossState();
             isLoadingStrategy = true;
             // Load default parameters for the selected strategy and apply to UI inputs
@@ -831,11 +889,12 @@ window.addEventListener('load', () => {
                 if (res.ok) {
                     const meta = await res.json();
                     const defaults = meta.defaultParams || {};
+                    const enabled = meta.enabled || {};
                     // Map known parameter keys to UI element IDs
                     const mapping = {
                         smaFast: 'sma-period',
                         smaPeriod: 'sma-period',
-                        smaSlow: 'sma-period',
+                        smaSlow: 'sma-period', // placeholder if using same input for fast/slow not present
                         emaFast: 'ema-period',
                         emaPeriod: 'ema-period',
                         emaSlow: 'ema-period',
@@ -843,8 +902,8 @@ window.addEventListener('load', () => {
                         rsiLow: 'rsi-low',
                         rsiHigh: 'rsi-high',
                         bbPeriod: 'bb-period',
-                        minConfirmations: 'min-confirmations',
-                        minScore: 'min-score',
+                        minConfirmations: 'min-confirmations', // if UI exists
+                        minScore: 'min-score', // if UI exists
                         coolDownCandles: 'cooldown-candles'
                     };
                     Object.entries(defaults).forEach(([key, val]) => {
@@ -863,6 +922,7 @@ window.addEventListener('load', () => {
                         stoch: 'stoch-enabled',
                         macd: 'macd-enabled'
                     };
+                    // Determine which indicators the strategy uses based on presence of relevant params
                     const uses = {
                         sma: !!defaults.smaFast || !!defaults.smaPeriod || !!defaults.smaSlow,
                         ema: !!defaults.emaFast || !!defaults.emaPeriod,
@@ -875,14 +935,13 @@ window.addEventListener('load', () => {
                         const el = document.getElementById(id);
                         if (el) {
                             el.checked = !!uses[key];
-                            el.disabled = !uses[key];
+                            el.disabled = !uses[key]; // disable if strategy does not use this indicator
                             const related = document.getElementById(`${id.replace('-enabled', '')}-period`);
                             if (related) related.style.display = uses[key] ? '' : 'none';
                         }
                     });
                     resetTickCrossState();
-                    // NO requestHistory() here, we want to redraw only
-                    updateIndicators();
+                    requestHistory();
                     isLoadingStrategy = false;
                 }
             } catch (e) {
@@ -905,6 +964,7 @@ document.getElementById('close-results')?.addEventListener('click', () => {
 });
 
 function showPositionTimer(signalType, entryPrice) {
+    console.log('[TIMER] showPositionTimer called:', signalType, entryPrice);
     const overlay = document.getElementById('position-overlay');
     const countdownEl = document.getElementById('overlay-countdown');
     const typeEl = document.getElementById('overlay-type');
@@ -920,6 +980,7 @@ function showPositionTimer(signalType, entryPrice) {
     
     overlay.className = signalType === 'call' ? '' : 'put-mode';
     overlay.style.display = 'block';
+    console.log('[TIMER] Overlay displayed, display:', overlay.style.display);
     
     if (positionTimer) clearInterval(positionTimer);
     
@@ -935,6 +996,7 @@ function showPositionTimer(signalType, entryPrice) {
 }
 
 function highlightIndicator(name, isActive) {
+    console.log('[HIGHLIGHT] Setting', name, 'to width:', isActive ? 4 : 1);
     const width = isActive ? 4 : 1;
     switch(name) {
         case 'RSI':

@@ -1,0 +1,43 @@
+Listo, emparchado para ver la UI sin conexión.
+
+Cambios hechos:
+- Creé ruta offline:
+  /home/salmarina/deriv-templ/deriv-fallrise-template/app/offline/page.tsx
+
+- Reutiliza el componente real:
+  /home/salmarina/deriv-templ/deriv-fallrise-template/components/trade-controls.tsx
+
+- Ajusté stake compartido:
+  min = 0.5
+  max = 5000
+  step = 0.01
+
+- Creé .gitignore:
+  /home/salmarina/deriv-templ/deriv-fallrise-template/.gitignore
+
+- Añadí progress.log local ignorado por git:
+  /home/salmarina/deriv-templ/deriv-fallrise-template/progress.log
+
+Cómo verlo:
+1. Instala deps si aún no están:
+   nice -n 5 ionice -c2 -n5 npm install
+
+2. Arranca dev:
+   nice -n 5 ionice -c2 -n5 npm run dev
+
+3. Abre:
+   http://localhost:3000/offline
+
+Qué muestra:
+- UI Rise/Fall sin WebSocket.
+- Mock chart.
+- Selector de símbolo con R_25 default.
+- Controles reales de Rise/Fall.
+- Stake con límites 0.5–5000.
+- Duración mock.
+- Payout mock = stake × 1.95.
+- Botón Buy genera resultado/toast mock sin conexión.
+
+Verificación hecha:
+- git diff --check: OK
+- No pude correr typecheck/build porque no hay node_modules instalado.

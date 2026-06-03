@@ -1,0 +1,30 @@
+Repo analysis summary
+
+Project: Next.js/React Deriv Rise/Fall trading app with internal @deriv/core package.
+
+Main findings:
+- No Express backend in this repo; app is frontend-first with shared Deriv WebSocket logic in packages/core.
+- Main UI entry: app/page.tsx -> RiseFallView -> TradeControls.
+- Trading logic: hooks/use-rise-fall-trading.ts and hooks/use-base-trading.ts.
+- WebSocket layer: packages/core/src/ws/deriv-ws.ts.
+- Environment/config: README expects .env.production, but .env.example is missing.
+- Build docs and config are inconsistent: README says static export to /out, but next.config.js lacks output: 'export'.
+- No lockfile present and node_modules was not installed, so build/typecheck could not be run.
+- Risk: .env.production is tracked by git.
+
+UI/feature gaps vs requested offline preview:
+- No dedicated offline/mock route originally.
+- No explicit symbol dropdown in the main trading controls; symbol is selected via chart callback.
+- No barrier input in the main trading controls.
+- Stake limits originally allowed min 0; updated to min 0.5 and max 5000.
+- Payout preview uses real proposal payout, not fixed stake × 1.95.
+
+Verification performed:
+- Read package.json, README.md, next.config.js, tsconfig.json, main page/components/hooks.
+- Checked git status and basic environment.
+- git diff --check passed after edits.
+
+Added offline preview work:
+- app/offline/page.tsx provides a no-WS mock UI preview using real TradeControls.
+- .gitignore now ignores node_modules, .next, out, env local files, progress.log, and *.log.
+- progress.log updated with completed tasks.

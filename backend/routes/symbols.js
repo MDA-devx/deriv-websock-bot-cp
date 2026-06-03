@@ -15,31 +15,39 @@ let cacheTime = 0;
 const CACHE_TTL = 3600000;
 
 router.get('/', (req, res) => {
-  const now = Date.now();
-  
-  if (symbolsCache && (now - cacheTime) < CACHE_TTL) {
-    return res.json(symbolsCache);
+  try {
+    const now = Date.now();
+    
+    if (symbolsCache && (now - cacheTime) < CACHE_TTL) {
+      return res.json(symbolsCache);
+    }
+    
+    const symbols = Object.keys(availableSymbols).map(key => ({
+      symbol: key,
+      ...availableSymbols[key]
+    }));
+    
+    symbolsCache = symbols;
+    cacheTime = now;
+    
+    res.json(symbols);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
   }
-  
-  const symbols = Object.keys(availableSymbols).map(key => ({
-    symbol: key,
-    ...availableSymbols[key]
-  }));
-  
-  symbolsCache = symbols;
-  cacheTime = now;
-  
-  res.json(symbols);
 });
 
 router.get('/:symbol', (req, res) => {
-  const symbol = availableSymbols[req.params.symbol.toUpperCase()];
-  
-  if (!symbol) {
-    return res.status(404).json({ error: 'Symbol not found' });
+  try {
+    const symbol = availableSymbols[req.params.symbol.toUpperCase()];
+    
+    if (!symbol) {
+      return res.status(404).json({ error: 'Symbol not found' });
+    }
+    
+    res.json({ symbol: req.params.symbol.toUpperCase(), ...symbol });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
   }
-  
-  res.json({ symbol: req.params.symbol.toUpperCase(), ...symbol });
 });
 
 export default router;

@@ -6,33 +6,45 @@ const router = Router();
 let startTime = Date.now();
 
 router.get('/', (req, res) => {
-  const uptimeSeconds = Math.floor((Date.now() - startTime) / 1000);
-  const uptime = formatUptime(uptimeSeconds);
-  
-  res.json({
-    status: 'running',
-    uptime,
-    uptimeSeconds,
-    version: '1.0.0',
-    config: {
-      appId: configManager.get('appId'),
-      defaultTimeframe: configManager.get('defaultTimeframe'),
-      symbols: configManager.get('symbols')
-    }
-  });
+  try {
+    const uptimeSeconds = Math.floor((Date.now() - startTime) / 1000);
+    const uptime = formatUptime(uptimeSeconds);
+    
+    res.json({
+      status: 'running',
+      uptime,
+      uptimeSeconds,
+      version: '1.0.0',
+      config: {
+        appId: configManager.get('appId'),
+        defaultTimeframe: configManager.get('defaultTimeframe'),
+        symbols: configManager.get('symbols')
+      }
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 router.get('/uptime', (req, res) => {
-  const uptimeSeconds = Math.floor((Date.now() - startTime) / 1000);
-  res.json({
-    uptime: formatUptime(uptimeSeconds),
-    uptimeSeconds,
-    startTime
-  });
+  try {
+    const uptimeSeconds = Math.floor((Date.now() - startTime) / 1000);
+    res.json({
+      uptime: formatUptime(uptimeSeconds),
+      uptimeSeconds,
+      startTime
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 router.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: Date.now() });
+  try {
+    res.json({ status: 'ok', timestamp: Date.now() });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 function formatUptime(seconds) {
