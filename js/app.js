@@ -47,50 +47,6 @@ let estrMarkType = 'open';
 let estrAutoSignals = [];
 let isLoadingStrategy = false;
 
-const STRATEGY_DEFAULTS = {
-    'multi-momentum': {
-        defaultParams: {
-            minConfirmations: 3,
-            rsiPeriod: 7,
-            rsiHigh: 70,
-            rsiLow: 30,
-            stochPeriod: 14,
-            macdFast: 12,
-            macdSlow: 26,
-            macdSignal: 9,
-            smaFast: 9,
-            smaSlow: 21,
-            bbPeriod: 20,
-            bbStdDev: 2,
-            enabled: { rsi: true, stoch: true, macd: true, sma: true, bb: true }
-        }
-    },
-    'adaptive-confluence': {
-        defaultParams: {
-            emaFast: 20,
-            emaSlow: 50,
-            rsiPeriod: 14,
-            rsiBullMin: 45,
-            rsiBullMax: 70,
-            rsiBearMin: 30,
-            rsiBearMax: 55,
-            macdFast: 12,
-            macdSlow: 26,
-            macdSignal: 9,
-            bbPeriod: 20,
-            bbStdDev: 2,
-            minScore: 3,
-            coolDownCandles: 8
-        }
-    },
-    'fast-ema-sma-cross': {
-        defaultParams: {
-            smaPeriod: 15,
-            emaPeriod: 8
-        }
-    }
-};
-
 const chartOptions = {
     layout: { backgroundColor: '#0d1117', textColor: '#e6edf3' },
     grid: { 
@@ -560,15 +516,13 @@ function connect() {
             if (res.msg_type === 'error') {
                 console.log('[ERROR] API error:', res.error);
                 addLog('API: ' + (res.error?.message || JSON.stringify(res)), 'put');
-                // Even if it's an error, maybe history is still needed if it's not an auth error?
-                // But for now, let's keep it as is.
             }
             if (res.msg_type === 'candles') {
                 console.log('[DATA] Received candles, count:', res.candles?.length);
                 const validCandles = res.candles.map(c => ({
                     time: parseInt(c.epoch), open: parseFloat(c.open), high: parseFloat(c.high),
                     low: parseFloat(c.low), close: parseFloat(c.close)
-                })).filter(c => c.time && c.open > 0 && c.high >= Math.min(c.open, c.close) && c.low <= Math.max(c.open, c.close));
+                })).filter(c => c.time && c.open > 0 && c.high >= Math.max(c.open, c.close) && c.low <= Math.min(c.open, c.close));
 
                 console.log('[DATA] Valid candles:', validCandles.length);
                 if (validCandles.length > 0) {
@@ -664,7 +618,6 @@ function disconnect() {
 }
 
 function requestHistory() {
-    if (!ws || ws.readyState !== WebSocket.OPEN) return;
     const gran = parseInt(document.getElementById('timeframe').value) || 60;
     ws.send(JSON.stringify({ ticks_history: currentSymbol, end: 'latest', start: Math.floor(Date.now() / 1000) - 7200, style: 'candles', granularity: gran }));
 }
@@ -818,17 +771,6 @@ document.getElementById('view-1d').addEventListener('click', () => {
 
 ['sma-enabled', 'ema-enabled', 'bb-enabled', 'rsi-enabled'].forEach(id => {
     document.getElementById(id).addEventListener('change', async () => {
-        const el = document.getElementById(id);
-        const checked = el.checked;
-        const relId = id.replace('-enabled', '');
-        const related = document.getElementById(relId + '-period');
-        if (related) related.style.display = checked ? '' : 'none';
-        if (relId === 'rsi') {
-            ['rsi-high', 'rsi-low'].forEach(rid => {
-                const rel = document.getElementById(rid);
-                if (rel) rel.style.display = checked ? '' : 'none';
-            });
-        }
         updateIndicators();
         await syncRunningStrategyParams();
     });
@@ -886,6 +828,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 function resetUIForStrategy() {
+    // Clear market data history and chart series
     dataHistory = [];
     candleSeries.setData([]);
     smaSeries.setData([]);
@@ -897,116 +840,115 @@ function resetUIForStrategy() {
     stochSeries.setData([]);
     macdSeries.setData([]);
     macdSignalSeries.setData([]);
+    // Reset indicator toggles to defaults
+    const toggleMap = {
+        'sma-enabled': true,
+        'ema-enabled': true,
+        'rsi-enabled': true,
+        'bb-enabled': true,
+        'stoch-enabled': false,
+        'macd-enabled': false
+    };
+    Object.entries(toggleMap).forEach(([id, def]) => {
+        const el = document.getElementById(id);
+        if (el) el.checked = def;
+    });
+    // Reset indicator parameters to defaults (these will be overwritten later when a strategy is selected)
+    document.getElementById('sma-period').value = 9;
+    document.getElementById('ema-period').value = 10;
+    document.getElementById('rsi-period').value = 7;
+    document.getElementById('rsi-high').value = 70;
+    document.getElementById('rsi-low').value = 30;
+    document.getElementById('bb-period').value = 20;
+    // Refresh indicators and chart
     updateIndicators();
     priceChart.applyOptions({});
     rsiChart.applyOptions({});
+    // Disable UI elements for indicators that the current strategy does not use (will be refined after fetching metadata)
+    // This placeholder will be overwritten when the strategy is changed below.
 }
 
-function applyStrategyDefaults(meta = {}, fetchHistory = true) {
-    const defaults = meta.defaultParams || {};
-    // Map known parameter keys to UI element IDs
-    const mapping = {
-        smaFast: 'sma-period',
-        smaPeriod: 'sma-period',
-        emaFast: 'ema-period',
-        emaPeriod: 'ema-period',
-        rsiPeriod: 'rsi-period',
-        rsiLow: 'rsi-low',
-        rsiHigh: 'rsi-high',
-        bbPeriod: 'bb-period',
-        minConfirmations: 'min-confirmations',
-        minScore: 'min-score',
-        coolDownCandles: 'cooldown-candles'
-    };
-    Object.entries(defaults).forEach(([key, val]) => {
-        const elementId = mapping[key];
-        if (!elementId) return;
-        const el = document.getElementById(elementId);
-        if (!el) return;
-        el.value = val;
-        el.disabled = false;
-    });
 
-    const toggleIds = {
-        sma: 'sma-enabled',
-        ema: 'ema-enabled',
-        rsi: 'rsi-enabled',
-        bb: 'bb-enabled',
-        stoch: 'stoch-enabled',
-        macd: 'macd-enabled'
-    };
-    const uses = {
-        sma: !!defaults.smaFast || !!defaults.smaPeriod || !!defaults.smaSlow,
-        ema: !!defaults.emaFast || !!defaults.emaPeriod,
-        rsi: !!defaults.rsiPeriod,
-        bb: !!defaults.bbPeriod,
-        stoch: !!defaults.stochPeriod,
-        macd: !!(defaults.macdFast && defaults.macdSlow && defaults.macdSignal)
-    };
-    Object.entries(toggleIds).forEach(([key, id]) => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        const enabled = !!uses[key];
-        el.checked = enabled;
-        el.disabled = !enabled;
-        const relKey = id.replace('-enabled', '');
-        const related = document.getElementById(relKey + '-period');
-        if (related) related.style.display = enabled ? '' : 'none';
-        if (relKey === 'rsi') {
-            ['rsi-high', 'rsi-low'].forEach(rid => {
-                const rel = document.getElementById(rid);
-                if (rel) rel.style.display = enabled ? '' : 'none';
-            });
-        }
-    });
 
-    resetTickCrossState();
-    if (fetchHistory) requestHistory();
-    updateIndicators();
-}
 
-async function loadStrategyDefaults(strategyId, fetchHistory = true) {
-    if (!strategyId) return;
-    isLoadingStrategy = true;
-    let meta = null;
-    try {
-        const res = await fetch(`/api/strategies/${strategyId}`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        meta = await res.json();
-    } catch (e) {
-        console.warn('[UI] Backend unavailable, using frontend defaults', e);
-        meta = STRATEGY_DEFAULTS[strategyId] || null;
-    } finally {
-        if (meta) applyStrategyDefaults(meta, fetchHistory);
-        isLoadingStrategy = false;
-    }
-}
 
 window.addEventListener('load', () => {
     initCharts();
     window.dispatchEvent(new Event('resize'));
     const strategySelect = document.getElementById('strategy');
-    const strategyApply = document.getElementById('strategy-apply');
     if (strategySelect) {
         strategySelect.addEventListener('change', async () => {
             console.log('[UI] Strategy changed, resetting UI components');
             resetUIForStrategy();
             resetTickCrossState();
-            await loadStrategyDefaults(strategySelect.value, true);
+            isLoadingStrategy = true;
+            // Load default parameters for the selected strategy and apply to UI inputs
+            try {
+                const strategyId = document.getElementById('strategy')?.value;
+                const res = await fetch(`/api/strategies/${strategyId}`);
+                if (res.ok) {
+                    const meta = await res.json();
+                    const defaults = meta.defaultParams || {};
+                    const enabled = meta.enabled || {};
+                    // Map known parameter keys to UI element IDs
+                    const mapping = {
+                        smaFast: 'sma-period',
+                        smaPeriod: 'sma-period',
+                        smaSlow: 'sma-period', // placeholder if using same input for fast/slow not present
+                        emaFast: 'ema-period',
+                        emaPeriod: 'ema-period',
+                        emaSlow: 'ema-period',
+                        rsiPeriod: 'rsi-period',
+                        rsiLow: 'rsi-low',
+                        rsiHigh: 'rsi-high',
+                        bbPeriod: 'bb-period',
+                        minConfirmations: 'min-confirmations', // if UI exists
+                        minScore: 'min-score', // if UI exists
+                        coolDownCandles: 'cooldown-candles'
+                    };
+                    Object.entries(defaults).forEach(([key, val]) => {
+                        const elementId = mapping[key];
+                        if (elementId) {
+                            const el = document.getElementById(elementId);
+                            if (el) el.value = val;
+                        }
+                    });
+                    // Enable/disable indicator toggles based on strategy support
+                    const toggleIds = {
+                        sma: 'sma-enabled',
+                        ema: 'ema-enabled',
+                        rsi: 'rsi-enabled',
+                        bb: 'bb-enabled',
+                        stoch: 'stoch-enabled',
+                        macd: 'macd-enabled'
+                    };
+                    // Determine which indicators the strategy uses based on presence of relevant params
+                    const uses = {
+                        sma: !!defaults.smaFast || !!defaults.smaPeriod || !!defaults.smaSlow,
+                        ema: !!defaults.emaFast || !!defaults.emaPeriod,
+                        rsi: !!defaults.rsiPeriod,
+                        bb: !!defaults.bbPeriod,
+                        stoch: !!defaults.stochPeriod,
+                        macd: !!(defaults.macdFast && defaults.macdSlow && defaults.macdSignal)
+                    };
+                    Object.entries(toggleIds).forEach(([key, id]) => {
+                        const el = document.getElementById(id);
+                        if (el) {
+                            el.checked = !!uses[key];
+                            el.disabled = !uses[key]; // disable if strategy does not use this indicator
+                            const related = document.getElementById(`${id.replace('-enabled', '')}-period`);
+                            if (related) related.style.display = uses[key] ? '' : 'none';
+                        }
+                    });
+                    resetTickCrossState();
+                    requestHistory();
+                    isLoadingStrategy = false;
+                }
+            } catch (e) {
+                console.error('Failed to load strategy defaults', e);
+                isLoadingStrategy = false;
+            }
         });
-        strategySelect.addEventListener('click', () => {
-            strategySelect.dataset.previousValue = strategySelect.value;
-        });
-    }
-    if (strategyApply && strategySelect) {
-        strategyApply.addEventListener('click', async () => {
-            console.log('[UI] Reapplying current strategy defaults');
-            resetUIForStrategy();
-            await loadStrategyDefaults(strategySelect.value, true);
-        });
-    }
-    if (strategySelect) {
-        loadStrategyDefaults(strategySelect.value, false);
     }
 });
 
